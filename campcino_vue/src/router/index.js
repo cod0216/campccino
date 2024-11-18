@@ -1,6 +1,6 @@
 // src/router/index.js
 import { createRouter, createWebHistory } from "vue-router";
-import BoardView from "../views/BoardView.vue";
+import BoardView from "../views/board/BoardView.vue";
 import CreatePost from "../views/CreatePost.vue";
 import PostDetail from "../views/PostDetail.vue";
 import MainView from "../views/MainView.vue";
