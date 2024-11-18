@@ -9,7 +9,7 @@
             type="text"
             id="username"
             v-model="username"
-            class="w-full p-2 border border-gray-300 rounded"
+            class="w-full p-2 border border-gray-300 rounded" required
           />
         </div>
         <div class="mb-4">
@@ -20,7 +20,7 @@
             type="password"
             id="password"
             v-model="password"
-            class="w-full p-2 border border-gray-300 rounded"
+            class="w-full p-2 border border-gray-300 rounded" required
           />
         </div>
         <div class="flex gap-4">
@@ -36,9 +36,16 @@
             class="w-[150px] py-2 mt-4 bg-blue-600 text-white font-bold rounded"
           >
             회원가입
-          </button>
+        </button>
+        <span class="ml-auto text-blue-500 cursor-pointer">
+        <router-link
+        to="/search">
+        비회원으로 이용하기
+    </router-link>
+  </span>
         </div>
       </form>
+
     </main>
   </div>
 </template>
@@ -58,9 +65,22 @@ export default {
     };
   },
   methods: {
-    handleLogin() {
-      // 로그인 처리 로직 구현
-      console.log(`아이디: ${this.username}, 비밀번호: ${this.password}`);
+    async handleLogin() {
+      try {
+        const response = await axios.post("/api/auth/login", {
+          username: this.username,
+          password: this.password,
+        });
+        const token = response.data.token;
+        // JWT 토큰 저장
+        localStorage.setItem("token", token);
+        alert("로그인 성공!");
+        // 로그인 후 메인 페이지로 이동
+        this.$router.push("/");
+      } catch (error) {
+        console.error(error);
+        alert("로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.");
+      }
     },
     handleSignUp() {
       // 회원가입 페이지로 이동 로직 구현
@@ -71,5 +91,66 @@ export default {
 </script>
 
 <style scoped>
-/* 스타일 추가 필요 시 */
+span.ml-auto {
+  margin-left: auto;
+}
 </style>
+
+
+<!-- <template>
+  <div class="login-container">
+    <form @submit.prevent="login">
+      <input v-model="username" type="text" placeholder="Username" required />
+      <input v-model="password" type="password" placeholder="Password" required />
+      <button type="submit">Login</button>
+    </form>
+  </div>
+</template>
+
+<script>
+import axios from 'axios';
+
+export default {
+  data() {
+    return {
+      username: '',
+      password: '',
+    };
+  },
+  methods: {
+    async login() {
+      try {
+        const response = await axios.post('/api/auth/login', {
+          username: this.username,
+          password: this.password,
+        });
+        const token = response.data.token;
+        localStorage.setItem('token', token); // JWT 저장
+        this.$router.push('/'); // 로그인 성공 시 리다이렉트
+      } catch (error) {
+        alert('Login failed! Please check your credentials.');
+      }
+    },
+  },
+};
+</script>
+
+<style scoped>
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+input {
+  margin: 10px;
+  padding: 10px;
+  width: 200px;
+}
+button {
+  padding: 10px 20px;
+  cursor: pointer;
+}
+</style>
+ -->
