@@ -1,30 +1,26 @@
 // src/router/index.js
 import { createRouter, createWebHistory } from "vue-router";
-import BoardView from "../views/board/BoardView.vue";
-import CreatePost from "../views/CreatePost.vue";
-import PostDetail from "../views/PostDetail.vue";
-import MainView from "../views/MainView.vue";
-import CampDetailView from "../views/CampDetailView.vue";
-import CampStoreView from "../views/CampStoreView.vue";
-import CampStoreDetailView from "../views/CampStoreDetailView.vue";
-import LoginView from "../views/LoginView.vue";
-import JoinView from "../views/JoinView.vue";
-import CampSearchView from "../views/CampSearchView.vue";
+import BoardView from "@/views/board/BoardView.vue";
+import CreatePost from "@/views/post/CreatePost.vue";
+import PostDetail from "@/views/post/PostDetail.vue";
+import MainView from "@/views/MainView.vue";
+import CampDetailView from "@/views/camp/CampDetailView.vue";
+import CampStoreView from "@/views/store/CampStoreView.vue";
+import CampStoreDetailView from "@/views/store/CampStoreDetailView.vue";
+import LoginView from "@/views/user/LoginView.vue";
+import JoinView from "@/views/user/JoinView.vue";
+import CampSearchView from "@/views/camp/CampSearchView.vue";
 
 const routes = [
-  { path: "/", name: "CampSearch", component: CampSearchView },
+  { path: "/", name: "MainView", component: MainView },
   { path: "/board", name: "BoardView", component: BoardView },
   { path: "/create", name: "CreatePost", component: CreatePost },
   { path: "/post/:id", name: "PostDetail", component: PostDetail },
   { path: "/main", name: "Main", component: MainView },
   { path: "/camp/:id", name: "CampDetail", component: CampDetailView },
   { path: "/store", name: "CampStore", component: CampStoreView },
-  {
-    path: "/store/:id",
-    name: "CampStoreDetail",
-    component: CampStoreDetailView,
-    props: true,
-  },
+  { path: "/search", name: "CampSearchView", component: CampSearchView, },
+  { path: "/store/:id", name: "CampStoreDetail", component: CampStoreDetailView, props: true, },
   { path: "/login", name: "Login", component: LoginView },
   { path: "/join", name: "Join", component: JoinView },
 ];

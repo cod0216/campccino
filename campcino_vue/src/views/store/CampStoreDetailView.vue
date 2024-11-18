@@ -75,9 +75,9 @@
 </template>
 
 <script>
-import Header from "../components/common/Header.vue";
-import ReviewItem from "../components/ReviewItem.vue";
-import RelatedProductItem from "../components/RelatedProductItem.vue";
+import Header from "@/components/common/Header.vue";
+import ReviewItem from "@/components/ReviewItem.vue";
+import RelatedProductItem from "@/components/RelatedProductItem.vue";
 
 export default {
   name: "CampStoreDetailView",

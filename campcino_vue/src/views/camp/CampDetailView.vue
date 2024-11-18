@@ -13,9 +13,9 @@
 </template>
 
 <script>
-import Header from "../components/common/Header.vue";
-import RatingStars from "../components/RatingStars.vue";
-import AmenitiesList from "../components/AmenitiesList.vue";
+import Header from "@/components/common/Header.vue";
+import RatingStars from "@/components/RatingStars.vue";
+import AmenitiesList from "@/components/AmenitiesList.vue";
 
 export default {
   name: "CampDetailView",

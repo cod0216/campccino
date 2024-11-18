@@ -1,6 +1,5 @@
 <template>
   <div class="login-view-container">
-    <Header />
     <main class="container mx-auto p-6">
       <h1 class="text-4xl font-bold">로그인</h1>
       <form @submit.prevent="handleLogin" class="mt-6">
@@ -45,7 +44,7 @@
 </template>
 
 <script>
-import Header from "../components/common/Header.vue";
+import Header from "@/components/common/Header.vue";
 
 export default {
   name: "LoginView",

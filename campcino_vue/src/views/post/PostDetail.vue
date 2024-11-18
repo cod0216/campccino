@@ -36,8 +36,8 @@
 </template>
 
 <script>
-import Header from "../components/common/Header.vue";
-import { getBoardById, updateBoard } from "../api"; // 올바른 경로 확인
+import Header from "@/components/common/Header.vue";
+import { getBoardById, updateBoard } from "@/api"; // 올바른 경로 확인
 
 export default {
   name: "PostDetail",

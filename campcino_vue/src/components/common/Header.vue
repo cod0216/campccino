@@ -15,7 +15,7 @@
     </div>
     <nav class="flex items-center gap-4">
       <router-link
-        to="/"
+        to="/search"
         class="text-[#1C160C] hover:text-[#A18249] font-medium"
         >캠핑장 조회</router-link
       >

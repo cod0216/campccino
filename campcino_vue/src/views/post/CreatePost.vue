@@ -79,8 +79,8 @@
 </template>
 
 <script>
-import Header from "../components/common/Header.vue";
-import { createBoard } from "../api";
+import Header from "@/components/common/Header.vue";
+import { createBoard } from "@/api";
 
 export default {
   name: "CreatePost",

@@ -3,7 +3,6 @@
     class="relative flex w-full min-h-screen flex-col bg-white overflow-x-hidden"
     style="font-family: 'Noto Serif', 'Noto Sans', sans-serif"
   >
-    <Header />
     <div class="layout-container flex h-full grow flex-col">
       <div class="px-40 flex flex-1 justify-center py-5">
         <div
@@ -68,7 +67,7 @@
 </template>
 
 <script>
-import Header from "../components/common/Header.vue";
+import Header from "@/components/common/Header.vue";
 
 export default {
   name: "UserJoin",
