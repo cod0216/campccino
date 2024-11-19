@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { onMounted, watch } from 'vue';
+import { onMounted, watch } from "vue";
 
 export default {
   name: "MapSection",
@@ -20,7 +20,8 @@ export default {
         initMap();
       } else {
         const script = document.createElement("script");
-        script.src = '//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=850d7b0fe59c47b55e0c0511520c3335&libraries=services,clusterer,drawing';
+        script.src =
+          "//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=850d7b0fe59c47b55e0c0511520c3335&libraries=services,clusterer,drawing";
         script.onload = () => kakao.maps.load(() => initMap());
         document.head.appendChild(script);
       }
@@ -48,8 +49,8 @@ export default {
       if (!map) return;
 
       // 기존 마커 및 인포윈도우 삭제
-      kakaoMarkers.forEach(marker => marker.setMap(null));
-      infowindows.forEach(infowindow => infowindow.close());
+      kakaoMarkers.forEach((marker) => marker.setMap(null));
+      infowindows.forEach((infowindow) => infowindow.close());
       kakaoMarkers = [];
       infowindows = [];
 
@@ -66,8 +67,8 @@ export default {
         });
 
         // 마커 클릭 시 지도 중심 설정 및 레벨 변경
-        kakao.maps.event.addListener(marker, 'click', function () {
-          map.setLevel(2);
+        kakao.maps.event.addListener(marker, "click", function () {
+          map.setLevel(3); // level3 수준으로 변경
           map.setCenter(marker.getPosition());
           infowindow.open(map, marker);
         });
@@ -82,7 +83,7 @@ export default {
       if (kakaoMarkers.length === 0) return;
 
       let bounds = new kakao.maps.LatLngBounds();
-      kakaoMarkers.forEach(marker => {
+      kakaoMarkers.forEach((marker) => {
         bounds.extend(marker.getPosition());
       });
 
@@ -95,7 +96,7 @@ export default {
       if (kakaoMarkers[markerIndex]) {
         const marker = kakaoMarkers[markerIndex];
         const infowindow = infowindows[markerIndex];
-        map.setLevel(2);
+        map.setLevel(3); // level3 수준으로 변경
         map.setCenter(marker.getPosition());
         infowindow.open(map, marker);
       }

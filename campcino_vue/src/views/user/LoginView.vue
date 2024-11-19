@@ -52,6 +52,7 @@
 
 <script>
 import Header from "@/components/common/Header.vue";
+import axios from 'axios';
 
 export default {
   name: "LoginView",
@@ -96,61 +97,3 @@ span.ml-auto {
 }
 </style>
 
-
-<!-- <template>
-  <div class="login-container">
-    <form @submit.prevent="login">
-      <input v-model="username" type="text" placeholder="Username" required />
-      <input v-model="password" type="password" placeholder="Password" required />
-      <button type="submit">Login</button>
-    </form>
-  </div>
-</template>
-
-<script>
-import axios from 'axios';
-
-export default {
-  data() {
-    return {
-      username: '',
-      password: '',
-    };
-  },
-  methods: {
-    async login() {
-      try {
-        const response = await axios.post('/api/auth/login', {
-          username: this.username,
-          password: this.password,
-        });
-        const token = response.data.token;
-        localStorage.setItem('token', token); // JWT 저장
-        this.$router.push('/'); // 로그인 성공 시 리다이렉트
-      } catch (error) {
-        alert('Login failed! Please check your credentials.');
-      }
-    },
-  },
-};
-</script>
-
-<style scoped>
-.login-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-}
-input {
-  margin: 10px;
-  padding: 10px;
-  width: 200px;
-}
-button {
-  padding: 10px 20px;
-  cursor: pointer;
-}
-</style>
- -->

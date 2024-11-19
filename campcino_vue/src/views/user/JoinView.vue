@@ -67,6 +67,7 @@
 </template>
 
 <script>
+import axios from "axios";
 import Header from "@/components/common/Header.vue";
 
 export default {
@@ -149,12 +150,31 @@ export default {
     };
   },
   methods: {
-    handleSubmit() {
-      // Form submission logic
-      console.log("Form Data:", this.formData);
-    },
+    async handleSubmit() {
+  if (this.formData.password !== this.formData.confirmPassword) {
+    alert("비밀번호가 일치하지 않습니다.");
+    return;
+  }
+
+  try {
+    const response = await axios.post("http://localhost:8080/auth/register", {
+      userId: this.formData.username,
+      password: this.formData.password,
+      ssn: this.formData.ssn,
+      phone: this.formData.phone,
+      age: this.formData.age,
+      email: this.formData.email,
+      gender: this.formData.gender,
+    });
+
+    alert("회원가입 성공: " + response.data.message); // 성공 메시지
+    this.$router.push("/login");
+  } catch (error) {
+    console.error("회원가입 실패:", error);
+    alert("회원가입 실패: " + (error.response?.data?.message || "서버에 문제가 발생했습니다."));
+  }
+},
     goToLogin() {
-      // Navigate to the login page
       this.$router.push("/login");
     },
   },
