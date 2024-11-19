@@ -18,7 +18,9 @@ public class UserService {
 
     public void registerUser(UserDTO user) {
         user.setPassword(passwordEncoder.encode(user.getPassword())); // 비밀번호 암호화
+        user.
         userMapper.registerUser(user);
+        System.out.println("저장 완료");
     }
 
     public UserDTO findByUsername(String username) {

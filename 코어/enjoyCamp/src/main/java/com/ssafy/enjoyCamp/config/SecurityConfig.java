@@ -23,17 +23,19 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable() // CSRF 비활성화 (API 서버에 적합)
-                .authorizeRequests()
-                .requestMatchers("/user/login", "/user/register").permitAll() // 로그인, 회원가입은 누구나 접근 가능
-                .anyRequest().authenticated() // 그 외 요청은 인증 필요
-                .and()
+        http
+                .securityMatcher("/**") // 보안 설정을 적용할 경로
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/user/login", "/user/join").permitAll() // 로그인, 회원가입은 누구나 접근 가능
+                        .anyRequest().authenticated() // 그 외 요청은 인증 필요
+                )
+                .csrf(csrf -> csrf.disable()) // CSRF 비활성화
                 .addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    @Bean
+//    @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }

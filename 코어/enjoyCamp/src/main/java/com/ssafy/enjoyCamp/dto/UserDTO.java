@@ -5,8 +5,7 @@ import java.sql.*;
 
 @Data
 public class UserDTO {
-    private int id;
-    private String username;
+    private String userId;
     private String password;
     private String email;
 

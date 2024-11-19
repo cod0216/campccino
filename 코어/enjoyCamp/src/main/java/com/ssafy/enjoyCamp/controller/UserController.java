@@ -19,15 +19,17 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping
+    @PostMapping("/join")
     public ResponseEntity<String> registerUser(@RequestBody UserDTO user){
+
+        System.out.println("user = " + user);
         userService.registerUser(user);
         return ResponseEntity.ok("유저 정보 등록 성공적으로 완료");
     }
 
-    @PostMapping
+    @PostMapping("/login")
     public ResponseEntity<String> loginUser(@RequestBody UserDTO user){
-        UserDTO foundUser = userService.findByUsername(user.getUsername());
+        UserDTO foundUser = userService.findByUsername(user.getUserId());
         if (foundUser != null && new BCryptPasswordEncoder().matches(user.getPassword(), foundUser.getPassword())) {
             // JWT 생성 및 반환
             String token = "Generated JWT"; // 여기에 JWT 생성 로직 추가
