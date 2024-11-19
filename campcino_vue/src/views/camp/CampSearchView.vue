@@ -1,102 +1,108 @@
+<!-- src/views/CampSearchView.vue -->
 <template>
-  <div class="flex flex-col w-full min-h-screen bg-white" style="font-family: 'Noto Serif', 'Noto Sans', sans-serif">
+  <div
+    class="flex flex-col w-full min-h-screen bg-white"
+    style="font-family: 'Noto Serif', 'Noto Sans', sans-serif"
+  >
     <Header />
     <div class="flex flex-col items-center px-10 py-6">
       <div class="w-full max-w-5xl">
-        <!-- 검색 필터 섹션 -->
-        <FiltersSection :regions="regions" :categories="categories" @search="handleSearch" />
-        <!-- 카카오맵 섹션 -->
+        <FiltersSection
+          :regions="regions"
+          :categories="categories"
+          @search="handleSearch"
+        />
         <MapSection :markers="markers" ref="mapSection" />
-        <!-- 캠핑장 리스트 섹션 -->
-        <CampList :camps="filteredCamps" @toggle-favorite="toggleFavorite" @focus-marker="focusMarker" />
+        <div v-if="loading">캠핑장 로딩 중...</div>
+        <div v-else-if="error">
+          <p class="text-red-500">{{ error }}</p>
+        </div>
+        <div v-else>
+          <CampList :camps="camps" @focus-marker="focusMarker" />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, onMounted } from "vue";
+import { getCamps, getRegions, getCategories } from "@/api";
 import Header from "@/components/common/Header.vue";
-import FiltersSection from '@/components/camp/FiltersSection.vue';
-import MapSection from '@/components/camp/MapSection.vue';
-import CampList from '@/components/camp/CampList.vue';
+import FiltersSection from "@/components/camp/FiltersSection.vue";
+import MapSection from "@/components/camp/MapSection.vue";
+import CampList from "@/components/camp/CampList.vue";
 
-const regions = ref(["전체"]); // 초기값 설정
-const categories = ref(["전체"]); // 초기값 설정
+const regions = ref([]);
+const categories = ref([]);
 const camps = ref([]);
-const searchQuery = ref("");
-const selectedRegion = ref("전체");
-const selectedCategory = ref("전체");
-
 const markers = ref([]);
 const mapSection = ref(null);
 
-async function fetchCamps() {
+const loading = ref(false);
+const error = ref(null);
+
+const fetchCamps = async (regionId = 0, categoryId = 0, query = "") => {
+  loading.value = true;
+  error.value = null;
   try {
-    const response = await fetch('https://api.odcloud.kr/api/15111395/v1/uddi:8c528230-eda4-4d83-855a-bee73605e49f?page=10&perPage=50&serviceKey=upfTufBMOmKlnkynpU9y4ze%2BVPuP8whZAv8lPQEzihBrIef6T1O14RBOvBznJQNBbOw51L4UCswtLzLtu43Tpw%3D%3D');
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
-    const data = await response.json();
-    camps.value = data.data.map(item => ({
-      id: item['시설명'],
-      name: item['시설명'],
-      address: item['지번주소'],
-      category: item['카테고리3'],
-      latitude: Number(item['위도']),
-      longitude: Number(item['경도']),
-      isFavorite: false,
+    const campData = await getCamps(regionId, categoryId, query);
+    camps.value = campData.map((item) => ({
+      id: item.campId,
+      name: item.campName,
+      address: item.roadAddress,
+      latitude: item.latitude,
+      longitude: item.longitude,
     }));
-
-    // 중복 제거 후 지역 및 카테고리 설정
-    const uniqueRegions = [...new Set(camps.value.map(item => item.address.split(" ")[0]))];
-    const uniqueCategories = [...new Set(camps.value.flatMap(item => item.category.split(',')))];
-
-    regions.value = ["전체", ...uniqueRegions];
-    categories.value = ["전체", ...uniqueCategories];
-  } catch (error) {
-    console.error('데이터를 가져오는 데 오류가 발생했습니다:', error);
+    updateMarkers();
+  } catch (err) {
+    error.value = "캠핑장 데이터를 가져오는 중 오류가 발생했습니다.";
+  } finally {
+    loading.value = false;
   }
-}
+};
 
-const filteredCamps = computed(() => {
-  return camps.value.filter((camp) => {
-    const matchesRegion = selectedRegion.value === "전체" || camp.address.includes(selectedRegion.value);
-    const matchesCategory = selectedCategory.value === "전체" || camp.category.includes(selectedCategory.value);
-    const matchesQuery = searchQuery.value === "" || camp.name.toLowerCase().includes(searchQuery.value.toLowerCase());
-    return matchesRegion && matchesCategory && matchesQuery;
-  });
-});
+const fetchFilters = async () => {
+  try {
+    const [regionsData, categoriesData] = await Promise.all([
+      getRegions(),
+      getCategories(),
+    ]);
+    regions.value = regionsData;
+    categories.value = categoriesData;
+  } catch (err) {
+    error.value = "필터 데이터를 가져오는 중 오류가 발생했습니다.";
+  }
+};
 
-function handleSearch(region, category, query) {
-  selectedRegion.value = region;
-  selectedCategory.value = category;
-  searchQuery.value = query;
-  updateMarkers();
-}
+const fetchData = async () => {
+  await fetchFilters();
+};
 
-function updateMarkers() {
-  markers.value = filteredCamps.value.map((camp) => ({
+const handleSearch = (regionId, categoryId, query) => {
+  fetchCamps(regionId, categoryId, query);
+};
+
+const updateMarkers = () => {
+  markers.value = camps.value.map((camp) => ({
+    id: camp.id,
     title: camp.name,
     latlng: new kakao.maps.LatLng(camp.latitude, camp.longitude),
   }));
-}
+};
 
-function toggleFavorite(campId) {
-  const camp = camps.value.find((c) => c.id === campId);
-  if (camp) {
-    camp.isFavorite = !camp.isFavorite;
+const focusMarker = (campId) => {
+  const campIndex = camps.value.findIndex((camp) => camp.id === campId);
+  if (campIndex !== -1 && mapSection.value) {
+    mapSection.value.focusMarker(campIndex);
   }
-}
-
-function focusMarker(markerIndex) {
-  mapSection.value.focusMarker(markerIndex);
-}
+};
 
 onMounted(() => {
-  fetchCamps();
+  fetchData();
 });
 </script>
 
 <style scoped>
-/* 스타일 추가 필요 시 */
+/* 필요한 스타일을 추가하세요 */
 </style>
