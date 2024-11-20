@@ -8,6 +8,10 @@
             지번 주소
           </th>
           <th class="p-4 text-left text-sm font-bold text-[#1C160C]">찜하기</th>
+          <th class="p-4 text-left text-sm font-bold text-[#1C160C]">
+            자세히 보기
+          </th>
+          <!-- 새 열 추가 -->
         </tr>
       </thead>
       <tbody>
@@ -22,6 +26,14 @@
           <td class="p-4">
             <button class="flex items-center gap-2 px-4 py-2 border rounded">
               <span class="text-gray-600">&#9825; 찜하기</span>
+            </button>
+          </td>
+          <td class="p-4">
+            <button
+              @click="viewDetails(camp.id)"
+              class="text-blue-500 hover:underline"
+            >
+              자세히 보기
             </button>
           </td>
         </tr>
@@ -40,6 +52,11 @@ export default {
     },
   },
   emits: ["focus-marker"],
+  methods: {
+    viewDetails(campId) {
+      this.$router.push({ name: "CampDetail", params: { id: campId } });
+    },
+  },
 };
 </script>
 

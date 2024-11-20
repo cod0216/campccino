@@ -14,13 +14,24 @@ import CampSearchView from "@/views/camp/CampSearchView.vue";
 const routes = [
   { path: "/", name: "MainView", component: MainView },
   { path: "/board", name: "BoardView", component: BoardView },
+  {
+    path: "/camps/:id",
+    name: "CampDetail",
+    component: CampDetailView,
+    props: true, // 라우트 파라미터를 props로 전달
+  },
   { path: "/create", name: "CreatePost", component: CreatePost },
   { path: "/post/:id", name: "PostDetail", component: PostDetail },
   { path: "/main", name: "Main", component: MainView },
   { path: "/camp/:id", name: "CampDetail", component: CampDetailView },
   { path: "/store", name: "CampStore", component: CampStoreView },
-  { path: "/search", name: "CampSearchView", component: CampSearchView, },
-  { path: "/store/:id", name: "CampStoreDetail", component: CampStoreDetailView, props: true, },
+  { path: "/search", name: "CampSearchView", component: CampSearchView },
+  {
+    path: "/store/:id",
+    name: "CampStoreDetail",
+    component: CampStoreDetailView,
+    props: true,
+  },
   { path: "/login", name: "Login", component: LoginView },
   { path: "/join", name: "Join", component: JoinView },
 ];

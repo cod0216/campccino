@@ -118,7 +118,7 @@ CREATE TABLE `tbl_op` (
 	`o_weekday`	BOOLEAN	NULL,
 	`o_weekend`	BOOLEAN	NULL,
 	`o_spring`	BOOLEAN	NULL,
-	`o_summber`	BOOLEAN	NULL,
+	`o_summer`	BOOLEAN	NULL,
 	`o_fall`	BOOLEAN	NULL,
 	`o_winter`	BOOLEAN	NULL
 );

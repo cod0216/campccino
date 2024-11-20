@@ -1,50 +1,52 @@
 // src/api.js
 import axios from "axios";
+
 // Backend API base URL
 const BASE_URL = "http://localhost:8080/api";
 
+// Axios 인스턴스 생성
+const apiClient = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
 // 캠프 API
-export const getCamps = async (regionId = 0, categoryId = 0, query = "") => {
-  try {
-    const response = await axios.get(`${BASE_URL}/camps`, {
+export const getCamps = (region, categories, query) => {
+  return apiClient
+    .get("/camps", {
       params: {
-        region: regionId,
-        category: categoryId,
+        region,
+        category: categories, // Ensure categories are sent as an array
         text: query,
       },
-    });
-    return response.data;
-  } catch (error) {
-    console.error("캠핑장 데이터를 가져오는 중 오류 발생:", error);
-    throw error;
-  }
+      paramsSerializer: (params) => {
+        // Serialize arrays correctly
+        const searchParams = new URLSearchParams();
+        if (params.region) searchParams.append("region", params.region);
+        if (params.category && Array.isArray(params.category)) {
+          params.category.forEach((cat) =>
+            searchParams.append("category", cat)
+          );
+        }
+        if (params.text) searchParams.append("text", params.text);
+        return searchParams.toString();
+      },
+    })
+    .then((res) => res.data);
 };
 
-export const getRegions = async () => {
-  try {
-    const response = await axios.get(`${BASE_URL}/regions`);
-    return response.data;
-  } catch (error) {
-    console.error("지역 데이터를 가져오는 중 오류 발생:", error);
-    throw error;
-  }
-};
+export const getRegions = () =>
+  apiClient.get("/regions").then((res) => res.data);
 
-export const getCategories = async () => {
-  try {
-    const response = await axios.get(`${BASE_URL}/categories`);
-    return response.data;
-  } catch (error) {
-    console.error("카테고리 데이터를 가져오는 중 오류 발생:", error);
-    throw error;
-  }
-};
+export const getCategories = () =>
+  apiClient.get("/categories").then((res) => res.data);
 
-// 보드 API
+// 보드 API (unchanged)
 export const getBoards = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/boards`);
+    const response = await apiClient.get("/boards");
     return response.data;
   } catch (error) {
     console.error("보드 데이터를 가져오는 중 오류 발생:", error);
@@ -54,7 +56,7 @@ export const getBoards = async () => {
 
 export const getBoardById = async (id) => {
   try {
-    const response = await axios.get(`${BASE_URL}/boards/${id}`);
+    const response = await apiClient.get(`/boards/${id}`);
     return response.data;
   } catch (error) {
     console.error("ID로 보드를 가져오는 중 오류 발생:", error);
@@ -64,7 +66,7 @@ export const getBoardById = async (id) => {
 
 export const createBoard = async (boardData) => {
   try {
-    const response = await axios.post(`${BASE_URL}/boards`, boardData);
+    const response = await apiClient.post("/boards", boardData);
     return response.data;
   } catch (error) {
     console.error("보드를 생성하는 중 오류 발생:", error);
@@ -74,11 +76,16 @@ export const createBoard = async (boardData) => {
 
 export const updateBoard = async (id, updatedData) => {
   try {
-    const response = await axios.put(`${BASE_URL}/boards/${id}`, updatedData);
+    const response = await apiClient.put(`/boards/${id}`, updatedData);
     console.log("보드 업데이트 API 응답:", response.data); // 디버깅
     return response.data;
   } catch (error) {
     console.error("보드를 업데이트하는 중 오류 발생:", error);
     throw error;
   }
+};
+
+// 캠프 상세 조회 API 추가
+export const getCampById = (campId) => {
+  return apiClient.get(`/camps/${campId}`).then((res) => res.data);
 };
