@@ -1,8 +1,9 @@
 
 package com.ssafy.campcino.service;
 
-import com.ssafy.campcino.model.CampDto;
 import java.util.List;
+
+import com.ssafy.campcino.dto.responseDto.CampDto;
 
 public interface CampService {
     List<CampDto> getAllCamps();

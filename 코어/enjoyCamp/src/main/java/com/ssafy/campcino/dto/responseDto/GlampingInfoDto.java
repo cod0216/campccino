@@ -1,4 +1,4 @@
-package com.ssafy.campcino.model;
+package com.ssafy.campcino.dto.responseDto;
 
 import lombok.Getter;
 import lombok.Setter;

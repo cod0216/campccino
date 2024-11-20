@@ -1,8 +1,8 @@
 
 package com.ssafy.campcino.service;
 
-import com.ssafy.campcino.model.AddressDto;
+import com.ssafy.campcino.model.AddressEntity;
 
 public interface AddressService {
-    AddressDto getAddressByCampId(int campId);
+    AddressEntity getAddressByCampId(int campId);
 }

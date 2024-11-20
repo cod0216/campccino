@@ -1,6 +1,7 @@
 
 package com.ssafy.campcino.controller;
 
+import com.ssafy.campcino.dto.responseDto.CampDto;
 import com.ssafy.campcino.model.*;
 import com.ssafy.campcino.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,19 +50,19 @@ public class CampController {
 
     // Address endpoints
     @GetMapping("/camps/{id}/address")
-    public AddressDto getAddressByCampId(@PathVariable int id) {
+    public AddressEntity getAddressByCampId(@PathVariable int id) {
         return addressService.getAddressByCampId(id);
     }
 
     // Category endpoints
     @GetMapping("/categories")
-    public List<CategoryDto> getAllCategories() {
+    public List<CategoryEntity> getAllCategories() {
         return categoryService.getAllCategories();
     }
 
     // Region endpoints
     @GetMapping("/regions")
-    public List<SidoDto> getAllRegions() {
+    public List<SidoEntity> getAllRegions() {
         return sidoService.getAllRegions();
     }
 }

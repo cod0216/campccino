@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class AddressDto {
+public class AddressEntity {
     private int campId;
     private String campRoadAddress;
     private String campNumberAddress;

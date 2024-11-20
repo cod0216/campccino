@@ -4,7 +4,7 @@ import lombok.Data;
 import java.sql.*;
 
 @Data
-public class UserDto {
+public class UserEntity {
     private String userId;
     private String userPassword;
     private String userPhone;

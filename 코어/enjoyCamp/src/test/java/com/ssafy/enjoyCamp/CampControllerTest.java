@@ -1,7 +1,7 @@
 
 package com.ssafy.enjoyCamp;
 
-import com.ssafy.campcino.model.CampDto;
+import com.ssafy.campcino.dto.responseDto.CampDto;
 import com.ssafy.campcino.service.CampService;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

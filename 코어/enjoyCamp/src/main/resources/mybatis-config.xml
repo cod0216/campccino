@@ -13,7 +13,7 @@
     <!-- Type Alias 설정 -->
     <typeAliases>
         <!-- 모델 패키지 매핑 -->
-        <package name="com.ssafy.enjoyCamp.dto"/> <!-- 모델 클래스가 있는 패키지 -->
+        <package name="com.ssafy.campcino"/> <!-- 모델 클래스가 있는 패키지 -->
     </typeAliases>
 
     <!-- 매퍼 설정 -->

@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.campcino.mapper.SidoMapper;
-import com.ssafy.campcino.model.SidoDto;
+import com.ssafy.campcino.model.SidoEntity;
 
 @Service
 public class SidoServiceImpl implements SidoService {
@@ -16,7 +16,7 @@ public class SidoServiceImpl implements SidoService {
     private SidoMapper sidoMapper;
 
     @Override
-    public List<SidoDto> getAllRegions() {
+    public List<SidoEntity> getAllRegions() {
         return sidoMapper.findAll();
     }
 }

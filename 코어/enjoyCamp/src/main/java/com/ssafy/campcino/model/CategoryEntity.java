@@ -6,8 +6,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SidoDto {
-    private int sidoId;
-    private String sidoName;
+public class CategoryEntity {
+    private int categoryId;
+    private String categoryName;
 
 }

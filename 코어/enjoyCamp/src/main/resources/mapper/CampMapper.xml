@@ -4,7 +4,7 @@
 <mapper namespace="com.ssafy.campcino.mapper.CampMapper">
 
     <!-- 캠핑장 기본 정보 매핑 -->
-    <resultMap id="CampResultMap" type="com.ssafy.campcino.model.CampDto">
+    <resultMap id="CampResultMap" type="com.ssafy.campcino.dto.responseDto.CampDto">
         <id property="campId" column="camp_id" />
         <result property="regionId" column="sido_id" />
         <result property="regionName" column="sido_name" />
@@ -29,7 +29,7 @@
     </resultMap>
 
     <!-- AmenitiesResultMap -->
-    <resultMap id="AmenitiesResultMap" type="com.ssafy.campcino.model.AmenitiesDto">
+    <resultMap id="AmenitiesResultMap" type="com.ssafy.campcino.model.AmenitiesEntity">
         <result property="f_elec" column="f_elec" />
         <result property="f_hotWater" column="f_hot_water" />
         <result property="f_wifi" column="f_wifi" />
@@ -45,7 +45,7 @@
     </resultMap>
 
     <!-- NearAmenitiesResultMap -->
-    <resultMap id="NearAmenitiesResultMap" type="com.ssafy.campcino.model.NearAmenitiesDto">
+    <resultMap id="NearAmenitiesResultMap" type="com.ssafy.campcino.dto.responseDto.NearAmenitiesDto">
         <result property="n_fishing" column="n_fishing" />
         <result property="n_hiking" column="n_hiking" />
         <result property="n_beach" column="n_beach" />
@@ -59,7 +59,7 @@
     </resultMap>
 
     <!-- OperatingHoursResultMap -->
-    <resultMap id="OperatingHoursResultMap" type="com.ssafy.campcino.model.OperatingHoursDto">
+    <resultMap id="OperatingHoursResultMap" type="com.ssafy.campcino.dto.responseDto.OperatingHoursDto">
         <result property="o_weekday" column="o_weekday" />
         <result property="o_weekend" column="o_weekend" />
         <result property="o_spring" column="o_spring" />
@@ -69,7 +69,7 @@
     </resultMap>
 
     <!-- GlampingInfoResultMap -->
-    <resultMap id="GlampingInfoResultMap" type="com.ssafy.campcino.model.GlampingInfoDto">
+    <resultMap id="GlampingInfoResultMap" type="com.ssafy.campcino.dto.responseDto.GlampingInfoDto">
         <result property="g_bed" column="g_bed" />
         <result property="g_tv" column="g_tv" />
         <result property="g_fridge" column="g_fridge" />

@@ -1,4 +1,6 @@
-package com.ssafy.campcino.model;
+package com.ssafy.campcino.dto.responseDto;
+
+import com.ssafy.campcino.model.AmenitiesEntity;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -22,7 +24,7 @@ public class CampDto {
     private String numberAddress;   // 지번 주소
     
     private double rating; // 캠핑장 평점
-    private AmenitiesDto amenities; // tbl_facilities에서 가져온 편의 시설
+    private AmenitiesEntity amenities; // tbl_facilities에서 가져온 편의 시설
     private NearAmenitiesDto nearAmenities; // tbl_near_facilities에서 가져온 근처 시설
     private OperatingHoursDto operatingHours; // tbl_op에서 가져온 운영 시간
     private GlampingInfoDto glampingInfo; // tbl_glamping에서 가져온 글램핑 정보 (글램핑인 경우)

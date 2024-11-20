@@ -1,10 +1,11 @@
 
 package com.ssafy.campcino.mapper;
 
-import com.ssafy.campcino.model.CampDto;
-
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
+import com.ssafy.campcino.dto.responseDto.CampDto;
+
 import java.util.List;
 @Mapper
 public interface CampMapper {

@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.campcino.mapper.CategoryMapper;
-import com.ssafy.campcino.model.CategoryDto;
+import com.ssafy.campcino.model.CategoryEntity;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -16,7 +16,7 @@ public class CategoryServiceImpl implements CategoryService {
     private CategoryMapper categoryMapper;
 
     @Override
-    public List<CategoryDto> getAllCategories() {
+    public List<CategoryEntity> getAllCategories() {
         return categoryMapper.findAll();
     }
 }
