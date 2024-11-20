@@ -1,16 +1,17 @@
 
 package com.ssafy.campcino.service;
 
-import com.ssafy.campcino.model.AddressDto;
-import com.ssafy.campcino.repository.AddressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.ssafy.campcino.mapper.AddressMapper;
+import com.ssafy.campcino.model.AddressDto;
 
 @Service
 public class AddressServiceImpl implements AddressService {
 
     @Autowired
-    private AddressRepository addressRepository;
+    private AddressMapper addressRepository;
 
     @Override
     public AddressDto getAddressByCampId(int campId) {

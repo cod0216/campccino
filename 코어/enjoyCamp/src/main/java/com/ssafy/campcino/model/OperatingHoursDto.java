@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class OperatingHours {
+public class OperatingHoursDto {
 	private boolean o_weekday;
     private boolean o_weekend;
     private boolean o_spring;

@@ -8,8 +8,8 @@ import org.springframework.context.annotation.ComponentScan;
 
 import org.mybatis.spring.annotation.MapperScan;
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
-@ComponentScan(basePackages = {"com.ssafy.campcino", "com.ssafy.enjoyCamp"})
-@MapperScan("com.ssafy.campcino.repository")
+@ComponentScan(basePackages = {"com.ssafy"})
+@MapperScan("com.ssafy.campcino.mapper")
 public class CampCinoApplication {
 
 	public static void main(String[] args) {

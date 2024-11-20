@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ssafy.campcino.repository.CampRepository">
+<mapper namespace="com.ssafy.campcino.mapper.CampMapper">
 
     <!-- 캠핑장 기본 정보 매핑 -->
     <resultMap id="CampResultMap" type="com.ssafy.campcino.model.CampDto">
@@ -29,7 +29,7 @@
     </resultMap>
 
     <!-- AmenitiesResultMap -->
-    <resultMap id="AmenitiesResultMap" type="com.ssafy.campcino.model.Amenities">
+    <resultMap id="AmenitiesResultMap" type="com.ssafy.campcino.model.AmenitiesDto">
         <result property="f_elec" column="f_elec" />
         <result property="f_hotWater" column="f_hot_water" />
         <result property="f_wifi" column="f_wifi" />
@@ -45,7 +45,7 @@
     </resultMap>
 
     <!-- NearAmenitiesResultMap -->
-    <resultMap id="NearAmenitiesResultMap" type="com.ssafy.campcino.model.NearAmenities">
+    <resultMap id="NearAmenitiesResultMap" type="com.ssafy.campcino.model.NearAmenitiesDto">
         <result property="n_fishing" column="n_fishing" />
         <result property="n_hiking" column="n_hiking" />
         <result property="n_beach" column="n_beach" />
@@ -59,7 +59,7 @@
     </resultMap>
 
     <!-- OperatingHoursResultMap -->
-    <resultMap id="OperatingHoursResultMap" type="com.ssafy.campcino.model.OperatingHours">
+    <resultMap id="OperatingHoursResultMap" type="com.ssafy.campcino.model.OperatingHoursDto">
         <result property="o_weekday" column="o_weekday" />
         <result property="o_weekend" column="o_weekend" />
         <result property="o_spring" column="o_spring" />
@@ -69,7 +69,7 @@
     </resultMap>
 
     <!-- GlampingInfoResultMap -->
-    <resultMap id="GlampingInfoResultMap" type="com.ssafy.campcino.model.GlampingInfo">
+    <resultMap id="GlampingInfoResultMap" type="com.ssafy.campcino.model.GlampingInfoDto">
         <result property="g_bed" column="g_bed" />
         <result property="g_tv" column="g_tv" />
         <result property="g_fridge" column="g_fridge" />

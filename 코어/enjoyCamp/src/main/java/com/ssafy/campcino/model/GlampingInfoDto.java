@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class GlampingInfo {
+public class GlampingInfoDto {
 	private boolean g_bed;
     private boolean g_tv;
     private boolean g_fridge;

@@ -1,4 +1,4 @@
-package com.ssafy.campcino.repository;
+package com.ssafy.campcino.mapper;
 
 import com.ssafy.campcino.model.UserDto;
 import org.apache.ibatis.annotations.Mapper;

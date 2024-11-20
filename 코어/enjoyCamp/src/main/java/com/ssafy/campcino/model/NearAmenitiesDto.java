@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class NearAmenities {
+public class NearAmenitiesDto {
     private boolean n_fishing;
     private boolean n_hiking;
     private boolean n_beach;

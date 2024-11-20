@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class Amenities {
+public class AmenitiesDto {
     private boolean f_elec;
     private boolean f_hotWater;
     private boolean f_wifi;

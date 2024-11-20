@@ -1,21 +1,22 @@
 
 package com.ssafy.campcino.service;
 
-import com.ssafy.campcino.model.SidoDto;
-import com.ssafy.campcino.repository.SidoRepository;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.ssafy.campcino.mapper.SidoMapper;
+import com.ssafy.campcino.model.SidoDto;
 
 @Service
 public class SidoServiceImpl implements SidoService {
 
     @Autowired
-    private SidoRepository sidoRepository;
+    private SidoMapper sidoMapper;
 
     @Override
     public List<SidoDto> getAllRegions() {
-        return sidoRepository.findAll();
+        return sidoMapper.findAll();
     }
 }

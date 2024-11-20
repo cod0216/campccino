@@ -22,8 +22,8 @@ public class CampDto {
     private String numberAddress;   // 지번 주소
     
     private double rating; // 캠핑장 평점
-    private Amenities amenities; // tbl_facilities에서 가져온 편의 시설
-    private NearAmenities nearAmenities; // tbl_near_facilities에서 가져온 근처 시설
-    private OperatingHours operatingHours; // tbl_op에서 가져온 운영 시간
-    private GlampingInfo glampingInfo; // tbl_glamping에서 가져온 글램핑 정보 (글램핑인 경우)
+    private AmenitiesDto amenities; // tbl_facilities에서 가져온 편의 시설
+    private NearAmenitiesDto nearAmenities; // tbl_near_facilities에서 가져온 근처 시설
+    private OperatingHoursDto operatingHours; // tbl_op에서 가져온 운영 시간
+    private GlampingInfoDto glampingInfo; // tbl_glamping에서 가져온 글램핑 정보 (글램핑인 경우)
 }
