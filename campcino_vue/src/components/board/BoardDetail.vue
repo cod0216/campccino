@@ -22,9 +22,7 @@
         </svg>
       </div>
       <div class="flex flex-col justify-center">
-        <p
-          class="text-[#1C160C] text-base font-medium hover:underline"
-        >
+        <p class="text-[#1C160C] text-base font-medium hover:underline">
           {{ post.board_title }}
         </p>
         <p class="text-[#A18249] text-sm font-normal line-clamp-2">
@@ -42,7 +40,7 @@
 
 <script>
 export default {
-  name: "PostItem",
+  name: "BoardDetail",
   props: {
     post: {
       type: Object,
@@ -51,7 +49,10 @@ export default {
   },
   methods: {
     navigateToPost() {
-      this.$router.push({ name: "PostDetail", params: { id: this.post.board_id } });
+      this.$router.push({
+        name: "BoardDetail",
+        params: { id: this.post.board_id },
+      });
     },
   },
 };

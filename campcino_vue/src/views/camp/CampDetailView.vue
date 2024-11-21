@@ -1,6 +1,7 @@
+<!-- src/components/camp/CampDetailView.vue -->
 <template>
   <div class="camp-detail-container">
-    <Header />
+    <Header :profileImage="profileImage" />
     <main class="container mx-auto p-6">
       <!-- 로딩 상태 -->
       <div v-if="loading" class="text-center">캠핑장 정보를 로딩 중...</div>
@@ -18,51 +19,45 @@
           class="mt-6 flex flex-col md:flex-row md:justify-between md:items-center"
         >
           <div>
-            <h1 class="text-4xl font-bold text-[#1C160C]">
+            <h1 class="text-4xl font-bold text-primary md:mb-6">
               {{ camp.campName }}
             </h1>
-            <p class="text-sm text-[#A18249]">{{ camp.regionName }}</p>
+            <p class="text-2xl text-secondary">{{ camp.roadAddress }}</p>
           </div>
         </div>
 
         <!-- 캠핑장 설명 -->
-        <p class="text-base text-[#1C160C] mt-4">{{ camp.campExplanation }}</p>
+        <p class="text-base text-primary mt-4">{{ camp.campExplanation }}</p>
 
-        <!-- 평점 및 리뷰 -->
-        <div class="flex items-center mt-6">
-          <div class="flex items-center">
-            <StarRating :rating="camp.rating" size="20px" />
-            <span class="ml-2 text-lg font-semibold text-[#1C160C]">{{
-              camp.rating
-            }}</span>
+        <!-- 섹션들을 Grid로 수평 정렬 -->
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-4 gap-6">
+          <!-- 편의 시설 -->
+          <div>
+            <h2 class="text-2xl font-semibold text-primary">편의 시설</h2>
+            <AmenitiesList :amenities="camp.amenities" />
           </div>
-          <span class="ml-4 text-sm text-[#A18249]"
-            >{{ camp.reviews.length }} 리뷰</span
-          >
-        </div>
 
-        <!-- 편의 시설 -->
-        <div class="mt-6">
-          <h2 class="text-2xl font-semibold text-[#1C160C]">편의 시설</h2>
-          <AmenitiesList :amenities="camp.amenities" />
-        </div>
+          <!-- 근처 시설 -->
+          <div>
+            <h2 class="text-2xl font-semibold text-primary">근처 시설</h2>
+            <NearAmenitiesList
+              v-if="camp.nearAmenities && camp.nearAmenities.length > 0"
+              :amenities="camp.nearAmenities"
+            />
+            <div v-else class="text-sm text-secondary">없음</div>
+          </div>
 
-        <!-- 근처 시설 -->
-        <div class="mt-6">
-          <h2 class="text-2xl font-semibold text-[#1C160C]">근처 시설</h2>
-          <NearAmenitiesList :amenities="camp.nearAmenities" />
-        </div>
+          <!-- 운영 시간 -->
+          <div>
+            <h2 class="text-2xl font-semibold text-primary">운영 시간</h2>
+            <OperatingHours :operatingHours="camp.operatingHours" />
+          </div>
 
-        <!-- 운영 시간 -->
-        <div class="mt-6">
-          <h2 class="text-2xl font-semibold text-[#1C160C]">운영 시간</h2>
-          <OperatingHours :operatingHours="camp.operatingHours" />
-        </div>
-
-        <!-- 글램핑 시설 (옵션) -->
-        <div v-if="camp.glampingInfo" class="mt-6">
-          <h2 class="text-2xl font-semibold text-[#1C160C]">글램핑 시설</h2>
-          <GlampingInfo :glampingInfo="camp.glampingInfo" />
+          <!-- 글램핑 시설 (옵션) -->
+          <div v-if="camp.glampingInfo">
+            <h2 class="text-2xl font-semibold text-primary">글램핑 시설</h2>
+            <GlampingInfo :glampingInfo="camp.glampingInfo" />
+          </div>
         </div>
 
         <!-- 캠핑장 홈페이지 링크 -->
@@ -78,26 +73,72 @@
 
         <!-- 리뷰 섹션 -->
         <div class="mt-8">
-          <h2 class="text-2xl font-semibold text-[#1C160C]">리뷰</h2>
-          <Reviews :reviews="camp.reviews" />
+          <!-- 리뷰 헤더와 평점 및 리뷰 수를 수평으로 정렬 -->
+          <h2 class="text-2xl font-semibold text-primary md:mb-1">리뷰</h2>
+          <div class="flex flex-col md:flex-row md:justify md:items-center">
+            <div class="flex items-center mt-2 md:mt-0">
+              <StarRating :rating="camp.rating" size="25px" />
+              <span class="ml-2 text-lg font-semibold text-primary">{{
+                camp.rating
+              }}</span>
+              <span class="ml-4 text-sm text-secondary"
+                >{{ totalReviewCount }} 리뷰</span
+              >
+            </div>
+          </div>
+
+          <!-- 리뷰 리스트 -->
+          <Reviews :reviews="reviews" />
+
+          <!-- 리뷰 페이지네이션 -->
+          <div class="flex justify-center mt-4">
+            <button
+              @click="goToReviewPage(currentReviewPage - 1)"
+              :disabled="currentReviewPage === 1"
+              class="px-3 py-1 mx-1 bg-gray-200 rounded disabled:opacity-50"
+            >
+              이전
+            </button>
+            <button
+              v-for="page in visibleReviewPages"
+              :key="page"
+              @click="goToReviewPage(page)"
+              :class="[
+                'px-3 py-1 mx-1 rounded',
+                {
+                  'bg-blue-500 text-white': page === currentReviewPage,
+                  'bg-gray-200': page !== currentReviewPage,
+                },
+              ]"
+            >
+              {{ page }}
+            </button>
+            <button
+              @click="goToReviewPage(currentReviewPage + 1)"
+              :disabled="currentReviewPage === totalReviewPages"
+              class="px-3 py-1 mx-1 bg-gray-200 rounded disabled:opacity-50"
+            >
+              다음
+            </button>
+          </div>
         </div>
 
         <!-- 예약 섹션 -->
         <div class="mt-8 bg-[#F4EFE6] p-6 rounded-lg">
-          <h2 class="text-2xl font-semibold text-[#1C160C]">예약하기</h2>
+          <h2 class="text-2xl font-semibold text-primary">예약하기</h2>
           <div class="mt-4 flex flex-col md:flex-row md:items-center md:gap-6">
             <!-- 날짜 선택 -->
             <div class="flex-1">
-              <label class="block text-sm font-medium text-[#1C160C]"
-                >예약 날짜</label
-              >
+              <label class="block text-sm font-medium text-primary">
+                예약 날짜
+              </label>
               <Calendar @date-selected="handleDateSelected" />
             </div>
             <!-- 게스트 선택 -->
             <div class="flex-1 mt-4 md:mt-0">
-              <label class="block text-sm font-medium text-[#1C160C]"
-                >게스트</label
-              >
+              <label class="block text-sm font-medium text-primary">
+                게스트
+              </label>
               <Guests :guests="camp.guests" />
             </div>
           </div>
@@ -112,7 +153,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 import Header from "@/components/common/Header.vue";
 import ImageGallery from "@/components/camp/ImageGallery.vue";
@@ -125,7 +166,7 @@ import Calendar from "@/components/camp/Calendar.vue";
 import Guests from "@/components/camp/Guests.vue";
 import ReserveButton from "@/components/camp/ReserveButton.vue";
 import StarRating from "@/components/camp/StarRating.vue";
-import { getCampById } from "@/api";
+import { getCampById, getPaginatedReviewsByCampId } from "@/api";
 
 export default {
   name: "CampDetailView",
@@ -149,9 +190,21 @@ export default {
     const loading = ref(true);
     const error = ref(null);
 
+    // 리뷰 페이징 상태
+    const reviews = ref([]);
+    const currentReviewPage = ref(1);
+    const totalReviewPages = ref(1);
+    const totalReviewCount = ref(0);
+    const reviewPageSize = 5;
+
+    // 사용자 프로필 이미지 (예시)
+    const profileImage = ref("https://example.com/default-image.jpg");
+
     const fetchCampDetail = async () => {
       try {
         const data = await getCampById(campId);
+        console.log("Raw API Data:", data); // 원본 데이터 확인
+
         camp.value = {
           ...data,
           amenities: getAmenities(data),
@@ -160,16 +213,37 @@ export default {
           glampingInfo: data.glampingInfo
             ? getGlampingInfo(data.glampingInfo)
             : null,
-          rating: data.rating || 0,
-          reviews: data.reviews || [],
+          rating: calculateAverageRating(data.reviews),
           images: getImages(data),
+          // 리뷰는 별도로 페이징 처리할 것이므로 제외
         };
-        console.log("Fetched Camp Data:", camp.value); // 디버깅용 로그
+
+        // 총 리뷰 수 설정
+        totalReviewCount.value = data.reviewCount || data.reviews.length;
+
+        console.log("Processed Camp Data:", camp.value); // 처리된 데이터 확인
+        console.log("Calculated Rating:", camp.value.rating); // 계산된 평점 확인
       } catch (err) {
         error.value = "캠핑장 정보를 가져오는 중 오류가 발생했습니다.";
         console.error(err);
       } finally {
         loading.value = false;
+      }
+    };
+
+    const fetchReviews = async () => {
+      try {
+        const data = await getPaginatedReviewsByCampId(
+          campId,
+          currentReviewPage.value,
+          reviewPageSize
+        );
+        reviews.value = data.items;
+        currentReviewPage.value = data.currentPage;
+        totalReviewPages.value = data.totalPages;
+        totalReviewCount.value = data.totalItems;
+      } catch (error) {
+        console.error("리뷰를 가져오는 중 오류 발생:", error);
       }
     };
 
@@ -250,8 +324,44 @@ export default {
       ];
     };
 
+    /**
+     * 평균 평점을 계산하는 함수
+     * @param {Array} reviews - 리뷰 배열
+     * @returns {Number} - 평균 평점 (소수점 첫째 자리까지)
+     */
+    const calculateAverageRating = (reviews) => {
+      if (!reviews || reviews.length === 0) return 0;
+      let total = 0;
+      let validCount = 0;
+
+      reviews.forEach((review) => {
+        // 'campRate' 필드 이름을 확인하세요 (백엔드 응답에 따라 변경)
+        const rate = Number(review.campRate); // 'camp_rate'에서 'campRate'로 변경
+        console.log(
+          `Review ID: ${review.review_id}, campRate: ${review.campRate}, Converted Rate: ${rate}`
+        );
+        if (!isNaN(rate) && rate >= 0 && rate <= 5) {
+          total += rate;
+          validCount += 1;
+        } else {
+          console.warn(
+            `Invalid camp_rate found: ${review.campRate} in review ID ${review.review_id}`
+          );
+        }
+      });
+
+      if (validCount === 0) return 0;
+
+      const avg = total / validCount;
+      console.log(
+        `Total valid ratings: ${total}, Count: ${validCount}, Average: ${avg}`
+      );
+      return parseFloat(avg.toFixed(1));
+    };
+
     onMounted(() => {
       fetchCampDetail();
+      fetchReviews();
     });
 
     const handleDateSelected = (date) => {
@@ -264,12 +374,46 @@ export default {
       // 예약 로직을 추가하세요.
     };
 
+    // 페이지네이션 계산
+    const visibleReviewPages = computed(() => {
+      const pages = [];
+      const maxVisible = 5;
+      let start = Math.max(
+        currentReviewPage.value - Math.floor(maxVisible / 2),
+        1
+      );
+      let end = start + maxVisible - 1;
+
+      if (end > totalReviewPages.value) {
+        end = totalReviewPages.value;
+        start = Math.max(end - maxVisible + 1, 1);
+      }
+
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+      return pages;
+    });
+
+    const goToReviewPage = (page) => {
+      if (page < 1 || page > totalReviewPages.value) return;
+      currentReviewPage.value = page;
+      fetchReviews();
+    };
+
     return {
       camp,
       loading,
       error,
+      reviews,
+      currentReviewPage,
+      totalReviewPages,
+      totalReviewCount,
+      visibleReviewPages,
+      goToReviewPage,
       handleDateSelected,
       handleReserve,
+      profileImage, // 프로필 이미지 전달
     };
   },
 };

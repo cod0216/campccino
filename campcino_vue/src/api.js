@@ -85,7 +85,42 @@ export const updateBoard = async (id, updatedData) => {
   }
 };
 
-// 캠프 상세 조회 API 추가
-export const getCampById = (campId) => {
-  return apiClient.get(`/camps/${campId}`).then((res) => res.data);
+// 캠프 상세 조회 API 수정
+export const getCampById = async (campId) => {
+  try {
+    const response = await apiClient.get(`/camps/${campId}`);
+    console.log(`캠핑장 ID ${campId}로부터 받은 데이터:`, response.data); // 디버깅 로그
+    return response.data; // 데이터 형식 확인 필요
+  } catch (error) {
+    console.error(
+      `캠핑장 ID ${campId}로 데이터를 가져오는 중 오류 발생:`,
+      error
+    );
+    throw error;
+  }
+};
+
+export const getCampReviewSummaries = (sortBy, sortOrder, page, size) => {
+  return apiClient
+    .get("/reviews", {
+      params: {
+        sortBy,
+        sortOrder,
+        page,
+        size,
+      },
+    })
+    .then((res) => res.data);
+};
+
+// 캠핑장 리뷰 페이징 조회 API 추가
+export const getPaginatedReviewsByCampId = (campId, page, size) => {
+  return apiClient
+    .get(`/camps/${campId}/reviews`, {
+      params: {
+        page,
+        size,
+      },
+    })
+    .then((res) => res.data);
 };

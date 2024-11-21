@@ -2,6 +2,7 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
+import { createPinia } from "pinia"; // Pinia 임포트 추가
 import "./assets/index.css"; // Tailwind CSS
 
 // Font Awesome 설정
@@ -67,6 +68,8 @@ library.add(
 );
 
 const app = createApp(App);
+const pinia = createPinia(); // Pinia 인스턴스 생성 추가
 app.component("font-awesome-icon", FontAwesomeIcon);
+app.use(pinia); // Pinia 사용 추가
 app.use(router);
 app.mount("#app");

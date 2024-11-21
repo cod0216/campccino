@@ -1,9 +1,11 @@
+// src/main/java/com/ssafy/campcino/dto/responseDto/CampDto.java
 package com.ssafy.campcino.dto.responseDto;
 
 import com.ssafy.campcino.model.AmenitiesEntity;
-
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -28,4 +30,6 @@ public class CampDto {
     private NearAmenitiesDto nearAmenities; // tbl_near_facilities에서 가져온 근처 시설
     private OperatingHoursDto operatingHours; // tbl_op에서 가져온 운영 시간
     private GlampingInfoDto glampingInfo; // tbl_glamping에서 가져온 글램핑 정보 (글램핑인 경우)
+    
+    private List<ReviewDto> reviews; // 캠핑장 리뷰 리스트
 }

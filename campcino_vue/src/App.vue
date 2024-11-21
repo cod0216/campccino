@@ -1,6 +1,10 @@
 <!-- src/App.vue -->
 <template>
-  <router-view />
+  <router-view v-slot="{ Component, route }">
+    <keep-alive include="CampSearchView">
+      <component :is="Component" :key="route.fullPath" />
+    </keep-alive>
+  </router-view>
 </template>
 
 <script>
@@ -10,5 +14,5 @@ export default {
 </script>
 
 <style>
-/* 필요에 따라 전역 스타일을 추가하세요 */
+/* 글로벌 스타일 */
 </style>

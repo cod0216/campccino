@@ -2,17 +2,17 @@
 <template>
   <div>
     <h3 class="text-[#1C160C] text-lg font-bold py-2 px-4">글 목록</h3>
-    <PostItem v-for="post in posts" :key="post.board_id" :post="post" />
+    <BoardDetail v-for="post in posts" :key="post.board_id" :post="post" />
   </div>
 </template>
 
 <script>
-import PostItem from "@/components/post/PostItem.vue";
+import BoardDetail from "@/components/board/BoardDetail.vue";
 
 export default {
-  name: "PostList",
+  name: "BoardList",
   components: {
-    PostItem,
+    BoardDetail,
   },
   props: {
     posts: {

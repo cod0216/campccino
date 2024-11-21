@@ -25,7 +25,7 @@
         />
 
         <!-- Popular Topics -->
-        <PostList :posts="filteredPosts" />
+        <BoardList :posts="filteredPosts" />
 
         <!-- Start New Post Button -->
         <StartNewPostButton />
@@ -38,7 +38,7 @@
 import Header from "@/components/common/Header.vue";
 import SearchBar from "@/components/board/SearchBar.vue";
 import CategoryTags from "@/components/board/CategoryTags.vue";
-import PostList from "@/components/post/PostList.vue";
+import BoardList from "@/components/board/BoardList.vue";
 import StartNewPostButton from "@/components/board/StartNewPostButton.vue";
 import { getBoards } from "../../api";
 
@@ -48,7 +48,7 @@ export default {
     Header,
     SearchBar,
     CategoryTags,
-    PostList,
+    BoardList,
     StartNewPostButton,
   },
   data() {
