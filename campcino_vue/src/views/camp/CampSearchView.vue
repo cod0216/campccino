@@ -1,9 +1,17 @@
+<!-- src/components/camp/CampSearchView.vue -->
 <template>
   <div
-    class="flex flex-col w-full min-h-screen bg-white"
+    class="relative flex flex-col w-full min-h-screen bg-white"
     style="font-family: 'Noto Serif', 'Noto Sans', sans-serif"
   >
     <Header />
+    <!-- 찜 목록 컴포넌트 -->
+    <FavoriteList
+      v-if="favorites.length"
+      :favorites="favorites"
+      @remove-favorite="handleRemoveFavorite"
+      class="favorite-list"
+    />
     <div class="flex flex-col items-center px-10 py-6">
       <div class="w-full max-w-5xl">
         <FiltersSection
@@ -11,13 +19,26 @@
           :categories="categories"
           @search="handleSearch"
         />
-        <MapSection :markers="markers" ref="mapSection" />
-        <div v-if="loading">캠핑장 로딩 중...</div>
-        <div v-else-if="error">
-          <p class="text-red-500">{{ error }}</p>
+        <!-- 지도 섹션 -->
+        <div class="w-full h-96 mb-6">
+          <MapSection
+            :markers="markers"
+            ref="mapSection"
+            class="w-full h-full"
+          />
         </div>
-        <div v-else>
-          <CampList :camps="camps" @focus-marker="focusMarker" />
+        <div v-if="loading" class="text-center mt-4">캠핑장 로딩 중...</div>
+        <div v-else-if="error" class="text-center text-red-500 mt-4">
+          {{ error }}
+        </div>
+        <div v-else class="mt-6">
+          <CampList
+            :camps="camps"
+            :favorites="favorites"
+            @focus-marker="focusMarker"
+            @toggle-favorite="handleToggleFavorite"
+            @view-details="viewDetails"
+          />
         </div>
       </div>
     </div>
@@ -25,12 +46,16 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
+import { useRouter } from "vue-router";
 import { getCamps, getRegions, getCategories } from "@/api";
 import Header from "@/components/common/Header.vue";
 import FiltersSection from "@/components/camp/FiltersSection.vue";
 import MapSection from "@/components/camp/MapSection.vue";
 import CampList from "@/components/camp/CampList.vue";
+import FavoriteList from "@/components/camp/FavoriteList.vue";
+
+const router = useRouter();
 
 const regions = ref([]);
 const categories = ref([]);
@@ -40,6 +65,55 @@ const mapSection = ref(null);
 
 const loading = ref(false);
 const error = ref(null);
+
+// 찜 목록 상태 관리
+const favorites = ref([]);
+
+// 카카오맵 API 로드 상태 확인
+const kakaoLoaded = ref(false);
+
+// 세션 스토리지에서 찜 목록 불러오기 및 카카오맵 API 로드
+onMounted(() => {
+  fetchData();
+  loadKakaoMaps();
+
+  const storedFavorites = sessionStorage.getItem("favorites");
+  if (storedFavorites) {
+    favorites.value = JSON.parse(storedFavorites);
+  }
+});
+
+// 찜 목록의 길이를 감시하여 지도 업데이트
+watch(
+  () => favorites.value.length,
+  () => {
+    if (mapSection.value && mapSection.value.updateMapCenter) {
+      // 약간의 지연 시간을 두어 레이아웃이 완료된 후에 지도 업데이트
+      setTimeout(() => {
+        mapSection.value.updateMapCenter();
+      }, 300);
+    }
+  }
+);
+
+// 카카오맵 API 로드 함수
+const loadKakaoMaps = () => {
+  if (window.kakao && window.kakao.maps) {
+    kakaoLoaded.value = true;
+    updateMarkers(); // 카카오맵 API가 로드되었으므로 마커 업데이트
+  } else {
+    const script = document.createElement("script");
+    script.src =
+      "https://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=850d7b0fe59c47b55e0c0511520c3335&libraries=services,clusterer,drawing";
+    script.onload = () => {
+      window.kakao.maps.load(() => {
+        kakaoLoaded.value = true;
+        updateMarkers(); // 카카오맵 API가 로드되었으므로 마커 업데이트
+      });
+    };
+    document.head.appendChild(script);
+  }
+};
 
 // 캠프장 카테고리와 그에 해당하는 ID 매핑
 const categoryMappings = {
@@ -69,6 +143,7 @@ const fetchCamps = async (
     updateMarkers();
   } catch (err) {
     error.value = "캠핑장 데이터를 가져오는 중 오류가 발생했습니다.";
+    console.error(err);
   } finally {
     loading.value = false;
   }
@@ -85,6 +160,7 @@ const fetchFilters = async () => {
     categories.value = categoriesData;
   } catch (err) {
     error.value = "필터 데이터를 가져오는 중 오류가 발생했습니다.";
+    console.error(err);
   }
 };
 
@@ -105,6 +181,8 @@ const handleSearch = (regionId, selectedCategory, query) => {
 
 // 마커 업데이트 함수
 const updateMarkers = () => {
+  if (!kakaoLoaded.value) return;
+
   markers.value = camps.value.map((camp) => ({
     id: camp.id,
     title: camp.name,
@@ -120,12 +198,58 @@ const focusMarker = (campId) => {
   }
 };
 
-// 컴포넌트가 마운트될 때 필터 및 캠프장 데이터 가져오기
-onMounted(() => {
-  fetchData();
-});
+// 찜하기 이벤트 처리
+const handleToggleFavorite = (camp) => {
+  const index = favorites.value.findIndex((fav) => fav.id === camp.id);
+  if (index !== -1) {
+    // 이미 찜한 캠핑장이라면 제거
+    favorites.value.splice(index, 1);
+  } else {
+    // 찜 목록에 추가
+    favorites.value.push(camp);
+  }
+  // 세션 스토리지에 저장
+  sessionStorage.setItem("favorites", JSON.stringify(favorites.value));
+};
+
+// 찜 목록에서 제거
+const handleRemoveFavorite = (campId) => {
+  favorites.value = favorites.value.filter((camp) => camp.id !== campId);
+  // 세션 스토리지에 저장
+  sessionStorage.setItem("favorites", JSON.stringify(favorites.value));
+};
+
+// "상세 보기" 버튼을 통해 CampDetailView 페이지로 이동
+const viewDetails = (campId) => {
+  router.push({ name: "CampDetail", params: { id: campId } });
+};
 </script>
 
 <style scoped>
-/* 필요한 스타일을 추가하세요 */
+/* 찜 목록을 화면 오른쪽에 고정시키는 스타일 */
+.favorite-list {
+  position: fixed;
+  top: 100px; /* 원하는 위치로 조정 */
+  right: 20px; /* 화면 오른쪽에서의 간격 */
+  width: 300px; /* 찜 목록의 너비 */
+  max-height: calc(100vh - 150px); /* 화면 높이에 따른 최대 높이 설정 */
+  overflow-y: auto;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  z-index: 1000; /* 다른 요소보다 위에 표시되도록 */
+}
+
+/* 작은 화면에서는 찜 목록이 고정되지 않도록 */
+@media (max-width: 1500px) {
+  .favorite-list {
+    position: static;
+    width: 100%;
+    max-height: none;
+    margin-top: 16px;
+    right: 0;
+    top: 0;
+  }
+}
 </style>

@@ -1,7 +1,7 @@
 <!-- src/components/camp/CampDetailView.vue -->
 <template>
   <div class="camp-detail-container">
-    <Header :profileImage="profileImage" />
+    <!-- <Header :profileImage="profileImage" /> -->
     <main class="container mx-auto p-6">
       <!-- 로딩 상태 -->
       <div v-if="loading" class="text-center">캠핑장 정보를 로딩 중...</div>
@@ -19,8 +19,18 @@
           class="mt-6 flex flex-col md:flex-row md:justify-between md:items-center"
         >
           <div>
-            <h1 class="text-4xl font-bold text-primary md:mb-6">
+            <h1
+              class="text-4xl font-bold text-primary md:mb-6 flex items-center"
+            >
               {{ camp.campName }}
+              <!-- 운영 상태 아이콘 추가 -->
+              <span class="ml-2">
+                <CheckCircleIcon
+                  v-if="isOperatingNow"
+                  class="h-6 w-6 text-green-500"
+                />
+                <XCircleIcon v-else class="h-6 w-6 text-red-500" />
+              </span>
             </h1>
             <p class="text-2xl text-secondary">{{ camp.roadAddress }}</p>
           </div>
@@ -74,16 +84,16 @@
         <!-- 리뷰 섹션 -->
         <div class="mt-8">
           <!-- 리뷰 헤더와 평점 및 리뷰 수를 수평으로 정렬 -->
-          <h2 class="text-2xl font-semibold text-primary md:mb-1">리뷰</h2>
           <div class="flex flex-col md:flex-row md:justify md:items-center">
+            <h2 class="text-2xl font-semibold text-primary md:mr-3">리뷰</h2>
             <div class="flex items-center mt-2 md:mt-0">
               <StarRating :rating="camp.rating" size="25px" />
-              <span class="ml-2 text-lg font-semibold text-primary">{{
-                camp.rating
-              }}</span>
-              <span class="ml-4 text-sm text-secondary"
-                >{{ totalReviewCount }} 리뷰</span
-              >
+              <span class="ml-2 text-lg font-semibold text-primary">
+                {{ camp.rating }}
+              </span>
+              <span class="ml-4 text-sm text-secondary">
+                {{ totalReviewCount }} 리뷰
+              </span>
             </div>
           </div>
 
@@ -153,8 +163,9 @@
 </template>
 
 <script>
+// Heroicons v2에서 Solid 아이콘 임포트
+import { CheckCircleIcon, XCircleIcon } from "@heroicons/vue/24/solid";
 import { ref, onMounted, computed } from "vue";
-import { useRoute } from "vue-router";
 import Header from "@/components/common/Header.vue";
 import ImageGallery from "@/components/camp/ImageGallery.vue";
 import AmenitiesList from "@/components/camp/AmenitiesList.vue";
@@ -182,10 +193,16 @@ export default {
     Guests,
     ReserveButton,
     StarRating,
+    CheckCircleIcon,
+    XCircleIcon,
   },
-  setup() {
-    const route = useRoute();
-    const campId = parseInt(route.params.id);
+  props: {
+    campId: {
+      type: Number,
+      required: true,
+    },
+  },
+  setup(props) {
     const camp = ref(null);
     const loading = ref(true);
     const error = ref(null);
@@ -202,7 +219,7 @@ export default {
 
     const fetchCampDetail = async () => {
       try {
-        const data = await getCampById(campId);
+        const data = await getCampById(props.campId);
         console.log("Raw API Data:", data); // 원본 데이터 확인
 
         camp.value = {
@@ -234,7 +251,7 @@ export default {
     const fetchReviews = async () => {
       try {
         const data = await getPaginatedReviewsByCampId(
-          campId,
+          props.campId,
           currentReviewPage.value,
           reviewPageSize
         );
@@ -285,12 +302,12 @@ export default {
 
     const getOperatingHours = (data) => {
       return {
-        weekday: data.operatingHours.o_weekday,
-        weekend: data.operatingHours.o_weekend,
         spring: data.operatingHours.o_spring,
         summer: data.operatingHours.o_summer,
         fall: data.operatingHours.o_fall,
         winter: data.operatingHours.o_winter,
+        weekday: data.operatingHours.o_weekday,
+        weekend: data.operatingHours.o_weekend,
       };
     };
 
@@ -359,6 +376,31 @@ export default {
       return parseFloat(avg.toFixed(1));
     };
 
+    /**
+     * 현재 계절을 반환하는 함수
+     * @returns {String} - 'spring', 'summer', 'fall', 'winter'
+     */
+    const getCurrentSeason = () => {
+      const month = new Date().getMonth() + 1; // 0-based index
+      if (month >= 3 && month <= 5) return "spring";
+      if (month >= 6 && month <= 8) return "summer";
+      if (month >= 9 && month <= 11) return "fall";
+      return "winter";
+    };
+
+    /**
+     * 현재 계절에 따른 운영 상태를 계산하는 함수
+     * @returns {Boolean} - 운영 중이면 true, 아니면 false
+     */
+    const isOperatingNow = computed(() => {
+      if (!camp.value || !camp.value.operatingHours) return false;
+      const currentSeason = getCurrentSeason();
+      const seasonHours = camp.value.operatingHours[currentSeason];
+      // seasonHours이 true/false 또는 운영 시간을 나타내는 값에 따라 조건을 조정하세요.
+      // 예시: 'o_spring': true 또는 false
+      return seasonHours === true;
+    });
+
     onMounted(() => {
       fetchCampDetail();
       fetchReviews();
@@ -414,6 +456,9 @@ export default {
       handleDateSelected,
       handleReserve,
       profileImage, // 프로필 이미지 전달
+      isOperatingNow, // 운영 상태
+      CheckCircleIcon,
+      XCircleIcon,
     };
   },
 };
@@ -440,4 +485,6 @@ export default {
 .mt-8 {
   margin-top: 2rem;
 }
+
+/* 추가적인 스타일링이 필요하다면 여기에 작성하세요 */
 </style>

@@ -36,6 +36,7 @@
       v-model="query"
       placeholder="검색어 입력"
       class="p-2 border rounded flex-1 w-full md:w-auto"
+      @keyup="handleKeyUp"
     />
 
     <!-- 검색 버튼 -->
@@ -49,7 +50,7 @@
 </template>
 
 <script>
-import { ref, watch } from "vue";
+import { ref } from "vue";
 
 export default {
   name: "FiltersSection",

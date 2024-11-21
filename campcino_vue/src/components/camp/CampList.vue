@@ -1,21 +1,27 @@
+<!-- src/components/camp/CampList.vue -->
 <template>
   <div class="overflow-x-auto">
     <table class="min-w-full bg-white">
       <thead>
-        <tr class="w-full bg-gray-100 border-b">
-          <th class="p-4 text-left text-sm font-bold text-[#1C160C]">시설명</th>
-          <th class="p-4 text-left text-sm font-bold text-[#1C160C]">
-            지번 주소
+        <tr>
+          <th class="p-4 text-left text-sm font-medium text-gray-500">
+            캠핑장 이름
           </th>
-          <th class="p-4 text-left text-sm font-bold text-[#1C160C]">찜하기</th>
-          <th class="p-4 text-left text-sm font-bold text-[#1C160C]">
-            자세히 보기
+          <th class="p-4 text-left text-sm font-medium text-gray-500">주소</th>
+          <th class="p-4 text-left text-sm font-medium text-gray-500">
+            찜하기
           </th>
-          <!-- 새 열 추가 -->
+          <th class="p-4 text-left text-sm font-medium text-gray-500">
+            상세 보기
+          </th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="camp in camps" :key="camp.id" class="border-b">
+        <tr
+          v-for="camp in camps"
+          :key="camp.id"
+          class="border-b hover:bg-gray-50"
+        >
           <td
             @click="$emit('focus-marker', camp.id)"
             class="p-4 text-sm text-[#1C160C] cursor-pointer hover:underline"
@@ -24,13 +30,18 @@
           </td>
           <td class="p-4 text-sm text-[#1C160C]">{{ camp.address }}</td>
           <td class="p-4">
-            <button class="flex items-center gap-2 px-4 py-2 border rounded">
-              <span class="text-gray-600">&#9825; 찜하기</span>
+            <button
+              @click="$emit('toggle-favorite', camp)"
+              class="flex items-center gap-2 px-4 py-2 border rounded"
+            >
+              <span class="text-gray-600">
+                {{ isFavorited(camp.id) ? "♥ 찜 취소" : "♡ 찜하기" }}
+              </span>
             </button>
           </td>
           <td class="p-4">
             <button
-              @click="viewDetails(camp.id)"
+              @click="$emit('view-details', camp.id)"
               class="text-blue-500 hover:underline"
             >
               자세히 보기
@@ -50,11 +61,15 @@ export default {
       type: Array,
       required: true,
     },
+    favorites: {
+      type: Array,
+      required: true,
+    },
   },
-  emits: ["focus-marker"],
+  emits: ["focus-marker", "toggle-favorite", "view-details"],
   methods: {
-    viewDetails(campId) {
-      this.$router.push({ name: "CampDetail", params: { id: campId } });
+    isFavorited(campId) {
+      return this.favorites.some((fav) => fav.id === campId);
     },
   },
 };

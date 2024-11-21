@@ -1,19 +1,25 @@
+<!-- src/components/camp/MapSection.vue -->
 <template>
-  <div id="map" class="w-full h-96 mb-6"></div>
+  <div ref="mapContainer" class="w-full h-full"></div>
 </template>
 
 <script>
-import { onMounted, watch } from "vue";
+import { onMounted, ref, watch, onBeforeUnmount } from "vue";
 
 export default {
   name: "MapSection",
   props: {
-    markers: Array,
+    markers: {
+      type: Array,
+      default: () => [],
+    },
   },
-  setup(props) {
-    let map;
+  setup(props, { expose }) {
+    const mapContainer = ref(null);
+    let map = null;
     let kakaoMarkers = [];
     let infowindows = [];
+    let resizeObserver = null;
 
     onMounted(() => {
       if (window.kakao && window.kakao.maps) {
@@ -21,36 +27,46 @@ export default {
       } else {
         const script = document.createElement("script");
         script.src =
-          "//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=850d7b0fe59c47b55e0c0511520c3335&libraries=services,clusterer,drawing";
-        script.onload = () => kakao.maps.load(() => initMap());
+          "https://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=850d7b0fe59c47b55e0c0511520c3335&libraries=services,clusterer,drawing";
+        script.onload = () => {
+          window.kakao.maps.load(() => {
+            initMap();
+          });
+        };
         document.head.appendChild(script);
       }
     });
 
+    onBeforeUnmount(() => {
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
+    });
+
     function initMap() {
-      const mapContainer = document.getElementById("map");
       const mapOption = {
         center: new kakao.maps.LatLng(35.159545, 126.852601),
         level: 12,
       };
-      map = new kakao.maps.Map(mapContainer, mapOption);
+      map = new kakao.maps.Map(mapContainer.value, mapOption);
       updateMarkers();
+      observeResize(); // 지도 컨테이너 크기 변화 감지 시작
     }
 
     watch(
       () => props.markers,
-      (newMarkers) => {
+      () => {
         updateMarkers();
         updateMapCenter();
-      }
+      },
+      { deep: true }
     );
 
     function updateMarkers() {
       if (!map) return;
 
-      // 기존 마커 및 인포윈도우 삭제
+      // 기존 마커 및 인포윈도우 제거
       kakaoMarkers.forEach((marker) => marker.setMap(null));
-      infowindows.forEach((infowindow) => infowindow.close());
       kakaoMarkers = [];
       infowindows = [];
 
@@ -66,9 +82,9 @@ export default {
           content: `<div style="padding:5px;">${markerData.title}</div>`,
         });
 
-        // 마커 클릭 시 지도 중심 설정 및 레벨 변경
+        // 마커 클릭 이벤트
         kakao.maps.event.addListener(marker, "click", function () {
-          map.setLevel(3); // level3 수준으로 변경
+          map.setLevel(3);
           map.setCenter(marker.getPosition());
           infowindow.open(map, marker);
         });
@@ -78,37 +94,51 @@ export default {
       });
     }
 
-    // 지도 중심을 마커들의 중심으로 이동시키는 함수
     function updateMapCenter() {
-      if (kakaoMarkers.length === 0) return;
+      if (!map || kakaoMarkers.length === 0) return;
 
-      let bounds = new kakao.maps.LatLngBounds();
+      const bounds = new kakao.maps.LatLngBounds();
       kakaoMarkers.forEach((marker) => {
         bounds.extend(marker.getPosition());
       });
 
-      // 모든 마커들을 포함하는 중앙 좌표로 이동
       map.setBounds(bounds);
     }
 
-    // 캠핑장 이름 클릭 시 지도 이동 함수
     function focusMarker(markerIndex) {
       if (kakaoMarkers[markerIndex]) {
         const marker = kakaoMarkers[markerIndex];
         const infowindow = infowindows[markerIndex];
-        map.setLevel(3); // level3 수준으로 변경
+        map.setLevel(3);
         map.setCenter(marker.getPosition());
         infowindow.open(map, marker);
       }
     }
 
+    // 지도 컨테이너의 크기 변화를 감지하여 지도 업데이트
+    function observeResize() {
+      resizeObserver = new ResizeObserver(() => {
+        if (map) {
+          map.relayout(); // 지도 크기 변경 알림
+          updateMapCenter(); // 지도 중심 및 영역 업데이트
+        }
+      });
+      resizeObserver.observe(mapContainer.value);
+    }
+
+    // 지도 중심 업데이트 함수를 노출하여 부모 컴포넌트에서 호출 가능하도록 설정
+    expose({ focusMarker, updateMapCenter });
+
     return {
-      focusMarker,
+      mapContainer,
     };
   },
 };
 </script>
 
 <style scoped>
-/* 스타일 추가 필요 시 */
+div {
+  width: 100%;
+  height: 100%;
+}
 </style>
