@@ -51,6 +51,14 @@ export default {
       map = new kakao.maps.Map(mapContainer.value, mapOption);
       updateMarkers();
       observeResize(); // 지도 컨테이너 크기 변화 감지 시작
+
+      // 지도 레벨 변경 이벤트 리스너 추가
+      kakao.maps.event.addListener(map, "zoom_changed", function () {
+        const currentLevel = map.getLevel();
+        if (currentLevel >= 8) {
+          closeAllInfowindows();
+        }
+      });
     }
 
     watch(
@@ -124,6 +132,13 @@ export default {
         }
       });
       resizeObserver.observe(mapContainer.value);
+    }
+
+    // 모든 인포윈도우 닫기 함수
+    function closeAllInfowindows() {
+      infowindows.forEach((infowindow) => {
+        infowindow.close();
+      });
     }
 
     // 지도 중심 업데이트 함수를 노출하여 부모 컴포넌트에서 호출 가능하도록 설정
