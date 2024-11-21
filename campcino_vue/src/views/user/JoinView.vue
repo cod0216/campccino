@@ -13,53 +13,100 @@
           >
             회원 가입
           </h1>
-
-          <!-- Form Fields -->
-          <div
-            class="flex flex-col items-start gap-4 px-4 py-3"
-            v-for="(field, index) in fields"
-            :key="index"
-          >
-            <label class="flex flex-col w-full">
-              <p
-                class="text-[#1C160C] text-base font-medium leading-normal pb-2"
-              >
-                {{ field.label }}
-              </p>
-              <component
-                :is="field.type === 'select' ? 'select' : 'input'"
-                :type="field.inputType"
-                :placeholder="field.placeholder"
+          <form @submit.prevent="handleSubmit" class="mt-6">
+            <!-- 아이디 입력 -->
+            <div class="mb-4">
+              <label for="userId" class="block mb-2 font-semibold">아이디 입력</label>
+              <input
+                type="text"
+                id="userId"
+                v-model="form.userId"
+                placeholder="아이디를 입력하세요"
                 class="w-full p-2 border border-gray-300 rounded"
-                v-model="formData[field.model]"
+              />
+            </div>
+            <!-- 비밀번호 -->
+            <div class="mb-4">
+              <label for="userPassword" class="block mb-2 font-semibold">비밀번호</label>
+              <input
+                type="password"
+                id="userPassword"
+                v-model="form.userPassword"
+                placeholder="비밀번호"
+                class="w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+            <!-- 비밀번호 확인 -->
+            <div class="mb-4">
+              <label for="confirmPassword" class="block mb-2 font-semibold">비밀번호 확인</label>
+              <input
+                type="password"
+                id="confirmPassword"
+                v-model="confirmPassword"
+                placeholder="비밀번호 확인"
+                class="w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+            <!-- 휴대전화 -->
+            <div class="mb-4">
+              <label for="userPhone" class="block mb-2 font-semibold">휴대전화</label>
+              <input
+                type="text"
+                id="userPhone"
+                v-model="form.userPhone"
+                placeholder="010-0000-0000"
+                class="w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+            <!-- 나이 -->
+            <div class="mb-4">
+              <label for="userAge" class="block mb-2 font-semibold">나이</label>
+              <input
+                type="number"
+                id="userAge"
+                v-model="form.userAge"
+                placeholder="나이"
+                class="w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+            <!-- 이메일 -->
+            <div class="mb-4">
+              <label for="userEmail" class="block mb-2 font-semibold">이메일</label>
+              <input
+                type="email"
+                id="userEmail"
+                v-model="form.userEmail"
+                placeholder="example@domain.com"
+                class="w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+            <!-- 성별 -->
+            <div class="mb-4">
+              <label for="userGender" class="block mb-2 font-semibold">성별</label>
+              <select
+                id="userGender"
+                v-model="form.userGender"
+                class="w-full p-2 border border-gray-300 rounded"
               >
-                <option
-                  v-for="option in field.options"
-                  :key="option.value"
-                  :value="option.value"
-                >
-                  {{ option.label }}
-                </option>
-              </component>
-            </label>
-          </div>
-
-          <!-- 회원가입 버튼 -->
-          <div class="flex px-4 py-3">
+                <option value="M">남성</option>
+                <option value="F">여성</option>
+              </select>
+            </div>
+            <!-- 회원가입 버튼 -->
             <button
-              @click="handleSubmit"
+              type="submit"
               class="w-full py-2 mt-4 bg-green-600 text-white font-bold rounded"
             >
               회원 가입
             </button>
-          </div>
-
-          <p
-            class="text-[#A18249] text-sm font-normal leading-normal pb-3 pt-1 px-4 text-center underline cursor-pointer"
-            @click="goToLogin"
-          >
-            이미 계정이 있으신가요? 로그인하기
-          </p>
+            <!-- 로그인 페이지로 이동 -->
+            <p
+              class="text-blue-500 text-sm mt-4 cursor-pointer text-center"
+              @click="goToLogin"
+            >
+              이미 계정이 있으신가요? 로그인하기
+            </p>
+          </form>
         </div>
       </div>
     </div>
@@ -67,120 +114,57 @@
 </template>
 
 <script>
+import { ref } from "vue";
+import { useRouter } from "vue-router";
 import axios from "axios";
-import Header from "@/components/common/Header.vue";
 
 export default {
   name: "UserJoin",
-  components: {
-    Header,
-  },
-  data() {
-    return {
-      formData: {
-        username: "",
-        password: "",
-        confirmPassword: "",
-        ssn: "",
-        phone: "",
-        age: null,
-        email: "",
-        gender: "male",
-      },
-      fields: [
-        {
-          label: "아이디 입력",
-          type: "input",
-          inputType: "text",
-          placeholder: "아이디를 입력하세요",
-          model: "username",
-        },
-        {
-          label: "비밀번호",
-          type: "input",
-          inputType: "password",
-          placeholder: "비밀번호",
-          model: "password",
-        },
-        {
-          label: "비밀번호 확인",
-          type: "input",
-          inputType: "password",
-          placeholder: "비밀번호 확인",
-          model: "confirmPassword",
-        },
-        {
-          label: "주민번호",
-          type: "input",
-          inputType: "password",
-          placeholder: "123454-1234456",
-          model: "ssn",
-        },
-        {
-          label: "휴대전화",
-          type: "input",
-          inputType: "text",
-          placeholder: "010-0000-0000",
-          model: "phone",
-        },
-        {
-          label: "나이",
-          type: "input",
-          inputType: "number",
-          placeholder: "나이",
-          model: "age",
-        },
-        {
-          label: "이메일",
-          type: "input",
-          inputType: "email",
-          placeholder: "choissafy@ssafy.com",
-          model: "email",
-        },
-        {
-          label: "성별",
-          type: "select",
-          model: "gender",
-          options: [
-            { value: "male", label: "남성" },
-            { value: "female", label: "여성" },
-          ],
-        },
-      ],
-    };
-  },
-  methods: {
-    async handleSubmit() {
-  if (this.formData.password !== this.formData.confirmPassword) {
+  setup() {
+    const router = useRouter();
+    const form = ref({
+      userId: "",
+      userPassword: "",
+      userPhone: "",
+      userAge: null,
+      userEmail: "",
+      userGender: "M",
+    });
+    const confirmPassword = ref("");
+
+    const handleSubmit = async () => {
+  if (form.value.userPassword !== confirmPassword.value) {
     alert("비밀번호가 일치하지 않습니다.");
     return;
   }
-
   try {
-    const response = await axios.post("http://localhost:8080/auth/register", {
-      userId: this.formData.username,
-      password: this.formData.password,
-      ssn: this.formData.ssn,
-      phone: this.formData.phone,
-      age: this.formData.age,
-      email: this.formData.email,
-      gender: this.formData.gender,
+    const response = await axios.post("/user/join", form.value, {
+      headers: {
+        "Content-Type": "application/json", // JSON 형식으로 요청
+      },
     });
-
-    alert("회원가입 성공: " + response.data.message); // 성공 메시지
-    this.$router.push("/login");
+    alert(response.data); // 서버 응답 메시지
+    router.push("/login");
   } catch (error) {
-    console.error("회원가입 실패:", error);
-    alert("회원가입 실패: " + (error.response?.data?.message || "서버에 문제가 발생했습니다."));
+    console.error("회원가입 실패:", error.response || error.message);
+    alert("회원가입에 실패했습니다. 정보를 확인해주세요.");
   }
-},
-    goToLogin() {
-      this.$router.push("/login");
-    },
+};
+
+    const goToLogin = () => {
+      router.push("/login");
+    };
+
+    return {
+      form,
+      confirmPassword,
+      handleSubmit,
+      goToLogin,
+    };
   },
 };
 </script>
 
 <style scoped>
-/* 스타일 추가 필요 시 */
+/* 스타일 정의 필요 시 추가 */
 </style>

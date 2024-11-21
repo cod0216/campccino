@@ -5,6 +5,7 @@ import router from "./router";
 import { createPinia } from "pinia"; // Pinia 임포트 추가
 import "./assets/index.css"; // Tailwind CSS
 
+
 // Font Awesome 설정
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
@@ -72,4 +73,7 @@ const pinia = createPinia(); // Pinia 인스턴스 생성 추가
 app.component("font-awesome-icon", FontAwesomeIcon);
 app.use(pinia); // Pinia 사용 추가
 app.use(router);
+
+// setupAxiosInterceptors();
+
 app.mount("#app");

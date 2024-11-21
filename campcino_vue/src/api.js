@@ -124,3 +124,36 @@ export const getPaginatedReviewsByCampId = (campId, page, size) => {
     })
     .then((res) => res.data);
 };
+
+
+// JWT 토큰 저장/삭제 헬퍼
+export const setAuthHeader = (token) => {
+  apiClient.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+};
+
+export const clearAuthHeader = () => {
+  delete apiClient.defaults.headers.common["Authorization"];
+};
+
+// 로그인 API
+export const login = (credentials) => {
+  return apiClient.post("/user/login", credentials).then((res) => res.headers);
+};
+
+// 로그아웃 API
+export const logout = (refreshToken) => {
+  return apiClient.post("/user/logout", {}, {
+    headers: {
+      Authorization: refreshToken,
+    },
+  });
+};
+
+// Access Token 재발급
+export const refreshToken = (refreshToken) => {
+  return apiClient.post("/user/refresh", {}, {
+    headers: {
+      Authorization: refreshToken,
+    },
+  });
+};
