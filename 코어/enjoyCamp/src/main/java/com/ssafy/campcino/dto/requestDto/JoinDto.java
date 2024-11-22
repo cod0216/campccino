@@ -1,4 +1,4 @@
-package com.ssafy.campcino.dto.requsetDto;
+package com.ssafy.campcino.dto.requestDto;
 
 import lombok.Data;
 import lombok.Getter;

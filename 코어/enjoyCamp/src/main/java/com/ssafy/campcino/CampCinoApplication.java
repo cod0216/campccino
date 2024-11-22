@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.context.annotation.ComponentScan;
 
 import org.mybatis.spring.annotation.MapperScan;
-@SpringBootApplication(exclude = SecurityAutoConfiguration.class)
+@SpringBootApplication
 @ComponentScan(basePackages = {"com.ssafy"})
 @MapperScan("com.ssafy.campcino.mapper")
 public class CampCinoApplication {

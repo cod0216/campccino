@@ -1,6 +1,7 @@
 package com.ssafy.campcino.service;
 
-import com.ssafy.campcino.dto.requsetDto.JoinDto;
+
+import com.ssafy.campcino.dto.requestDto.JoinDto;
 import com.ssafy.campcino.model.UserEntity;
 
 public interface UserService {

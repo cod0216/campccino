@@ -1,8 +1,8 @@
 package com.ssafy.campcino.controller;
 
 import com.ssafy.campcino.config.JwtTokenProvider;
-import com.ssafy.campcino.dto.requsetDto.JoinDto;
-import com.ssafy.campcino.dto.requsetDto.LoginDto;
+import com.ssafy.campcino.dto.requestDto.JoinDto;
+import com.ssafy.campcino.dto.requestDto.LoginDto;
 import com.ssafy.campcino.dto.responseDto.LoginResponseDto;
 import com.ssafy.campcino.model.UserEntity;
 import com.ssafy.campcino.service.UserService;

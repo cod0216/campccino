@@ -1,6 +1,6 @@
 package com.ssafy.campcino.service;
 
-import com.ssafy.campcino.dto.requsetDto.JoinDto;
+import com.ssafy.campcino.dto.requestDto.JoinDto;
 import com.ssafy.campcino.mapper.UserMapper;
 import com.ssafy.campcino.model.UserEntity;
 import org.springframework.stereotype.Service;

@@ -4,7 +4,7 @@
 <mapper namespace="com.ssafy.campcino.mapper.UserMapper">
 
     <!-- 회원 정보 삽입 -->
-    <insert id="insertUser" parameterType="com.ssafy.campcino.dto.requsetDto.JoinDto">
+    <insert id="insertUser" parameterType="com.ssafy.campcino.dto.requestDto.JoinDto">
         INSERT INTO tbl_user (
         user_id, user_password, user_phone, user_age, user_email, user_gender, user_signup
         ) VALUES (

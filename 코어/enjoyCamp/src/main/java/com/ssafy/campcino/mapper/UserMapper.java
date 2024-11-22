@@ -1,6 +1,6 @@
 package com.ssafy.campcino.mapper;
 
-import com.ssafy.campcino.dto.requsetDto.JoinDto;
+import com.ssafy.campcino.dto.requestDto.JoinDto;
 import com.ssafy.campcino.model.UserEntity;
 import org.apache.ibatis.annotations.Mapper;
 
