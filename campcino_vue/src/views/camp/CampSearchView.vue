@@ -10,6 +10,8 @@
       v-if="favorites.length"
       :favorites="favorites"
       @remove-favorite="handleRemoveFavorite"
+      @toggle-minimize="handleToggleMinimize"
+      @view-details="viewDetails"
       class="favorite-list"
     />
     <div class="flex flex-col items-center px-10 py-6">

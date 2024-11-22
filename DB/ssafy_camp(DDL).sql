@@ -69,14 +69,14 @@ CREATE TABLE `tbl_user` (
     `user_phone` VARCHAR(30) NULL DEFAULT NULL,
     `user_age` INT NULL DEFAULT NULL,
     `user_email` VARCHAR(30) NULL DEFAULT NULL,
-    `user_gender` VARCHAR(2) NULL DEFAULT NULL,
+    `user_gender` VARCHAR(10) NULL DEFAULT NULL,
     `user_signup` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
     `user_delete` TIMESTAMP NULL DEFAULT NULL,
     `user_mileage` BIGINT NULL DEFAULT NULL,
     `user_url` VARCHAR(255) NULL DEFAULT NULL,
     `user_temp_auth` VARCHAR(30) NULL DEFAULT NULL,
-    `user_res` CHAR(13) NULL DEFAULT NULL,
-    `user_grade` VARCHAR(30) NULL DEFAULT NULL,
+    `user_refresh_token` VARCHAR(255) NULL DEFAULT NULL, -- Refresh Token 저장 필드 추가
+    `user_grade` VARCHAR(30) NULL DEFAULT NULL,         -- 회원 등급
     PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
