@@ -3,7 +3,9 @@ package com.ssafy.campcino.controller;
 import com.ssafy.campcino.config.JwtTokenProvider;
 import com.ssafy.campcino.dto.requsetDto.JoinDto;
 import com.ssafy.campcino.dto.requsetDto.LoginDto;
+import com.ssafy.campcino.dto.responseDto.LoginResponseDto;
 import com.ssafy.campcino.model.UserDto;
+import com.ssafy.campcino.model.UserEntity;
 import com.ssafy.campcino.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -49,7 +51,7 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody LoginDto loginDto) {
 
-        // 사용자 조회
+        // 사용자 조회xs
         System.out.println("loginDto.getUserId() = " + loginDto.getUserId());
 
 
@@ -64,14 +66,16 @@ public class UserController {
         String accessToken = jwtTokenProvider.generateAccessToken(foundUser.getUserId());
         String refreshToken = jwtTokenProvider.generateRefreshToken(foundUser.getUserId());
 
+        System.out.println("accessToken = " + accessToken);
+        System.out.println("refreshToken = " + refreshToken);
+
         // Refresh Token DB 저장
         userService.updateRefreshToken(foundUser.getUserId(), refreshToken);
 
+        LoginResponseDto responseDto = new LoginResponseDto(accessToken, refreshToken);
+        return ResponseEntity.ok(responseDto);
         // 토큰 반환
-        return ResponseEntity.ok()
-                .header("Access-Token", accessToken)
-                .header("Refresh-Token", refreshToken)
-                .body("로그인 성공");
+
     }
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(@RequestHeader("Authorization") String refreshToken) {
@@ -83,7 +87,7 @@ public class UserController {
         String userId = jwtTokenProvider.getUserIdFromToken(refreshToken);
 
         // 데이터베이스에 저장된 Refresh Token과 비교
-        UserDto foundUser = userService.findByUserId(userId);
+        UserEntity foundUser = userService.findByUserId(userId);
         if (!refreshToken.equals(foundUser.getUserRefreshToken())) {
             return ResponseEntity.status(401).body("Refresh Token이 일치하지 않습니다.");
         }

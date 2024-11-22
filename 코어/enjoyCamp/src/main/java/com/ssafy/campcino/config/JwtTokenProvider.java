@@ -20,9 +20,16 @@ import java.util.List;
 @Component
 public class JwtTokenProvider {
 
-    private Key key;
+    private Key accessKey;
+    private Key refreshKey;
     private final UserDetailsService userDetailsService;
-    private final String secretKey = "3x@mpl3$S3cr3tK3yTh@tIsV3ryS3cur3!"; // Should match application.properties
+    private static final String SECRET_KEY = "my-secret-key-for-access-token-which-should-be-very-secure";
+    private static final String REFRESH_SECRET_KEY = "my-secret-key-for-refresh-token-which-should-be-different";
+
+    private static final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 30; // 30 minutes
+    private static final long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 7; // 7 days
+
+
     private final long expirationTime = 120000; // 120초
 
     //15분~1시간  리프레쉬는 1주일 정도
@@ -34,44 +41,33 @@ public class JwtTokenProvider {
     @PostConstruct
     public void init() {
         // application.properties에서 키를 로드
-        if (secretKey.length() < 32) {
-            throw new IllegalArgumentException("3x@mpl3$S3cr3tK3yTh@tIsV3ryS3cur3!");
-        }
-        this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
+        accessKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+        refreshKey = Keys.hmacShaKeyFor(REFRESH_SECRET_KEY.getBytes());
     }
 
 
     //, List<String> roles
-    public String generateAccessToken(String username) {
-        Claims claims = Jwts.claims().setSubject(username);
-//        claims.put("roles", roles);
-        Date now = new Date();
-        Date validity = new Date(now.getTime() + expirationTime);
-
+    public String generateAccessToken(String userId) {
         return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(validity)
-                .signWith(key, SignatureAlgorithm.HS256)
+                .setSubject(userId)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION))
+                .signWith(accessKey, SignatureAlgorithm.HS512)
                 .compact();
     }
 
-    public String generateRefreshToken(String username) {
-        Claims claims = Jwts.claims().setSubject(username);
-//        claims.put("roles", roles);
-        Date now = new Date();
-        Date validity = new Date(now.getTime() + expirationTime + expirationTime);
-
+    public String generateRefreshToken(String userId) {
         return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(validity)
-                .signWith(key, SignatureAlgorithm.HS256)
+                .setSubject(userId)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION))
+                .signWith(refreshKey, SignatureAlgorithm.HS512)
                 .compact();
     }
 
-    public boolean validateToken(String token) {
+    public boolean validateToken(String token, boolean isRefreshToken) {
         try {
+            Key key = isRefreshToken ? refreshKey : accessKey;
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (Exception e) {
@@ -79,18 +75,19 @@ public class JwtTokenProvider {
         }
     }// 토큰(유효시간)으로 만들 수 있는 놈이면 true, 아니면 false
 
-    public String getUserIdFromToken(String token) {
+    public String getUserIdFromToken(String token, boolean isRefreshToken) {
+        Key key = isRefreshToken ? refreshKey : accessKey;
         return Jwts.parserBuilder().setSigningKey(key).build()
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
     }
 
-    public Authentication getAuthentication(String token) {
-        String username = getUserIdFromToken(token);
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
-    }
+//    public Authentication getAuthentication(String token, boolean isRefreshToken) {
+//        String username = getUserIdFromToken(token);
+//        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+//        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+//    }
 }
 
 

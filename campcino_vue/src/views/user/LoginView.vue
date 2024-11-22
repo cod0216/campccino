@@ -48,6 +48,7 @@
 
 <script>
 import { useAuthStore } from "@/stores/auth"; // Pinia 상태 관리
+import axios from "axios";
 
 export default {
   name: "LoginView",
@@ -65,10 +66,16 @@ export default {
     async handleLogin() {
       try {
         // 로그인 요청
-        await this.authStore.login({
-          userId: this.username,
-          password: this.password,
-        });
+        // await this.authStore.login("http://localhost:8080/user/login",{
+        //   userId: this.username,
+        //   password: this.password,
+        // });
+        const response = await axios.post("http://localhost:8080/user/login", {
+        userId: this.username,
+        password: this.password,
+      });
+
+        
 
                // JWT 토큰 저장
                const { accessToken, refreshToken } = response.data;
