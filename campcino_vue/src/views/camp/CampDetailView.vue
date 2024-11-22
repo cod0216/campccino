@@ -1,7 +1,6 @@
-<!-- src/components/camp/CampDetailView.vue -->
+<!-- src/views/camp/CampDetailView.vue -->
 <template>
   <div class="camp-detail-container">
-    <!-- <Header :profileImage="profileImage" /> -->
     <main class="container mx-auto p-6">
       <!-- 로딩 상태 -->
       <div v-if="loading" class="text-center">캠핑장 정보를 로딩 중...</div>
@@ -84,8 +83,10 @@
         <!-- 리뷰 섹션 -->
         <div class="mt-8">
           <!-- 리뷰 헤더와 평점 및 리뷰 수를 수평으로 정렬 -->
-          <div class="flex flex-col md:flex-row md:justify md:items-center">
-            <h2 class="text-2xl font-semibold text-primary md:mr-3">리뷰</h2>
+          <div
+            class="flex flex-col md:flex-row md:justify-between md:items-center"
+          >
+            <h2 class="text-2xl font-semibold text-primary">리뷰</h2>
             <div class="flex items-center mt-2 md:mt-0">
               <StarRating :rating="camp.rating" size="25px" />
               <span class="ml-2 text-lg font-semibold text-primary">
@@ -99,6 +100,16 @@
 
           <!-- 리뷰 리스트 -->
           <Reviews :reviews="reviews" />
+
+          <!-- 리뷰 작성 버튼 추가 -->
+          <div class="mt-4 md:mt-0">
+            <button
+              @click="openReviewForm"
+              class="px-4 py-2 bg-white text-black border border-gray-300 rounded-lg hover:bg-gray-100"
+            >
+              리뷰 작성
+            </button>
+          </div>
 
           <!-- 리뷰 페이지네이션 -->
           <div class="flex justify-center mt-4">
@@ -159,13 +170,33 @@
         </div>
       </div>
     </main>
+
+    <!-- 리뷰 작성 모달 -->
+    <div
+      v-if="isReviewFormVisible"
+      class="fixed inset-0 flex justify-center items-end z-50 mt-40 translate-y-60"
+    >
+      <div
+        class="bg-white p-6 rounded-lg w-11/12 md:w-1/2 lg:w-1/3 relative shadow-lg transform translate-y-60"
+      >
+        <button
+          ref="closeButton"
+          @click="closeReviewForm"
+          class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl focus:outline-none"
+          aria-label="리뷰 작성 모달 닫기"
+        >
+          &times;
+        </button>
+        <ReviewForm :campId="campId" />
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 // Heroicons v2에서 Solid 아이콘 임포트
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/vue/24/solid";
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, onBeforeUnmount, nextTick } from "vue";
 import Header from "@/components/common/Header.vue";
 import ImageGallery from "@/components/camp/ImageGallery.vue";
 import AmenitiesList from "@/components/camp/AmenitiesList.vue";
@@ -177,6 +208,7 @@ import Calendar from "@/components/camp/Calendar.vue";
 import Guests from "@/components/camp/Guests.vue";
 import ReserveButton from "@/components/camp/ReserveButton.vue";
 import StarRating from "@/components/camp/StarRating.vue";
+import ReviewForm from "@/components/camp/ReviewForm.vue"; // 추가
 import { getCampById, getPaginatedReviewsByCampId } from "@/api";
 
 export default {
@@ -193,6 +225,7 @@ export default {
     Guests,
     ReserveButton,
     StarRating,
+    ReviewForm, // 추가
     CheckCircleIcon,
     XCircleIcon,
   },
@@ -216,6 +249,11 @@ export default {
 
     // 사용자 프로필 이미지 (예시)
     const profileImage = ref("https://example.com/default-image.jpg");
+
+    // 리뷰 작성 모달 상태
+    const isReviewFormVisible = ref(false);
+
+    const closeButton = ref(null); // 닫기 버튼 ref
 
     const fetchCampDetail = async () => {
       try {
@@ -280,8 +318,8 @@ export default {
         amenities.push(`샤워장: ${data.amenities.f_showers}개`);
       if (data.amenities.f_sinks)
         amenities.push(`싱크대: ${data.amenities.f_sinks}개`);
-      if (data.amenities.f_fire_extinguishers)
-        amenities.push(`소화기: ${data.amenities.f_fire_extinguishers}개`);
+      if (data.amenities.f_fireExtinguishers)
+        amenities.push(`소화기: ${data.amenities.f_fireExtinguishers}개`);
       return amenities;
     };
 
@@ -355,14 +393,14 @@ export default {
         // 'campRate' 필드 이름을 확인하세요 (백엔드 응답에 따라 변경)
         const rate = Number(review.campRate); // 'camp_rate'에서 'campRate'로 변경
         console.log(
-          `Review ID: ${review.review_id}, campRate: ${review.campRate}, Converted Rate: ${rate}`
+          `Review ID: ${review.reviewId}, campRate: ${review.campRate}, Converted Rate: ${rate}`
         );
         if (!isNaN(rate) && rate >= 0 && rate <= 5) {
           total += rate;
           validCount += 1;
         } else {
           console.warn(
-            `Invalid camp_rate found: ${review.campRate} in review ID ${review.review_id}`
+            `Invalid camp_rate found: ${review.campRate} in review ID ${review.reviewId}`
           );
         }
       });
@@ -401,9 +439,23 @@ export default {
       return seasonHours === true;
     });
 
+    /**
+     * 키보드 이벤트 핸들링: Esc 키로 모달 닫기
+     */
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape" && isReviewFormVisible.value) {
+        closeReviewForm();
+      }
+    };
+
     onMounted(() => {
       fetchCampDetail();
       fetchReviews();
+      window.addEventListener("keydown", handleKeyDown);
+    });
+
+    onBeforeUnmount(() => {
+      window.removeEventListener("keydown", handleKeyDown);
     });
 
     const handleDateSelected = (date) => {
@@ -443,6 +495,24 @@ export default {
       fetchReviews();
     };
 
+    // 리뷰 작성 모달 열기
+    const openReviewForm = () => {
+      isReviewFormVisible.value = true;
+      // 스크롤 방지 (선택 사항)
+      document.body.style.overflow = "hidden";
+      // 모달이 열린 후 닫기 버튼에 포커스 이동
+      nextTick(() => {
+        closeButton.value.focus();
+      });
+    };
+
+    // 리뷰 작성 모달 닫기
+    const closeReviewForm = () => {
+      isReviewFormVisible.value = false;
+      // 스크롤 방지 해제 (선택 사항)
+      document.body.style.overflow = "";
+    };
+
     return {
       camp,
       loading,
@@ -459,6 +529,10 @@ export default {
       isOperatingNow, // 운영 상태
       CheckCircleIcon,
       XCircleIcon,
+      isReviewFormVisible, // 리뷰 작성 모달 상태
+      openReviewForm, // 리뷰 작성 모달 열기
+      closeReviewForm, // 리뷰 작성 모달 닫기
+      closeButton, // 닫기 버튼 ref
     };
   },
 };
@@ -486,5 +560,19 @@ export default {
   margin-top: 2rem;
 }
 
-/* 추가적인 스타일링이 필요하다면 여기에 작성하세요 */
+.review-form-container {
+  background-color: #ffffff;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-height: 80vh; /* 최대 높이 설정 */
+  overflow-y: auto; /* 내용이 넘칠 경우 스크롤 */
+}
+
+/* 포커스 스타일 */
+button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #3182ce; /* Focus 스타일 */
+}
 </style>

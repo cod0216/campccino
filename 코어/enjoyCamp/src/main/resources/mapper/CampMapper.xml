@@ -344,10 +344,12 @@
 		user_id,
 		comment,
 		created_at
-		FROM tbl_review
+		FROM
+		tbl_review
 		WHERE camp_id = #{campId}
 		ORDER BY created_at DESC
-		LIMIT #{limit} OFFSET #{offset}
+		LIMIT
+		#{limit} OFFSET #{offset}
 	</select>
 
 	<!-- 캠핑장 리뷰 총 개수 조회 -->
@@ -357,4 +359,11 @@
 		FROM tbl_review
 		WHERE camp_id = #{campId}
 	</select>
+
+	<!-- 리뷰 삽입 쿼리 추가 -->
+	<insert id="insertReview"
+		parameterType="com.ssafy.campcino.dto.requestDto.CreateReviewRequestDto">
+		INSERT INTO tbl_review (camp_rate, comment, user_id, camp_id)
+		VALUES (#{campRate}, #{comment}, #{userId}, #{campId})
+	</insert>
 </mapper>

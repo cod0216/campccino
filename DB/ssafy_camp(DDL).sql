@@ -30,6 +30,15 @@ CREATE TABLE `tbl_camp_product` (
     PRIMARY KEY (`product_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE tbl_comments (
+    comment_id INT AUTO_INCREMENT PRIMARY KEY,
+    board_id INT NOT NULL,
+    user_id VARCHAR(30) NOT NULL,
+    comment_content TEXT NOT NULL,
+    comment_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (board_id) REFERENCES tbl_boards(board_id) ON DELETE CASCADE
+);
+
 -- tbl_camp 테이블 생성
 DROP TABLE IF EXISTS `tbl_camp`;
 
@@ -64,17 +73,17 @@ CREATE TABLE `tbl_address` (
 DROP TABLE IF EXISTS `tbl_user`;
 
 CREATE TABLE `tbl_user` (
-    `user_id` VARCHAR(30) NOT NULL,
-    `user_password` VARCHAR(30) NULL DEFAULT NULL,
+    `user_id` VARCHAR(50) NOT NULL,
+    `user_password` VARCHAR(255) NULL DEFAULT NULL,
     `user_phone` VARCHAR(30) NULL DEFAULT NULL,
     `user_age` INT NULL DEFAULT NULL,
-    `user_email` VARCHAR(30) NULL DEFAULT NULL,
+    `user_email` VARCHAR(100) NULL DEFAULT NULL,
     `user_gender` VARCHAR(10) NULL DEFAULT NULL,
     `user_signup` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
     `user_delete` TIMESTAMP NULL DEFAULT NULL,
     `user_mileage` BIGINT NULL DEFAULT NULL,
     `user_url` VARCHAR(255) NULL DEFAULT NULL,
-    `user_temp_auth` VARCHAR(30) NULL DEFAULT NULL,
+    `user_temp_auth` VARCHAR(255) NULL DEFAULT NULL,
     `user_refresh_token` VARCHAR(255) NULL DEFAULT NULL, -- Refresh Token 저장 필드 추가
     `user_grade` VARCHAR(30) NULL DEFAULT NULL,         -- 회원 등급
     PRIMARY KEY (`user_id`)

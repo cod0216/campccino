@@ -11,7 +11,7 @@ import LoginView from "@/views/user/LoginView.vue";
 import JoinView from "@/views/user/JoinView.vue";
 import CampSearchView from "@/views/camp/CampSearchView.vue";
 import ReviewListView from "@/views/review/ReviewListView.vue"; // 새로운 뷰 임포트
-
+import ReviewForm from "@/components/camp/ReviewForm.vue";
 const routes = [
   { path: "/", name: "MainView", component: MainView },
   { path: "/board", name: "BoardView", component: BoardView },
@@ -19,6 +19,13 @@ const routes = [
     path: "/camps/:id",
     name: "CampDetail",
     component: CampDetailView,
+    props: true,
+  },
+  // 별도의 리뷰 작성 페이지를 원할 경우
+  {
+    path: "/camps/:id/review",
+    name: "ReviewForm",
+    component: ReviewForm,
     props: true,
   },
   { path: "/create", name: "CreatePost", component: CreatePost },

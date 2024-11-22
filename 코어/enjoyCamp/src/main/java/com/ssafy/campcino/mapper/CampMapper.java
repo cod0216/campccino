@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.ssafy.campcino.dto.requestDto.CreateReviewRequestDto;
 import com.ssafy.campcino.dto.responseDto.CampDto;
 import com.ssafy.campcino.dto.responseDto.CampReviewSummaryDto;
 import com.ssafy.campcino.dto.responseDto.ReviewDto;
@@ -22,4 +23,6 @@ public interface CampMapper {
     // 새로 추가된 메서드
     List<ReviewDto> getReviewsByCampIdPaginated(Map<String, Object> params);
     int getReviewCountByCampId(@Param("campId") int campId);
+ // 새로 추가된 리뷰 삽입 메서드
+    void insertReview(CreateReviewRequestDto createReviewRequestDto);
 }

@@ -5,12 +5,18 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ssafy.campcino.dto.requestDto.CreateReviewRequestDto;
 import com.ssafy.campcino.dto.responseDto.CampDto;
 import com.ssafy.campcino.dto.responseDto.CampReviewSummaryDto;
 import com.ssafy.campcino.dto.responseDto.PaginatedResponse;
@@ -21,6 +27,7 @@ import com.ssafy.campcino.model.SidoEntity;
 import com.ssafy.campcino.service.AddressService;
 import com.ssafy.campcino.service.CampService;
 import com.ssafy.campcino.service.CategoryService;
+import com.ssafy.campcino.service.ReviewService;
 import com.ssafy.campcino.service.SidoService;
 
 @RestController
@@ -39,11 +46,8 @@ public class CampController {
 	@Autowired
 	private SidoService sidoService;
 
-	// Camp endpoints
-//    @GetMapping("/camps")
-//    public List<CampDto> getAllCamps() {
-//        return campService.getAllCamps();
-//    }
+	@Autowired
+	private ReviewService reviewService; // 추가
 
 	@GetMapping("/camps")
 	public List<CampDto> getSelectCamps(@RequestParam(required = false, defaultValue = "0") int region,
@@ -93,5 +97,17 @@ public class CampController {
 			@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "5") int size) {
 		return campService.getPaginatedReviewsByCampId(campId, page, size);
 	}
+	
+	@PostMapping("/reviews")
+    public ResponseEntity<String> createReview(@RequestBody CreateReviewRequestDto request, Authentication authentication) {
+        try {
+            String userId = authentication.getName();
+            request.setUserId(userId);
+            reviewService.createReview(request);
+            return new ResponseEntity<>("리뷰가 성공적으로 작성되었습니다!", HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>("리뷰 작성에 실패했습니다: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 
 }

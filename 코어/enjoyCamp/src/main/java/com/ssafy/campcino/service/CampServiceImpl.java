@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ssafy.campcino.dto.requestDto.CreateReviewRequestDto;
 import com.ssafy.campcino.dto.responseDto.CampDto;
 import com.ssafy.campcino.dto.responseDto.CampReviewSummaryDto;
 import com.ssafy.campcino.dto.responseDto.PaginatedResponse;
@@ -63,4 +64,9 @@ public class CampServiceImpl implements CampService {
 		int totalPages = (int) Math.ceil((double) totalItems / size);
 		return new PaginatedResponse<>(items, page, size, totalItems, totalPages);
 	}
+	
+	@Override
+    public void createReview(CreateReviewRequestDto createReviewRequestDto) {
+        campMapper.insertReview(createReviewRequestDto);
+    }
 }
