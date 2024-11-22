@@ -4,6 +4,12 @@ import App from "./App.vue";
 import router from "./router";
 import { createPinia } from "pinia"; // Pinia 임포트 추가
 import "./assets/index.css"; // Tailwind CSS
+import axios from "axios";
+import '@fortawesome/fontawesome-free/css/all.css';
+
+
+
+axios.defaults.baseURL = "http://localhost:8080"; // 백엔드 서버 URL
 
 
 // Font Awesome 설정

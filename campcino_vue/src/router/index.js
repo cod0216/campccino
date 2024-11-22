@@ -1,4 +1,3 @@
-// src/router/index.js
 import { createRouter, createWebHistory } from "vue-router";
 import BoardView from "@/views/board/BoardView.vue";
 import CreatePost from "@/components/board/CreateBoard.vue";
@@ -10,7 +9,7 @@ import CampStoreDetailView from "@/views/store/CampStoreDetailView.vue";
 import LoginView from "@/views/user/LoginView.vue";
 import JoinView from "@/views/user/JoinView.vue";
 import CampSearchView from "@/views/camp/CampSearchView.vue";
-import ReviewListView from "@/views/review/ReviewListView.vue"; // 새로운 뷰 임포트
+import ReviewListView from "@/views/review/ReviewListView.vue";
 
 const routes = [
   { path: "/", name: "MainView", component: MainView },
@@ -24,18 +23,17 @@ const routes = [
   { path: "/create", name: "CreatePost", component: CreatePost },
   { path: "/post/:id", name: "PostDetail", component: PostDetail },
   { path: "/main", name: "Main", component: MainView },
-  // 중복된 라우트 제거 ("/camp/:id")
   { path: "/store", name: "CampStore", component: CampStoreView },
-  { path: "/search", name: "CampSearchView", component: CampSearchView },
   {
     path: "/store/:id",
     name: "CampStoreDetail",
     component: CampStoreDetailView,
     props: true,
   },
+  { path: "/search", name: "CampSearchView", component: CampSearchView },
   { path: "/login", name: "Login", component: LoginView },
   { path: "/join", name: "Join", component: JoinView },
-  { path: "/reviews", name: "ReviewList", component: ReviewListView }, // 새로운 라우트 추가
+  { path: "/reviews", name: "ReviewList", component: ReviewListView },
 ];
 
 const router = createRouter({
