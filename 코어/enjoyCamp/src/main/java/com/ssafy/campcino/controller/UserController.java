@@ -4,7 +4,6 @@ import com.ssafy.campcino.config.JwtTokenProvider;
 import com.ssafy.campcino.dto.requsetDto.JoinDto;
 import com.ssafy.campcino.dto.requsetDto.LoginDto;
 import com.ssafy.campcino.dto.responseDto.LoginResponseDto;
-import com.ssafy.campcino.model.UserDto;
 import com.ssafy.campcino.model.UserEntity;
 import com.ssafy.campcino.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -55,7 +54,7 @@ public class UserController {
         System.out.println("loginDto.getUserId() = " + loginDto.getUserId());
 
 
-        UserDto foundUser = userService.findByUserId(loginDto.getUserId());
+        UserEntity foundUser = userService.findByUserId(loginDto.getUserId());
 
         System.out.println("foundUser = " + foundUser);
         if (foundUser == null || !passwordEncoder.matches(loginDto.getPassword(), foundUser.getUserPassword())) {

@@ -20,7 +20,7 @@
         WHERE user_id = #{userId}
     </select>
 
-    <resultMap id="UserResultMap" type="com.ssafy.campcino.model.UserDto">
+    <resultMap id="UserResultMap" type="com.ssafy.campcino.model.UserEntity">
         <id property="userId" column="user_id"/>
         <result property="userPassword" column="user_password"/>
         <result property="userPhone" column="user_phone"/>

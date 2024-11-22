@@ -2,7 +2,7 @@ package com.ssafy.campcino.service;
 
 import com.ssafy.campcino.dto.requsetDto.JoinDto;
 import com.ssafy.campcino.mapper.UserMapper;
-import com.ssafy.campcino.model.UserDto;
+import com.ssafy.campcino.model.UserEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,8 +20,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto findByUserId(String userId) {
-        UserDto temp = userMapper.findByUserId(userId);
+    public UserEntity findByUserId(String userId) {
+        UserEntity temp = userMapper.findByUserId(userId);
         System.out.println("temp = " + temp);
         return temp;
     }

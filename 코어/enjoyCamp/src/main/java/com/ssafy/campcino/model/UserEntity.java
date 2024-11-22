@@ -2,6 +2,7 @@ package com.ssafy.campcino.model;
 import lombok.Data;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 
 @Data
 public class UserEntity {
