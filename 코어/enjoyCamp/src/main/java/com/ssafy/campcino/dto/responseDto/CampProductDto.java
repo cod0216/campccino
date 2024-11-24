@@ -13,6 +13,7 @@ public class CampProductDto {
     private int productId;               // 제품 ID
     private String productName;          // 제품 이름
     private int productCategory;         // 제품 카테고리
+    private Double rating;
     private long productPrice;           // 제품 가격
     private String productImg;           // 제품 이미지 URL
     private String productDescription;   // 제품 설명

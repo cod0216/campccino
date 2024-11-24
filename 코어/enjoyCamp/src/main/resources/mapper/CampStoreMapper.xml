@@ -12,9 +12,7 @@
         <result property="productPrice" column="product_price" />
         <result property="productImg" column="product_img" />
         <result property="productDescription" column="product_description" />
-        <!-- 평점 연관 매핑 -->
         <association property="rating" column="product_id" javaType="com.ssafy.campcino.dto.responseDto.ProductRatingDto" select="com.ssafy.campcino.mapper.RatingMapper.findRatingByProductId"/>
-        <!-- 리뷰 연관 매핑 -->
         <collection property="reviews" column="product_id" javaType="List" ofType="com.ssafy.campcino.dto.responseDto.ProductReviewDto" select="com.ssafy.campcino.mapper.ReviewMapper.findReviewsByProductId"/>
     </resultMap>
 
@@ -56,8 +54,8 @@
         cs.shop_comment AS product_description
         FROM tbl_camp_product cp
         JOIN tbl_camp_shop cs ON cp.product_id = cs.product_id
-        ORDER BY RAND()
-        LIMIT 4
+        WHERE cp.product_id >= FLOOR(1 + RAND() * (SELECT MAX(product_id) FROM tbl_camp_product))
+        LIMIT 4;
     </select>
 
 </mapper>
