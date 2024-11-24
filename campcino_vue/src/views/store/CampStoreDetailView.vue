@@ -1,149 +1,140 @@
+<!-- src/views/StoreDetailView.vue -->
 <template>
-  <Header />
-  <div class="store-detail-container">
-    <main class="container mx-auto p-6">
-      <div v-if="product" class="flex flex-col md:flex-row">
-        <img
-          :src="product.productImg || 'https://via.placeholder.com/300'"
-          alt="Product Image"
-          class="w-full md:w-1/2 h-64 object-cover mb-4 md:mb-0"
-        />
-        <div class="md:ml-6">
-          <h1 class="text-3xl font-bold">{{ product.productName }}</h1>
-          <p class="text-xl text-gray-700 mt-2">가격: {{ product.productPrice }} 원</p>
-          <p class="mt-4">{{ product.productDescription }}</p>
-          <!-- 평점 표시 -->
-          <div class="flex items-center mt-4">
-            <i class="fas fa-star text-yellow-500 mr-2"></i>
-            <span>{{ product.averageRating || '평가 없음' }}</span>
-            <span class="ml-2 text-sm text-gray-600">({{ product.totalReviews || 0 }} 리뷰)</span>
-          </div>
-        </div>
-      </div>
-
+  <div>
+    <Header />
+    <div v-if="storeDetail" class="p-6">
+      <h1 class="text-2xl font-bold">{{ storeDetail.shopTitle }}</h1>
+      <img
+        :src="storeDetail.image"
+        :alt="storeDetail.shopTitle"
+        @error="handleImageError"
+        class="w-full h-64 object-cover rounded mt-4"
+      />
+      <p class="text-lg mt-4">
+        Price: ${{ formattedPrice }}
+      </p>
+      <p class="text-yellow-500">
+        ⭐ {{ formattedRating }}
+      </p>
+      <p class="mt-2">{{ storeDetail.shopComment }}</p>
+      
       <!-- 리뷰 섹션 -->
-      <section class="mt-8">
-        <h2 class="text-2xl font-semibold mb-4">리뷰</h2>
-        <ReviewList :reviews="product.reviews" />
-        <ReviewForm :productId="product.productId" @submit-review="handleSubmitReview" />
-      </section>
-
-      <!-- 랜덤 상품 추천 -->
-      <section class="mt-12">
-        <h2 class="text-3xl font-semibold mb-4">랜덤 상품 추천</h2>
-        <div v-if="randomItems && randomItems.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div
-            v-for="item in randomItems"
-            :key="item?.productId"
-            class="border p-4 rounded cursor-pointer hover:shadow-lg"
-            @click="goToDetail(item?.productId)"
-          >
-            <img
-              :src="item?.productImg || 'https://via.placeholder.com/150'"
-              alt="Item Image"
-              class="w-full h-40 object-cover mb-4"
-            />
-            <h2 class="text-xl font-bold">{{ item?.productName || '정보 없음' }}</h2>
-            <p class="text-lg">가격: {{ item?.productPrice || 0 }} 원</p>
-            <!-- 평점 표시 -->
-            <div class="flex items-center mt-2">
-              <i class="fas fa-star text-yellow-500 mr-2"></i>
-              <span>{{ item?.averageRating || '평가 없음' }}</span>
-              <span class="ml-2 text-sm text-gray-600">({{ item?.totalReviews || 0 }} 리뷰)</span>
-            </div>
+      <div class="mt-6">
+        <h2 class="text-xl font-semibold mb-4">Reviews</h2>
+        <div v-if="storeReviews.length > 0">
+          <div v-for="review in storeReviews" :key="review.reviewId" class="mb-4 border-b pb-2">
+            <p class="text-yellow-500">⭐ {{ review.shopRate }}</p>
+            <p>{{ review.comment }}</p>
+            <p class="text-gray-500 text-sm">{{ review.userId }} - {{ review.createdAt }}</p>
           </div>
         </div>
         <div v-else>
-          <p class="text-center">랜덤 추천 상품을 불러오는 중입니다...</p>
+          <p class="text-gray-500">No reviews yet.</p>
         </div>
-      </section>
-    </main>
+        
+        <!-- 리뷰 작성 폼 -->
+        <div class="mt-6">
+          <h3 class="text-lg font-semibold mb-2">Add a Review</h3>
+          <form @submit.prevent="submitReview">
+            <div class="mb-4">
+              <label for="shopRate" class="block text-gray-700">Rating</label>
+              <select v-model.number="newReview.shopRate" id="shopRate" required class="mt-1 block w-full border rounded p-2">
+                <option disabled value="">Select rating</option>
+                <option v-for="n in 5" :key="n" :value="n">{{ n }}</option>
+              </select>
+            </div>
+            <div class="mb-4">
+              <label for="comment" class="block text-gray-700">Comment</label>
+              <textarea v-model="newReview.comment" id="comment" rows="3" required class="mt-1 block w-full border rounded p-2"></textarea>
+            </div>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Submit Review</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div v-else class="p-6">
+      <p>스토어 상세 정보를 로드 중입니다...</p>
+    </div>
   </div>
 </template>
 
 <script>
-import axios from "axios";
+import { useStoreStore } from "@/stores/storeStore";
+import { onMounted, reactive, computed } from "vue";
 import Header from "@/components/common/Header.vue";
-import ReviewList from "@/components/store/ReviewList.vue";
-import ReviewForm from "@/components/store/ReviewForm.vue";
+import { useRoute } from "vue-router";
 
 export default {
-  name: "CampStoreDetail",
-  components: { Header, ReviewList, ReviewForm },
-  data() {
-    return {
-      product: null, // 상품 상세 데이터
-      randomItems: [], // 랜덤 추천 상품 데이터
+  name: "StoreDetailView",
+  components: { Header },
+  setup() {
+    const storeStore = useStoreStore();
+    const route = useRoute();
+    const storeId = parseInt(route.params.id, 10);
+    
+    const newReview = reactive({
+      userId: "currentUserId", // 실제 사용자 ID로 교체
+      shopRate: null,
+      comment: "",
+    });
+
+    onMounted(async () => {
+      try {
+        await storeStore.fetchStoreDetail(storeId);
+        console.log('스토어 상세 정보:', storeStore.storeDetail); // 디버깅용
+        await storeStore.fetchStoreReviews(storeId);
+      } catch (error) {
+        console.error("스토어 상세 정보 또는 리뷰를 가져오는 중 오류 발생:", error);
+        alert("스토어 상세 정보를 로드하지 못했습니다. 나중에 다시 시도해주세요.");
+      }
+    });
+
+    const submitReview = async () => {
+      try {
+        await storeStore.submitShopReview(storeId, { 
+          userId: newReview.userId, 
+          shopRate: newReview.shopRate, 
+          comment: newReview.comment 
+        });
+        // 폼 초기화
+        newReview.shopRate = null;
+        newReview.comment = "";
+      } catch (error) {
+        console.error("리뷰 제출 실패:", error);
+        alert("리뷰 제출에 실패했습니다. 나중에 다시 시도해주세요.");
+      }
     };
-  },
-  methods: {
-    async fetchProduct(productId) {
-      try {
-        const response = await axios.get(`/store/${productId}`);
-        if (response.data) {
-          this.product = response.data;
-        } else {
-          console.error("API 응답에 데이터가 없습니다.");
-          this.product = null;
-        }
-      } catch (error) {
-        console.error("Error fetching product:", error);
-        this.product = null;
-      }
-    },
-    async fetchRandomItems() {
-      try {
-        const response = await axios.get("/store/recommend");
-        if (response.data) {
-          this.randomItems = response.data;
-        } else {
-          console.error("API 응답에 랜덤 데이터가 없습니다.");
-          this.randomItems = [];
-        }
-      } catch (error) {
-        console.error("Error fetching random items:", error);
-        this.randomItems = [];
-      }
-    },
-    async handleSubmitReview(review) {
-      try {
-        const response = await axios.post("/store/reviews", review);
-        if (response.status === 200) {
-          console.log("리뷰 제출 성공:", response.data);
-          // 리뷰 목록 갱신을 위해 다시 상품 상세 정보 가져오기
-          this.fetchProduct(this.product.productId);
-          return 'success';
-        } else {
-          console.error("리뷰 제출 실패:", response.data);
-          return 'failure';
-        }
-      } catch (error) {
-        console.error("Error submitting review:", error);
-        return 'failure';
-      }
-    },
-    goToDetail(productId) {
-      if (!productId) {
-        console.error("Invalid productId:", productId);
-        return;
-      }
-      this.$router.push({ name: "CampStoreDetail", params: { id: productId } });
-    },
-  },
-  created() {
-    const productId = this.$route.params.id;
-    if (productId) {
-      this.fetchProduct(productId);
-    } else {
-      console.error("No productId provided in route.");
-    }
-    this.fetchRandomItems(); // 랜덤 추천 상품 API 호출
+
+    const handleImageError = (event) => {
+      event.target.src = "https://via.placeholder.com/400x300?text=Image+Not+Available"; // 대체 이미지 URL
+    };
+
+    // 안전한 접근을 위한 계산된 속성
+    const formattedPrice = computed(() => {
+      return storeStore.storeDetail.shopPrice !== undefined
+        ? storeStore.storeDetail.shopPrice.toFixed(2)
+        : 'N/A';
+    });
+
+    const formattedRating = computed(() => {
+      return storeStore.storeDetail.rating !== undefined
+        ? storeStore.storeDetail.rating.toFixed(2)
+        : 'No rating';
+    });
+
+    return {
+      storeDetail: storeStore.storeDetail,
+      storeReviews: storeStore.storeReviews,
+      newReview,
+      submitReview,
+      handleImageError,
+      formattedPrice,
+      formattedRating,
+    };
   },
 };
 </script>
 
 <style scoped>
-.store-detail-container {
-  /* 스타일 추가 가능 */
-}
+/* 필요한 경우 추가 스타일링 */
 </style>
