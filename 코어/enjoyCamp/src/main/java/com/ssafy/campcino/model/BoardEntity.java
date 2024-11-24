@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 public class BoardEntity {
     
-    private Long boardId;
+    private Integer boardId; // 변경: Long -> Integer
 
     private String boardTitle;
 

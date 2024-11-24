@@ -30,15 +30,6 @@ CREATE TABLE `tbl_camp_product` (
     PRIMARY KEY (`product_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE tbl_comments (
-    comment_id INT AUTO_INCREMENT PRIMARY KEY,
-    board_id INT NOT NULL,
-    user_id VARCHAR(30) NOT NULL,
-    comment_content TEXT NOT NULL,
-    comment_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (board_id) REFERENCES tbl_boards(board_id) ON DELETE CASCADE
-);
-
 -- tbl_camp 테이블 생성
 DROP TABLE IF EXISTS `tbl_camp`;
 
@@ -112,6 +103,7 @@ CREATE TABLE `tbl_boards` (
     `board_id` INT NOT NULL AUTO_INCREMENT,
     `board_title` VARCHAR(100) NULL,
     `board_content` TEXT NULL,
+     `category` VARCHAR(50) NOT NULL,
     `board_created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `board_view` INT NULL DEFAULT 0,
     `img_url` VARCHAR(255) NULL,
@@ -119,6 +111,15 @@ CREATE TABLE `tbl_boards` (
     PRIMARY KEY (`board_id`),
     FOREIGN KEY (`user_id`) REFERENCES `tbl_user`(`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE tbl_comments (
+    comment_id INT AUTO_INCREMENT PRIMARY KEY,
+    board_id INT NOT NULL,
+    user_id VARCHAR(30) NOT NULL,
+    comment_content TEXT NOT NULL,
+    comment_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (board_id) REFERENCES tbl_boards(board_id) ON DELETE CASCADE
+);
 
 -- tbl_res 테이블 생성
 DROP TABLE IF EXISTS `tbl_res`;
