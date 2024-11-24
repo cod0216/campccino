@@ -2,11 +2,12 @@
 import axios from "axios";
 
 // Backend API base URL
-const BASE_URL = "http://localhost:8080/api";
+const BASE_URL = "http://localhost:8080";
 
 // Axios 인스턴스 생성
 const apiClient = axios.create({
   baseURL: BASE_URL,
+  withCredentials: true, // 쿠키를 자동으로 포함하도록 설정
   headers: {
     "Content-Type": "application/json",
   },
@@ -125,35 +126,19 @@ export const getPaginatedReviewsByCampId = (campId, page, size) => {
     .then((res) => res.data);
 };
 
-
-// JWT 토큰 저장/삭제 헬퍼
-export const setAuthHeader = (token) => {
-  apiClient.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+// 사용자 로그인
+export const loginUser = async (credentials) => {
+  const response = await apiClient.post("/user/login", credentials);
+  return response.data.accessToken; // 액세스 토큰 반환
+};
+// 사용자 로그아웃
+export const logoutUser = () => {
+  return apiClient.post("/user/logout");
 };
 
-export const clearAuthHeader = () => {
-  delete apiClient.defaults.headers.common["Authorization"];
+// Refresh Token 요청 (토큰 갱신)
+export const refreshToken = () => {
+  return apiClient.post("/user/refresh");
 };
 
-// 로그인 API
-export const login = (credentials) => {
-  return apiClient.post("/user/login", credentials).then((res) => res.headers);
-};
-
-// 로그아웃 API
-export const logout = (refreshToken) => {
-  return apiClient.post("/user/logout", {}, {
-    headers: {
-      Authorization: refreshToken,
-    },
-  });
-};
-
-// Access Token 재발급
-export const refreshToken = (refreshToken) => {
-  return apiClient.post("/user/refresh", {}, {
-    headers: {
-      Authorization: refreshToken,
-    },
-  });
-};
+export default apiClient;
