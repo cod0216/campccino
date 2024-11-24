@@ -12,8 +12,13 @@
     </div>
     <p class="text-gray-500">작성일: {{ formattedDate }}</p>
 
+    <!-- 목록으로 돌아가기 버튼 추가 -->
+    <div class="mt-4">
+      <button @click="goBackToList" class="px-4 py-2 bg-gray-500 text-white rounded">목록</button>
+    </div>
+
     <!-- 댓글 목록 -->
-    <CommentList :boardId="board.boardId" />
+    <CommentList ref="commentList" :boardId="board.boardId" />
 
     <!-- 댓글 작성 폼 -->
     <CommentForm :boardId="board.boardId" @commentSubmitted="refreshComments" />
@@ -25,6 +30,7 @@
 
 <script>
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { getBoardById } from '@/api';
 import CommentList from './CommentList.vue';
 import CommentForm from './CommentForm.vue';
@@ -42,6 +48,7 @@ export default {
     },
   },
   setup(props) {
+    const router = useRouter();
     const board = ref(null);
     const formattedDate = ref('');
     const commentList = ref(null); // CommentList 컴포넌트의 ref
@@ -62,6 +69,11 @@ export default {
       }
     };
 
+    // 목록으로 돌아가기 함수
+    const goBackToList = () => {
+      router.push('/boards');
+    };
+
     onMounted(() => {
       fetchBoard();
     });
@@ -71,6 +83,7 @@ export default {
       formattedDate,
       commentList,
       refreshComments,
+      goBackToList,
     };
   },
 };

@@ -129,7 +129,9 @@ public class BoardController {
             Authentication authentication) {
         try {
             // 인증된 사용자 ID 설정
-            String userId = authentication.getName();
+//            String userId = authentication.getName();
+            String userId = "ssafy";
+        	
             request.setBoardId(boardId);
             request.setUserId(userId);
             commentService.createComment(request);

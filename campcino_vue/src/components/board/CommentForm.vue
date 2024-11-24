@@ -1,22 +1,10 @@
 <!-- src/components/board/CommentForm.vue -->
 <template>
-  <div class="comment-form-container mt-6">
-    <h3 class="text-lg font-bold mb-4">댓글 작성</h3>
-    <form @submit.prevent="submitComment" class="flex flex-col gap-4">
-      <div>
-        <label class="block text-sm font-medium text-gray-700">댓글 내용</label>
-        <textarea
-          v-model="newComment.commentContent"
-          required
-          rows="4"
-          class="mt-1 block w-full border border-gray-300 rounded-md p-2"
-          placeholder="댓글을 입력하세요..."
-        ></textarea>
-      </div>
-      <div class="flex gap-4">
-        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">작성</button>
-        <button type="button" @click="resetForm" class="px-4 py-2 bg-gray-500 text-white rounded">취소</button>
-      </div>
+  <div class="comment-form mt-4">
+    <h3 class="text-xl font-semibold mb-2">댓글 작성</h3>
+    <form @submit.prevent="submitComment">
+      <textarea v-model="commentContent" class="w-full border rounded p-2 mb-2" rows="3" placeholder="댓글을 작성하세요..." required></textarea>
+      <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">작성</button>
     </form>
   </div>
 </template>
@@ -33,44 +21,33 @@ export default {
       required: true,
     },
   },
-  setup(props) {
-    const newComment = ref({
-      commentContent: '',
-    });
+  emits: ['commentSubmitted'], // 이벤트 선언
+  setup(props, { emit }) {
+    const commentContent = ref('');
 
     const submitComment = async () => {
-      if (!newComment.value.commentContent) {
-        alert('댓글 내용을 입력해주세요.');
-        return;
-      }
       try {
-        await createComment(props.boardId, newComment.value);
-        alert('댓글이 성공적으로 작성되었습니다!');
-        resetForm();
-        // 부모 컴포넌트에 댓글이 추가되었음을 알릴 수 있음 (예: emit 이벤트)
+        await createComment(props.boardId, { commentContent: commentContent.value });
+        commentContent.value = '';
+        emit('commentSubmitted'); // 댓글 작성 완료 이벤트 발생
       } catch (error) {
         console.error('댓글 작성 중 오류가 발생했습니다:', error);
         alert('댓글 작성에 실패했습니다.');
       }
     };
 
-    const resetForm = () => {
-      newComment.value.commentContent = '';
-    };
-
     return {
-      newComment,
+      commentContent,
       submitComment,
-      resetForm,
     };
   },
 };
 </script>
 
 <style scoped>
-.comment-form-container {
-  background-color: #f9f9f9;
+.comment-form {
+  background-color: #f5f5f5;
   padding: 1rem;
-  border-radius: 0.5rem;
+  border-radius: 5px;
 }
 </style>

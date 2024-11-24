@@ -26,7 +26,7 @@ public class CommentServiceImpl implements CommentService {
         CommentEntity comment = new CommentEntity();
         comment.setBoardId(createCommentRequestDto.getBoardId());
         // userId는 인증된 사용자에서 설정 (예시로 "user123" 설정, 실제로는 Authentication에서 가져와야 함)
-        comment.setUserId("user123"); // 추후 수정 필요
+        comment.setUserId("ssafy"); // 추후 수정 필요
         comment.setCommentContent(createCommentRequestDto.getCommentContent());
         comment.setCommentCreatedAt(LocalDateTime.now());
 

@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, defineExpose } from 'vue';
 import { getCommentsByBoardId } from '@/api';
 
 export default {
@@ -82,6 +82,11 @@ export default {
 
     watch(() => props.boardId, () => {
       fetchComments(1);
+    });
+
+    // fetchComments 메서드를 부모 컴포넌트에 노출
+    defineExpose({
+      fetchComments,
     });
 
     return {
