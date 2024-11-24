@@ -117,6 +117,9 @@ export default {
     });
 
     const formattedRating = computed(() => {
+      
+      console.log('storeDetail:', storeStore.storeDetail.rating);
+
       return storeStore.storeDetail.rating !== undefined
         ? storeStore.storeDetail.rating.toFixed(2)
         : 'No rating';

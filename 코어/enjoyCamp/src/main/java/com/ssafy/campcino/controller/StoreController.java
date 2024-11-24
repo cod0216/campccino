@@ -44,6 +44,11 @@ public class StoreController {
     // 상점 리뷰 목록 조회
     @GetMapping("/{id}/reviews")
     public List<ShopReviewResponse> getStoreReviews(@PathVariable int id) {
+        System.out.println("id = " + id);
+        List<ShopReviewResponse> list = storeService.getStoreReviews(id);
+        for (ShopReviewResponse shopReviewResponse : list) {
+            System.out.println("shopReviewResponse = " + shopReviewResponse);
+        }
         return storeService.getStoreReviews(id);
     }
 }
