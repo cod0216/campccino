@@ -34,6 +34,12 @@ const routes = [
   { path: "/login", name: "Login", component: LoginView },
   { path: "/join", name: "Join", component: JoinView },
   { path: "/reviews", name: "ReviewList", component: ReviewListView },
+
+  { 
+    path: "/modify", 
+    name: "Modify", 
+    component: () => import("@/views/user/modifyView.vue") 
+  },
 ];
 
 const router = createRouter({

@@ -6,6 +6,9 @@ import com.ssafy.campcino.dto.requestDto.LoginDto;
 import com.ssafy.campcino.dto.responseDto.LoginResponseDto;
 import com.ssafy.campcino.model.UserEntity;
 import com.ssafy.campcino.service.UserService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -48,74 +51,84 @@ public class UserController {
      * 로그인
      */
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody LoginDto loginDto) {
+    public ResponseEntity<Void> login(@RequestBody LoginDto loginDto, HttpServletResponse response) {
+        String username = userService.authenticateUser(loginDto);
+        String accessToken = jwtTokenProvider.generateAccessToken(username);
+        String refreshToken = jwtTokenProvider.generateRefreshToken(username);
 
-        // 사용자 조회xs
-        System.out.println("loginDto.getUserId() = " + loginDto.getUserId());
+        // Set HttpOnly cookies
+        Cookie accessCookie = new Cookie("access_token", accessToken);
+        accessCookie.setHttpOnly(true);
+        accessCookie.setSecure(true); // Use HTTPS
+        accessCookie.setPath("/");
+        accessCookie.setMaxAge(120); // 120 seconds
 
+        Cookie refreshCookie = new Cookie("refresh_token", refreshToken);
+        refreshCookie.setHttpOnly(true);
+        refreshCookie.setSecure(true); // Use HTTPS
+        refreshCookie.setPath("/");
+        refreshCookie.setMaxAge(604800); // 7 days
 
-        UserEntity foundUser = userService.findByUserId(loginDto.getUserId());
+        response.addCookie(accessCookie);
+        response.addCookie(refreshCookie);
 
-        System.out.println("foundUser = " + foundUser);
-        if (foundUser == null || !passwordEncoder.matches(loginDto.getPassword(), foundUser.getUserPassword())) {
-            return ResponseEntity.status(401).body("아이디 또는 비밀번호가 잘못되었습니다.");
-        }
-
-        // JWT 생성
-        String accessToken = jwtTokenProvider.generateAccessToken(foundUser.getUserId());
-        String refreshToken = jwtTokenProvider.generateRefreshToken(foundUser.getUserId());
-
-        System.out.println("accessToken = " + accessToken);
-        System.out.println("refreshToken = " + refreshToken);
-
-        // Refresh Token DB 저장
-        userService.updateRefreshToken(foundUser.getUserId(), refreshToken);
-
-        LoginResponseDto responseDto = new LoginResponseDto(accessToken, refreshToken);
-        return ResponseEntity.ok(responseDto);
-        // 토큰 반환
-
+        return ResponseEntity.ok().build();
     }
+
     @PostMapping("/refresh")
-    public ResponseEntity<?> refreshToken(@RequestHeader("Authorization") String refreshToken) {
-        if (!jwtTokenProvider.validateToken(refreshToken)) {
-            return ResponseEntity.status(401).body("유효하지 않은 Refresh Token입니다.");
+    public ResponseEntity<Void> refresh(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = null;
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("refresh_token".equals(cookie.getName())) {
+                    refreshToken = cookie.getValue();
+                    break;
+                }
+            }
         }
 
-        // Refresh Token에서 사용자 정보 추출
-        String userId = jwtTokenProvider.getUserIdFromToken(refreshToken);
+        if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
+            String username = jwtTokenProvider.getUserIdFromToken(refreshToken);
+            String newAccessToken = jwtTokenProvider.generateAccessToken(username);
 
-        // 데이터베이스에 저장된 Refresh Token과 비교
-        UserEntity foundUser = userService.findByUserId(userId);
-        if (!refreshToken.equals(foundUser.getUserRefreshToken())) {
-            return ResponseEntity.status(401).body("Refresh Token이 일치하지 않습니다.");
+            // Set new access token as cookie
+            Cookie accessCookie = new Cookie("access_token", newAccessToken);
+            accessCookie.setHttpOnly(true);
+            accessCookie.setSecure(true);
+            accessCookie.setPath("/");
+            accessCookie.setMaxAge(120);
+
+            response.addCookie(accessCookie);
+            return ResponseEntity.ok().build();
         }
 
-        // 새 Access Token 발급
-        String newAccessToken = jwtTokenProvider.generateAccessToken(userId);
-
-        return ResponseEntity.ok()
-                .header("Access-Token", newAccessToken)
-                .body("Access Token이 갱신되었습니다.");
+        return ResponseEntity.status(HttpServletResponse.SC_UNAUTHORIZED).build();
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logoutUser(@RequestHeader("Authorization") String refreshToken) {
-        if (!jwtTokenProvider.validateToken(refreshToken)) {
-            return ResponseEntity.status(401).body("유효하지 않은 Refresh Token입니다.");
-        }
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        // Clear cookies
+        Cookie accessCookie = new Cookie("access_token", null);
+        accessCookie.setHttpOnly(true);
+        accessCookie.setSecure(true);
+        accessCookie.setPath("/");
+        accessCookie.setMaxAge(0);
 
-        // Refresh Token에서 사용자 정보 추출
-        String userId = jwtTokenProvider.getUserIdFromToken(refreshToken);
+        Cookie refreshCookie = new Cookie("refresh_token", null);
+        refreshCookie.setHttpOnly(true);
+        refreshCookie.setSecure(true);
+        refreshCookie.setPath("/");
+        refreshCookie.setMaxAge(0);
 
-        // Refresh Token 삭제
-        userService.updateRefreshToken(userId, null);
+        response.addCookie(accessCookie);
+        response.addCookie(refreshCookie);
 
-        return ResponseEntity.ok("로그아웃되었습니다.");
+        return ResponseEntity.ok().build();
     }
 
 
-//
+
+
 //    @PostMapping("/join")
 //    public ResponseEntity<String> registerUser(@ModelAttribute JoinDto join){
 //        System.out.println("user = " + join);
@@ -145,5 +158,5 @@ public class UserController {
 //         */
 //        userService.registerUser(join);
 //        return ResponseEntity.ok("유저 정보 등록 성공적으로 완료");
-
+//
 }

@@ -3,6 +3,7 @@ package com.ssafy.campcino.config;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -21,22 +22,25 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     public JwtTokenFilter(JwtTokenProvider jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
     }
+    private String getTokenFromCookie(HttpServletRequest request) {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("access_token".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
-            String token = getTokenFromRequest(request);
+            String token = getTokenFromCookie(request);
 
             if (token != null && jwtTokenProvider.validateToken(token)) {
                 var authentication = jwtTokenProvider.getAuthentication(token);
-
-                // AbstractAuthenticationToken으로 캐스팅
-                if (authentication instanceof AbstractAuthenticationToken) {
-                    ((AbstractAuthenticationToken) authentication)
-                            .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                }
-
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception e) {
@@ -49,11 +53,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     }
 
 
-    private String getTokenFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        return null;
-    }
+//    private String getTokenFromRequest(HttpServletRequest request) {
+//        String bearerToken = request.getHeader("Authorization");
+//        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+//            return bearerToken.substring(7);
+//        }
+//        return null;
+//    }
 }

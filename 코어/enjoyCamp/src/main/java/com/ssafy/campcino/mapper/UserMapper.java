@@ -3,10 +3,12 @@ package com.ssafy.campcino.mapper;
 import com.ssafy.campcino.dto.requestDto.JoinDto;
 import com.ssafy.campcino.model.UserEntity;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface UserMapper {
-    void insertUser(JoinDto joinDto); // 회원정보 삽입
-    UserEntity findByUserId(String userId); // 아이디로 사용자 조회
-    void updateRefreshToken(String userId, String refreshToken); // Refresh Token 업데이트
+    void insertUser(JoinDto joinDto);
+    UserEntity findByUserId(String userId);
+    void updateRefreshToken(@Param("userId") String userId, @Param("refreshToken") String refreshToken);
+    String findRefreshTokenByUserId(String userId); // 리프레시 토큰 조회
 }
