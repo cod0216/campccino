@@ -1,6 +1,7 @@
 package com.ssafy.campcino.controller;
 
 import com.ssafy.campcino.dto.responseDto.CampProductDto;
+import com.ssafy.campcino.dto.responseDto.ReviewDto;
 import com.ssafy.campcino.service.CampStoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

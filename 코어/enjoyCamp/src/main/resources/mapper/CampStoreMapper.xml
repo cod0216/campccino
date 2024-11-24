@@ -1,18 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.campcino.mapper.CampStoreMapper">
 
     <!-- 결과 매핑 정의 -->
     <resultMap id="CampProductMap" type="com.ssafy.campcino.dto.responseDto.CampProductDto">
-        <result property="productId" column="product_id"/>
-        <result property="productName" column="product_name"/>
-        <result property="productCategory" column="product_category"/>
-        <result property="productPrice" column="product_price"/>
-        <result property="productImg" column="product_img"/>
-        <result property="productDescription" column="product_description"/>
-        <association property="rating" column="product_id" javaType="com.ssafy.campcino.dto.responseDto.RatingDto" select="com.ssafy.campcino.mapper.RatingMapper.findRatingByProductId"/>
-        <collection property="reviews" column="product_id" javaType="List" ofType="com.ssafy.campcino.dto.responseDto.ReviewDto" select="com.ssafy.campcino.mapper.ReviewMapper.findReviewsByProductId"/>
+        <id property="productId" column="product_id" />
+        <result property="productName" column="product_name" />
+        <result property="productCategory" column="product_category" />
+        <result property="productPrice" column="product_price" />
+        <result property="productImg" column="product_img" />
+        <result property="productDescription" column="product_description" />
+        <!-- 평점 연관 매핑 -->
+        <association property="rating" column="product_id" javaType="com.ssafy.campcino.dto.responseDto.ProductRatingDto" select="com.ssafy.campcino.mapper.RatingMapper.findRatingByProductId"/>
+        <!-- 리뷰 연관 매핑 -->
+        <collection property="reviews" column="product_id" javaType="List" ofType="com.ssafy.campcino.dto.responseDto.ProductReviewDto" select="com.ssafy.campcino.mapper.ReviewMapper.findReviewsByProductId"/>
     </resultMap>
 
     <!-- 캠핑 용품 목록 조회 -->
