@@ -14,7 +14,7 @@ import ReviewListView from "@/views/review/ReviewListView.vue"; // 새로운 뷰
 import ReviewForm from "@/components/camp/ReviewForm.vue";
 const routes = [
   { path: "/", name: "MainView", component: MainView },
-  { path: "/board", name: "BoardView", component: BoardView },
+  { path: "/boards", name: "BoardView", component: BoardView },
   {
     path: "/camps/:id",
     name: "CampDetail",
