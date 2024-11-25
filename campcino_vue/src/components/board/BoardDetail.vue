@@ -83,17 +83,16 @@ export default {
       try {
         const response = await getBoardById(props.id);
         board.value = response;
-        formattedDate.value = new Date(
-          response.boardCreatedAt
-        ).toLocaleString();
+        formattedDate.value = new Date(response.boardCreatedAt).toLocaleString();
       } catch (error) {
         console.error("게시글을 가져오는 중 오류가 발생했습니다:", error);
       }
     };
 
+    // 댓글 목록 새로고침
     const refreshComments = () => {
       if (commentList.value) {
-        commentList.value.fetchComments(1);
+        commentList.value.fetchComments(1); // 댓글 목록을 즉시 새로고침
       }
     };
 
@@ -135,7 +134,6 @@ export default {
       isOwner,
       editPost,
       deletePost,
-      Header,
     };
   },
 };

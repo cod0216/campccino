@@ -1,4 +1,3 @@
-<!-- src/views/Home.vue -->
 <template>
   <div
     class="relative flex w-full min-h-screen flex-col bg-white overflow-x-hidden"
@@ -69,6 +68,11 @@ export default {
   },
   created() {
     this.fetchPosts();
+  },
+  watch: {
+    topicSearch(newSearch) {
+      this.fetchPosts(1); // 검색어가 변경될 때마다 첫 페이지부터 재조회
+    },
   },
   methods: {
     async fetchPosts(page = 1) {

@@ -1,4 +1,3 @@
-<!-- src/components/SearchBar.vue -->
 <template>
   <label class="flex flex-col min-w-40 h-10 max-w-64">
     <div class="flex w-full flex-1 items-stretch rounded h-full">

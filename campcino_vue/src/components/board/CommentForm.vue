@@ -56,7 +56,9 @@ export default {
 
         alert("댓글이 성공적으로 작성되었습니다!");
         commentContent.value = ""; // 입력 필드 초기화
-        emit("commentSubmitted"); // 부모 컴포넌트에 이벤트 전송
+
+        // 댓글 작성 후 부모 컴포넌트에 이벤트 전달하여 댓글 목록을 새로고침
+        emit("commentSubmitted"); // 부모 컴포넌트에서 댓글 목록 갱신하도록 처리
       } catch (error) {
         console.error("댓글 작성 중 오류가 발생했습니다:", error);
         alert("댓글 작성에 실패했습니다. 다시 시도해주세요.");
