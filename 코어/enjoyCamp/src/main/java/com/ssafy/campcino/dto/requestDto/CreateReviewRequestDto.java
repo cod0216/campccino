@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class CreateReviewRequestDto {
     private Integer campId;
-    private Integer campRate;
+    private double campRate;
     private String comment;
     private String userId; // 사용자 ID
 }

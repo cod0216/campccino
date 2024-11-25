@@ -82,4 +82,28 @@ public class BoardServiceImpl implements BoardService {
         // 댓글은 별도로 처리
         return dto;
     }
+    
+    @Override
+    public void updateBoard(CreateBoardRequestDto requestDto, Long boardId) {
+        BoardEntity board = boardMapper.getBoardById(boardId);
+        if (board == null) {
+            throw new RuntimeException("존재하지 않는 게시글입니다.");
+        }
+        board.setBoardTitle(requestDto.getBoardTitle());
+        board.setBoardContent(requestDto.getBoardContent());
+        board.setCategory(requestDto.getCategory());
+        board.setImgUrl(requestDto.getImgUrl());
+        boardMapper.updateBoard(board);
+    }
+    
+    @Override
+    public void deleteBoard(Long boardId) {
+        BoardEntity board = boardMapper.getBoardById(boardId);
+        if (board == null) {
+            throw new RuntimeException("존재하지 않는 게시글입니다.");
+        }
+        boardMapper.deleteBoard(boardId);
+    }
+
+
 }

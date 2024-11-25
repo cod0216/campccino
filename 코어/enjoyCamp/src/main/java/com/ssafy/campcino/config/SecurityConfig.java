@@ -1,6 +1,4 @@
-
 package com.ssafy.campcino.config;
-
 
 import com.ssafy.campcino.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;

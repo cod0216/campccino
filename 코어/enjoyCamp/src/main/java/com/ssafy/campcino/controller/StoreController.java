@@ -21,11 +21,11 @@ public class StoreController {
     // Store 목록 조회
     @GetMapping
     public List<StoreDto> getAllStores() {
-        System.out.println("조회 시작");
+//        System.out.println("조회 시작");
         List<StoreDto> list = storeService.getAllStores();
-        for (StoreDto storeDto : list) {
-            System.out.println("storeDto = " + storeDto);
-        }
+//        for (StoreDto storeDto : list) {
+//            System.out.println("storeDto = " + storeDto);
+//        }
         return list;
     }
 
@@ -44,11 +44,11 @@ public class StoreController {
     // 상점 리뷰 목록 조회
     @GetMapping("/{id}/reviews")
     public List<ShopReviewResponse> getStoreReviews(@PathVariable int id) {
-        System.out.println("id = " + id);
+//        System.out.println("id = " + id);
         List<ShopReviewResponse> list = storeService.getStoreReviews(id);
-        for (ShopReviewResponse shopReviewResponse : list) {
-            System.out.println("shopReviewResponse = " + shopReviewResponse);
-        }
+//        for (ShopReviewResponse shopReviewResponse : list) {
+//            System.out.println("shopReviewResponse = " + shopReviewResponse);
+//        }
         return storeService.getStoreReviews(id);
     }
 }

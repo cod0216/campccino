@@ -49,7 +49,7 @@
       <template v-if="isAuthenticated">
         <!-- 사용자 ID 표시 -->
         <span class="font-bold text-[#1C160C]">
-          {{ user?.id }}님 환영합니다!
+          {{ user.id }}님 환영합니다!
         </span>
         <router-link to="/profile">
           <button class="px-4 py-2 bg-[#F4EFE6] text-[#1C160C] font-bold">

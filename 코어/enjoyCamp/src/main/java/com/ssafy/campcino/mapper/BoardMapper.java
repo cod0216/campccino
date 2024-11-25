@@ -29,4 +29,9 @@ public interface BoardMapper {
         @Param("categories") List<String> categories,
         @Param("text") String text
     );
+    
+    void updateBoard(BoardEntity board);
+
+    void deleteBoard(@Param("boardId") Long boardId);
+
 }

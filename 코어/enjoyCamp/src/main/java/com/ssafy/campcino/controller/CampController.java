@@ -29,6 +29,7 @@ import com.ssafy.campcino.service.CampService;
 import com.ssafy.campcino.service.CategoryService;
 import com.ssafy.campcino.service.ReviewService;
 import com.ssafy.campcino.service.SidoService;
+import com.ssafy.campcino.service.UserService;
 
 @RestController
 @RequestMapping("/")
@@ -45,6 +46,9 @@ public class CampController {
 
 	@Autowired
 	private SidoService sidoService;
+	
+	@Autowired
+	private UserService userService;
 
 	@Autowired
 	private ReviewService reviewService; // 추가
@@ -101,8 +105,11 @@ public class CampController {
 	@PostMapping("/reviews")
     public ResponseEntity<String> createReview(@RequestBody CreateReviewRequestDto request, Authentication authentication) {
         try {
-            String userId = authentication.getName();
-            request.setUserId(userId);
+
+//        	System.out.println(authentication.getName());
+//            String userId = authentication.getName();
+//            String userId = "ssafy";
+//            request.setUserId(userId);
             reviewService.createReview(request);
             return new ResponseEntity<>("리뷰가 성공적으로 작성되었습니다!", HttpStatus.CREATED);
         } catch (Exception e) {

@@ -1,7 +1,7 @@
 <template>
-  <div class="create-post-container">
-    <h2 class="text-2xl font-bold mb-4">새 게시글 작성</h2>
-    <form @submit.prevent="submitPost">
+  <div class="edit-post-container">
+    <h2 class="text-2xl font-bold mb-4">게시글 수정</h2>
+    <form @submit.prevent="submitEdit">
       <div class="mb-4">
         <label class="block text-gray-700">제목</label>
         <input
@@ -48,7 +48,7 @@
       <div class="flex space-x-4">
         <button
           type="button"
-          @click="cancelPost"
+          @click="cancelEdit"
           class="flex-1 px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400"
         >
           취소
@@ -57,7 +57,7 @@
           type="submit"
           class="flex-1 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
-          작성
+          저장
         </button>
       </div>
     </form>
@@ -65,13 +65,19 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { createBoard } from "@/api";
+import { getBoardById, updateBoard } from "@/api";
 
 export default {
-  name: "CreatePost",
-  setup() {
+  name: "EditBoard",
+  props: {
+    id: {
+      type: String,
+      required: true,
+    },
+  },
+  setup(props) {
     const router = useRouter();
     const post = ref({
       title: "",
@@ -82,39 +88,61 @@ export default {
 
     const categories = ["질문", "추천", "수다", "장비", "기타"];
 
-    const submitPost = async () => {
+    // 게시글 데이터 로드
+    const fetchPost = async () => {
       try {
-        await createBoard({
+        const response = await getBoardById(props.id);
+        post.value = {
+          title: response.boardTitle,
+          content: response.boardContent,
+          category: response.category,
+          imgUrl: response.imgUrl,
+        };
+      } catch (error) {
+        console.error("게시글을 불러오는 중 오류가 발생했습니다:", error);
+        alert("게시글을 불러올 수 없습니다.");
+        router.push("/boards"); // 오류 발생 시 목록으로 이동
+      }
+    };
+
+    // 게시글 수정 제출
+    const submitEdit = async () => {
+      try {
+        await updateBoard(props.id, {
           boardTitle: post.value.title,
           boardContent: post.value.content,
           category: post.value.category,
           imgUrl: post.value.imgUrl,
         });
-        alert("게시글이 성공적으로 작성되었습니다!");
-        // 게시글 목록으로 이동
-        router.push("/boards"); // useRouter를 사용하여 네비게이션
+        alert("게시글이 성공적으로 수정되었습니다!");
+        router.push(`/boards/${props.id}`); // 상세 페이지로 이동
       } catch (error) {
-        console.error("게시글 작성 중 오류가 발생했습니다:", error);
-        alert("게시글 작성에 실패했습니다.");
+        console.error("게시글 수정 중 오류가 발생했습니다:", error);
+        alert("게시글 수정에 실패했습니다.");
       }
     };
 
-    const cancelPost = () => {
-      router.back(); // 이전 페이지로 이동
+    // 수정 취소
+    const cancelEdit = () => {
+      router.push(`/boards/${props.id}`); // 상세 페이지로 돌아가기
     };
+
+    onMounted(() => {
+      fetchPost(); // 컴포넌트 마운트 시 게시글 로드
+    });
 
     return {
       post,
       categories,
-      submitPost,
-      cancelPost,
+      submitEdit,
+      cancelEdit,
     };
   },
 };
 </script>
 
 <style scoped>
-.create-post-container {
+.edit-post-container {
   max-width: 600px;
   margin: 0 auto;
   padding: 2rem;
@@ -122,7 +150,7 @@ export default {
 
 /* 반응형 스타일 */
 @media (max-width: 768px) {
-  .create-post-container {
+  .edit-post-container {
     padding: 1rem;
   }
 

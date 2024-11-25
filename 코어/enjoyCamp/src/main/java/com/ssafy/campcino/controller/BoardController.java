@@ -8,9 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -140,4 +142,33 @@ public class BoardController {
             return new ResponseEntity<>("댓글 작성에 실패했습니다: " + e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+    
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateBoard(
+            @PathVariable("id") Long boardId,
+            @RequestBody CreateBoardRequestDto requestDto,
+            Authentication authentication) {
+        try {
+            // 인증된 사용자 확인 (추후 구현)
+            boardService.updateBoard(requestDto, boardId);
+            return new ResponseEntity<>("게시글이 성공적으로 수정되었습니다!", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("게시글 수정에 실패했습니다: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteBoard(
+            @PathVariable("id") Long boardId,
+            Authentication authentication) {
+        try {
+            // 인증된 사용자 확인 (추후 구현)
+            boardService.deleteBoard(boardId);
+            return new ResponseEntity<>("게시글이 성공적으로 삭제되었습니다!", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("게시글 삭제에 실패했습니다: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
 }

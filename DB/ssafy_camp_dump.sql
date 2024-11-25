@@ -57,7 +57,7 @@ CREATE TABLE `tbl_boards` (
   `category` varchar(50) NOT NULL,
   `board_created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `board_view` int DEFAULT '0',
-  `img_url` varchar(255) DEFAULT NULL,
+  `img_url` varchar(1000) DEFAULT NULL,
   `user_id` varchar(30) NOT NULL,
   PRIMARY KEY (`board_id`),
   KEY `user_id` (`user_id`),
