@@ -3,18 +3,49 @@ import axios from "axios";
 import qs from "qs"; // qs 라이브러리 임포트
 
 // Backend API base URL
-const BASE_URL = "http://localhost:8080/api";
+const BASE_URL = "http://localhost:8080";
 
 // Axios 인스턴스 생성
 const apiClient = axios.create({
   baseURL: BASE_URL,
+  withCredentials: true, // 쿠키를 자동으로 포함하도록 설정
   headers: {
     "Content-Type": "application/json",
   },
-  paramsSerializer: params => {
-    return qs.stringify(params, { arrayFormat: 'repeat' }); // 'repeat' 옵션 사용
-  },
 });
+
+// 사용자 정보 가져오기
+export const getUserInfo = async () => {
+  try {
+    const response = await apiClient.get("/user/info", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`, // 액세스 토큰 포함
+      },
+    });
+    return response.data; // 사용자 정보 반환
+  } catch (error) {
+    console.error("사용자 정보를 가져오는 중 오류 발생:", error);
+    throw error; // 에러를 호출한 쪽으로 전달
+  }
+};
+
+// 사용자 로그인
+export const loginUser = async (credentials) => {
+  const response = await apiClient.post("/user/login", credentials);
+  return response.data.accessToken; // 액세스 토큰 반환
+};
+
+// 사용자 로그아웃
+export const logoutUser = () => {
+  return apiClient.post("/user/logout");
+};
+
+// Refresh Token 요청 (토큰 갱신)
+export const refreshToken = () => {
+  return apiClient.post("/user/refresh");
+};
+
+
 
 // 캠프 API
 export const getCamps = (region, categories, query) => {
@@ -170,35 +201,4 @@ export const getPaginatedReviewsByCampId = (campId, page, size) => {
     .then((res) => res.data);
 };
 
-
-// JWT 토큰 저장/삭제 헬퍼
-export const setAuthHeader = (token) => {
-  apiClient.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-};
-
-export const clearAuthHeader = () => {
-  delete apiClient.defaults.headers.common["Authorization"];
-};
-
-// 로그인 API
-export const login = (credentials) => {
-  return apiClient.post("/user/login", credentials).then((res) => res.headers);
-};
-
-// 로그아웃 API
-export const logout = (refreshToken) => {
-  return apiClient.post("/user/logout", {}, {
-    headers: {
-      Authorization: refreshToken,
-    },
-  });
-};
-
-// Access Token 재발급
-export const refreshToken = (refreshToken) => {
-  return apiClient.post("/user/refresh", {}, {
-    headers: {
-      Authorization: refreshToken,
-    },
-  });
-};
+export default apiClient;
