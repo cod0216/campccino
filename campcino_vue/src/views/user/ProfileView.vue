@@ -58,7 +58,7 @@ import UserForm from "@/components/user/UserForm.vue";
 import { updateUser, getUserInfo } from "@/api"; // updateUser 및 getUserInfo 함수 임포트
 
 export default {
-  name: "App",
+  name: "UserUpdateView",
   components: {
     HeaderComponent,
     UserForm,

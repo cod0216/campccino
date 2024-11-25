@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -171,12 +172,12 @@ public class UserController {
             if (token != null && token.startsWith("Bearer ")) {
                 token = token.substring(7);
             } else {
-                return ResponseEntity.status(401).body("Authorization 헤더가 유효하지 않습니다.");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authorization 헤더가 유효하지 않습니다.");
             }
 
             // 액세스 토큰 유효성 검증
             if (!jwtTokenProvider.validateToken(token, true)) {
-                return ResponseEntity.status(401).body("유효하지 않은 액세스 토큰입니다.");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 액세스 토큰입니다.");
             }
 
             // 토큰에서 사용자 ID 추출
@@ -189,7 +190,14 @@ public class UserController {
             }
 
             // 사용자 정보 반환
-            return ResponseEntity.ok(Map.of("id", user.getUserId()));
+            Map<String, Object> userInfo = new HashMap<>();
+            userInfo.put("userId", user.getUserId());
+            userInfo.put("email", user.getUserEmail());
+            userInfo.put("phone", user.getUserPhone());
+            userInfo.put("gender", user.getUserGender());
+            // 필요한 다른 필드도 추가 가능
+
+            return ResponseEntity.ok(userInfo);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(500).body("서버 오류가 발생했습니다.");

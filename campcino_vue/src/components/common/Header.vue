@@ -27,7 +27,7 @@
       <!-- 로그인 상태에 따라 버튼 변경 -->
       <template v-if="isAuthenticated">
         <span class="font-bold text-[#1C160C]">
-          {{ user?.id }}님 환영합니다!
+          {{ user.userId }}님 환영합니다!
         </span>
         <router-link to="/profile">
           <button class="px-4 py-2 bg-[#F4EFE6] text-[#1C160C] font-bold">
