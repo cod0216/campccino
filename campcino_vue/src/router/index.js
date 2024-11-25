@@ -1,8 +1,6 @@
 // src/router/index.js
 import { createRouter, createWebHistory } from "vue-router";
 import BoardView from "@/views/board/BoardView.vue";
-import CreatePost from "@/components/board/CreateBoard.vue";
-import PostDetail from "@/components/board/PostDetail.vue";
 import MainView from "@/views/MainView.vue";
 import CampDetailView from "@/views/camp/CampDetailView.vue";
 import CampStoreView from "@/views/store/CampStoreView.vue";
@@ -12,17 +10,18 @@ import JoinView from "@/views/user/JoinView.vue";
 import CampSearchView from "@/views/camp/CampSearchView.vue";
 import ReviewListView from "@/views/review/ReviewListView.vue"; // 새로운 뷰 임포트
 import ReviewForm from "@/components/camp/ReviewForm.vue";
-import BoardList from '@/components/board/BoardList.vue';
-import BoardDetail from '@/components/board/BoardDetail.vue';
-import CreateBoard from '@/components/board/CreateBoard.vue';
+import BoardDetail from "@/components/board/BoardDetail.vue";
+import CreateBoard from "@/components/board/CreateBoard.vue";
 const routes = [
   { path: "/", name: "MainView", component: MainView },
   { path: "/boards", name: "BoardView", component: BoardView },
-<<<<<<< HEAD
-=======
-  { path: "/boards/:id", name: "BoardDetail", component: BoardDetail, props: true },
+  {
+    path: "/boards/:id",
+    name: "BoardDetail",
+    component: BoardDetail,
+    props: true,
+  },
   { path: "/boards/create", name: "CreateBoard", component: CreateBoard },
->>>>>>> ec005d9df6d9c4bddd045ee78461aead6298464d
   {
     path: "/camps/:id",
     name: "CampDetail",
