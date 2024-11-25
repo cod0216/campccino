@@ -111,6 +111,91 @@ CREATE TABLE tbl_boards (
     FOREIGN KEY (user_id) REFERENCES tbl_user(user_id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+<<<<<<< HEAD
+=======
+-- tbl_camp 테이블 생성
+DROP TABLE IF EXISTS `tbl_camp`;
+
+CREATE TABLE `tbl_camp` (
+    `camp_id` INT NOT NULL AUTO_INCREMENT,
+    `sido_id` INT NOT NULL,
+    `category_id` INT NOT NULL,
+    `camp_name` VARCHAR(30) NULL,
+    `camp_homepage` VARCHAR(200) NULL,
+    `camp_explanation` VARCHAR(1000) NULL,
+    `camp_phone` VARCHAR(15) NULL,
+    `camp_character` VARCHAR(1000) NULL,
+    PRIMARY KEY (`camp_id`),
+    FOREIGN KEY (`sido_id`) REFERENCES `tbl_sido`(`sido_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (`category_id`) REFERENCES `tbl_camp_category`(`category_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- tbl_address 테이블 생성
+DROP TABLE IF EXISTS `tbl_address`;
+
+CREATE TABLE `tbl_address` (
+    `camp_id` INT NOT NULL,
+    `camp_road_address` VARCHAR(50) NULL,
+    `camp_number_address` VARCHAR(50) NULL,
+    `longitude` DECIMAL(10,7) NULL,
+    `latitude` DECIMAL(10,8) NULL,
+    PRIMARY KEY (`camp_id`),
+    FOREIGN KEY (`camp_id`) REFERENCES `tbl_camp`(`camp_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- tbl_user 테이블 생성
+DROP TABLE IF EXISTS `tbl_user`;
+
+CREATE TABLE `tbl_user` (
+    `user_id` VARCHAR(50) NOT NULL,
+    `user_password` VARCHAR(255) NULL DEFAULT NULL,
+    `user_phone` VARCHAR(30) NULL DEFAULT NULL,
+    `user_age` INT NULL DEFAULT NULL,
+    `user_email` VARCHAR(100) NULL DEFAULT NULL,
+    `user_gender` VARCHAR(10) NULL DEFAULT NULL,
+    `user_signup` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    `user_delete` TIMESTAMP NULL DEFAULT NULL,
+    `user_mileage` BIGINT NULL DEFAULT NULL,
+    `user_url` VARCHAR(255) NULL DEFAULT NULL,
+    `user_temp_auth` VARCHAR(255) NULL DEFAULT NULL,
+    `user_refresh_token` VARCHAR(255) NULL DEFAULT NULL, -- Refresh Token 저장 필드 추가
+    `user_grade` VARCHAR(30) NULL DEFAULT NULL,         -- 회원 등급
+    PRIMARY KEY (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- tbl_review 테이블 생성
+DROP TABLE IF EXISTS `tbl_review`;
+
+CREATE TABLE `tbl_review` (
+    `review_id` INT NOT NULL AUTO_INCREMENT,
+    `camp_rate` INT NULL,
+    `comment` TEXT NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `user_id` VARCHAR(30) NOT NULL,
+    `camp_id` INT NOT NULL,
+    PRIMARY KEY (`review_id`),
+    FOREIGN KEY (`user_id`) REFERENCES `tbl_user`(`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (`camp_id`) REFERENCES `tbl_camp`(`camp_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- tbl_boards 테이블 생성
+DROP TABLE IF EXISTS `tbl_boards`;
+
+CREATE TABLE `tbl_boards` (
+    `board_id` INT NOT NULL AUTO_INCREMENT,
+    `board_title` VARCHAR(100) NULL,
+    `board_content` TEXT NULL,
+     `category` VARCHAR(50) NOT NULL,
+    `board_created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `board_view` INT NULL DEFAULT 0,
+    `img_url` VARCHAR(255) NULL,
+    `user_id` VARCHAR(30) NOT NULL,
+    PRIMARY KEY (`board_id`),
+    FOREIGN KEY (`user_id`) REFERENCES `tbl_user`(`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+>>>>>>> ec005d9df6d9c4bddd045ee78461aead6298464d
 CREATE TABLE tbl_comments (
     comment_id INT AUTO_INCREMENT PRIMARY KEY,
     board_id INT NOT NULL,

@@ -21,11 +21,16 @@
         <CategoryTags
           :categories="categories"
           :selectedCategory="selectedCategory"
-          @update:selectedCategory="selectedCategory = $event"
+          @update:selectedCategory="updateSelectedCategory"
         />
 
         <!-- Popular Topics -->
-        <BoardList :posts="filteredPosts" />
+        <BoardList
+          :posts="posts"
+          :currentPage="currentPage"
+          :totalPages="totalPages"
+          @changePage="changePage"
+        />
 
         <!-- Start New Post Button -->
         <StartNewPostButton />
@@ -40,7 +45,7 @@ import SearchBar from "@/components/board/SearchBar.vue";
 import CategoryTags from "@/components/board/CategoryTags.vue";
 import BoardList from "@/components/board/BoardList.vue";
 import StartNewPostButton from "@/components/board/StartNewPostButton.vue";
-import { getBoards } from "../../api";
+import { getBoards } from "@/api";
 
 export default {
   name: "Home",
@@ -53,40 +58,46 @@ export default {
   },
   data() {
     return {
-      headerSearch: "",
       topicSearch: "",
-      selectedCategory: "All",
+      selectedCategory: "전체",
       categories: ["전체", "질문", "추천", "수다", "장비", "기타"],
       posts: [],
+      currentPage: 1,
+      totalPages: 1,
+      totalItems: 0,
     };
-  },
-  computed: {
-    filteredPosts() {
-      return this.posts.filter((post) => {
-        const matchesCategory =
-          this.selectedCategory === "All" ||
-          post.category === this.selectedCategory;
-        const matchesSearch =
-          post.board_title
-            .toLowerCase()
-            .includes(this.topicSearch.toLowerCase()) ||
-          post.board_content
-            .toLowerCase()
-            .includes(this.topicSearch.toLowerCase());
-        return matchesCategory && matchesSearch;
-      });
-    },
   },
   created() {
     this.fetchPosts();
   },
   methods: {
-    async fetchPosts() {
+    async fetchPosts(page = 1) {
       try {
-        const response = await getBoards();
-        this.posts = response.data;
+        const response = await getBoards(
+          this.selectedCategory !== "전체" ? [this.selectedCategory] : ["일반", "질문", "공지", "자유", "정보", "기타"],
+          this.topicSearch,
+          page,
+          10, // size
+          "board_created_at",
+          "DESC"
+        );
+        this.posts = response.items;
+        this.currentPage = response.currentPage;
+        this.totalPages = response.totalPages;
+        this.totalItems = response.totalItems;
       } catch (error) {
         console.error("게시글을 가져오는 중 오류가 발생했습니다:", error);
+      }
+    },
+    updateSelectedCategory(newCategory) {
+      this.selectedCategory = newCategory;
+      this.currentPage = 1;
+      this.fetchPosts(1);
+    },
+    changePage(newPage) {
+      if (newPage >= 1 && newPage <= this.totalPages) {
+        this.currentPage = newPage;
+        this.fetchPosts(newPage);
       }
     },
   },
