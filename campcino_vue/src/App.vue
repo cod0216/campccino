@@ -37,7 +37,7 @@ export default {
     const router = useRouter();
     const isModalOpen = ref(false);
     const selectedCampId = ref(null);
-    
+
 
     const openModal = (campId) => {
       selectedCampId.value = campId;

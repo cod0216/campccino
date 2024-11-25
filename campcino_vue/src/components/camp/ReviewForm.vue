@@ -68,6 +68,7 @@
 <script>
 import { ref } from "vue";
 import axios from "axios";
+import { useAuthStore } from "@/stores/auth";
 
 export default {
   name: "ReviewForm",
@@ -78,6 +79,7 @@ export default {
     },
   },
   setup(props) {
+    const authStore = useAuthStore();
     const currentRating = ref(0);
     const comment = ref("");
 
@@ -97,17 +99,23 @@ export default {
       }
 
       try {
-        // 사용자 인증 정보가 필요하다면 헤더에 추가
+        const userId = authStore.user?.id; // user에서 ID 가져오기
+        if (!userId) {
+          alert("로그인이 필요합니다.");
+          return;
+        }
         const response = await axios.post(
-          "/api/reviews",
+          "/reviews",
           {
             campId: props.campId,
             campRate: currentRating.value,
             comment: comment.value,
+            userId: userId,
           },
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+              "Content-Type": "application/json", // JSON 형식으로 전달
             },
           }
         );
@@ -124,6 +132,7 @@ export default {
     };
 
     return {
+      user: authStore.user,
       currentRating,
       comment,
       setRating,

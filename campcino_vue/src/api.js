@@ -134,6 +134,11 @@ export const updateBoard = async (id, updatedData) => {
   }
 };
 
+// 게시글 삭제 API
+export const deleteBoardById = async (id) => {
+  return axios.delete(`/boards/${id}`);
+};
+
 /**
  * 댓글 목록 조회 (페이징 적용)
  * @param {number} boardId - 게시글 ID

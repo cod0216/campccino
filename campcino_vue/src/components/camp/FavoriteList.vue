@@ -2,7 +2,7 @@
 <template>
   <div class="favorite-list" :class="{ minimized: isMinimized }">
     <div class="header">
-      <h2 v-if="!isMinimized" class="title">찜 목록</h2>
+      <h2 class="title">찜 목록</h2>
       <button
         @click="toggleMinimize"
         class="minimize-button"

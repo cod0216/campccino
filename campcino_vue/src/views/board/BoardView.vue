@@ -1,11 +1,10 @@
 <!-- src/views/Home.vue -->
 <template>
-  <Header />
   <div
     class="relative flex w-full min-h-screen flex-col bg-white overflow-x-hidden"
     style="font-family: 'Be Vietnam Pro', 'Noto Sans', sans-serif"
   >
-    
+    <Header />
 
     <!-- Main Content -->
     <main class="flex flex-1 justify-center py-5 px-6">
@@ -75,7 +74,9 @@ export default {
     async fetchPosts(page = 1) {
       try {
         const response = await getBoards(
-          this.selectedCategory !== "전체" ? [this.selectedCategory] : ["일반", "질문", "공지", "자유", "정보", "기타"],
+          this.selectedCategory !== "전체"
+            ? [this.selectedCategory]
+            : ["질문", "추천", "수다", "장비", "기타"],
           this.topicSearch,
           page,
           10, // size
