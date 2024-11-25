@@ -106,7 +106,7 @@ CREATE TABLE `tbl_boards` (
      `category` VARCHAR(50) NOT NULL,
     `board_created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `board_view` INT NULL DEFAULT 0,
-    `img_url` VARCHAR(255) NULL,
+    `img_url` VARCHAR(1000) NULL,
     `user_id` VARCHAR(30) NOT NULL,
     PRIMARY KEY (`board_id`),
     FOREIGN KEY (`user_id`) REFERENCES `tbl_user`(`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
