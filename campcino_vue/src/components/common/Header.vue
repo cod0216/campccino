@@ -42,38 +42,66 @@
       >
         리뷰
       </router-link>
-      
-      <router-link
-        to="/modify"
-        class="text-[#1C160C] hover:text-[#A18249] font-medium"
-      >
-        회원정보 수정
-      </router-link>
-
     </nav>
 
     <div class="flex items-center gap-8">
-      <router-link to="/login">
-        <button class="px-4 py-2 bg-[#F4EFE6] text-[#1C160C] font-bold">
-          로그인
+      <!-- 로그인 상태에 따라 버튼 변경 -->
+      <template v-if="isAuthenticated">
+        <router-link to="/profile">
+          <button class="px-4 py-2 bg-[#F4EFE6] text-[#1C160C] font-bold">
+            회원정보
+          </button>
+        </router-link>
+        <button
+          @click="handleLogout"
+          class="px-4 py-2 bg-[#F4EFE6] text-[#1C160C] font-bold"
+        >
+          로그아웃
         </button>
-      </router-link>
+      </template>
+      <template v-else>
+        <router-link to="/login">
+          <button class="px-4 py-2 bg-[#F4EFE6] text-[#1C160C] font-bold">
+            로그인
+          </button>
+        </router-link>
+      </template>
+      <!-- 프로필 이미지 -->
       <div
+        v-if="isAuthenticated"
         class="w-10 h-10 rounded-full bg-cover"
-        :style="{ backgroundImage: `url('${profileImage}')` }"
+        :style="{ backgroundImage: `url('${profileImage || defaultImage}')` }"
       ></div>
     </div>
   </header>
 </template>
 
 <script>
+import { useAuthStore } from "@/stores/auth";
+import { useRouter } from "vue-router"; // Vue Router 사용
+
 export default {
   name: "Header",
   props: {
     profileImage: {
       type: String,
-      default: "https://example.com/default-image.jpg",
+      default: null, // 기본 프로필 이미지
     },
+  },
+  setup() {
+    const authStore = useAuthStore();
+    const router = useRouter(); // Vue Router 객체
+
+    const handleLogout = () => {
+      authStore.logoutUser(); // 로그아웃 호출
+      router.push("/");
+    };
+
+    return {
+      isAuthenticated: authStore.isAuthenticated, // 로그인 상태
+      handleLogout,
+      defaultImage: "https://example.com/default-image.jpg", // 기본 이미지
+    };
   },
 };
 </script>

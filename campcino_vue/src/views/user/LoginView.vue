@@ -32,9 +32,16 @@
           >
             로그인
           </button>
-          <router-link to="/join" class="ml-auto text-blue-500 hover:underline">
+        <button
+            type="button"
+            @click="handleSignUp"
+            class="w-[150px] py-3 bg-blue-600 text-white font-bold rounded rounded hover:bg-blue-700"
+          >
             회원가입
-          </router-link>
+          </button>
+          <span class="ml-auto text-blue-500 cursor-pointer">
+            <router-link to="/search">비회원으로 이용하기</router-link>
+          </span>
         </div>
       </form>
     </main>

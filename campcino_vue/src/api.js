@@ -13,6 +13,40 @@ const apiClient = axios.create({
   },
 });
 
+// 사용자 정보 가져오기
+export const getUserInfo = async () => {
+  try {
+    const response = await apiClient.get("/user/info", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`, // 액세스 토큰 포함
+      },
+    });
+    return response.data; // 사용자 정보 반환
+  } catch (error) {
+    console.error("사용자 정보를 가져오는 중 오류 발생:", error);
+    throw error; // 에러를 호출한 쪽으로 전달
+  }
+};
+
+// 사용자 로그인
+export const loginUser = async (credentials) => {
+  const response = await apiClient.post("/user/login", credentials);
+  return response.data.accessToken; // 액세스 토큰 반환
+};
+
+// 사용자 로그아웃
+export const logoutUser = () => {
+  return apiClient.post("/user/logout");
+};
+
+// Refresh Token 요청 (토큰 갱신)
+export const refreshToken = () => {
+  return apiClient.post("/user/refresh");
+};
+
+
+
+
 // 캠프 API
 export const getCamps = (region, categories, query) => {
   return apiClient
@@ -124,21 +158,6 @@ export const getPaginatedReviewsByCampId = (campId, page, size) => {
       },
     })
     .then((res) => res.data);
-};
-
-// 사용자 로그인
-export const loginUser = async (credentials) => {
-  const response = await apiClient.post("/user/login", credentials);
-  return response.data.accessToken; // 액세스 토큰 반환
-};
-// 사용자 로그아웃
-export const logoutUser = () => {
-  return apiClient.post("/user/logout");
-};
-
-// Refresh Token 요청 (토큰 갱신)
-export const refreshToken = () => {
-  return apiClient.post("/user/refresh");
 };
 
 export default apiClient;

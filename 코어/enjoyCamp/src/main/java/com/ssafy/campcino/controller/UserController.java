@@ -3,6 +3,7 @@ package com.ssafy.campcino.controller;
 import com.ssafy.campcino.config.JwtTokenProvider;
 import com.ssafy.campcino.dto.requestDto.JoinDto;
 import com.ssafy.campcino.dto.requestDto.LoginDto;
+import com.ssafy.campcino.model.UserEntity;
 import com.ssafy.campcino.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -128,4 +129,41 @@ public class UserController {
                     .body("로그아웃 처리 중 오류가 발생했습니다.");
         }
     }
+
+    /**
+     * 사용자 정보 조회
+     */
+    @GetMapping("/info")
+    public ResponseEntity<?> getUserInfo(@RequestHeader("Authorization") String token) {
+        try {
+            // Authorization 헤더에서 "Bearer " 제거
+            if (token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            }
+
+            // 액세스 토큰 유효성 검증
+            if (!jwtTokenProvider.validateToken(token, true)) {
+                return ResponseEntity.status(401).body("유효하지 않은 토큰입니다.");
+            }
+
+            // 토큰에서 사용자 ID 추출
+            String userId = jwtTokenProvider.getUserIdFromToken(token, true);
+
+            // 사용자 정보 조회
+            UserEntity user = userService.findByUserId(userId);
+            if (user == null) {
+                return ResponseEntity.status(404).body("사용자를 찾을 수 없습니다.");
+            }
+
+            // 사용자 정보 반환
+            return ResponseEntity.ok(Map.of(
+                    "id", user.getUserId()
+
+            ));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("서버 오류가 발생했습니다.");
+        }
+    }
 }
+

@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { useAuthStore } from "@/stores/auth"; // Pinia 스토어 가져오기
 import BoardView from "@/views/board/BoardView.vue";
 import CreatePost from "@/components/board/CreateBoard.vue";
 import PostDetail from "@/components/board/PostDetail.vue";
@@ -31,14 +32,28 @@ const routes = [
     props: true,
   },
   { path: "/search", name: "CampSearchView", component: CampSearchView },
-  { path: "/login", name: "Login", component: LoginView },
+  {
+    path: "/login",
+    name: "Login",
+    component: () => LoginView,
+    beforeEnter: (to, from, next) => {
+      const authStore = useAuthStore();
+      if (authStore.isAuthenticated) {
+        // 이미 로그인된 상태면 메인 페이지로 이동
+        next("/search");
+      } else {
+        next();
+      }
+    },
+  },
   { path: "/join", name: "Join", component: JoinView },
   { path: "/reviews", name: "ReviewList", component: ReviewListView },
 
-  { 
-    path: "/modify", 
-    name: "Modify", 
-    component: () => import("@/views/user/modifyView.vue") 
+  {
+    path: "/profile",
+    name: "Profile",
+    component: () => import("@/views/ProfileView.vue"),
+    meta: { requiresAuth: true }, // 인증 필요
   },
 ];
 
@@ -54,6 +69,16 @@ const router = createRouter({
       return { top: 0 };
     }
   },
+});
+
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore();
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    // 인증이 필요한 페이지에 접근하려고 하지만 인증되지 않은 경우 로그인 페이지로 이동
+    next("/login");
+  } else {
+    next();
+  }
 });
 
 export default router;
