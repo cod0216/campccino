@@ -91,7 +91,8 @@ public class BoardController {
         try {
             // 인증된 사용자 ID 설정
 //            String userId = authentication.getName();
-            String userId = "ssafy";
+            System.out.println("체꾸");
+            String userId = "cod0216";
             request.setUserId(userId);
             BoardDto createdBoard = boardService.createBoard(request);
             return new ResponseEntity<>(createdBoard, HttpStatus.CREATED);
