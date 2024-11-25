@@ -217,19 +217,24 @@ apiClient.interceptors.request.use((config) => {
 
 // 응답 인터셉터 추가 (토큰 갱신)
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => response, // 응답 성공 시
   async (error) => {
     if (error.response && error.response.status === 401) {
       console.error("Unauthorized. Attempting token refresh...");
       try {
-        const newToken = await refreshToken();
-        localStorage.setItem("accessToken", newToken);
-        error.config.headers.Authorization = `Bearer ${newToken}`;
-        return apiClient.request(error.config); // 원래 요청 재시도
+        const { data } = await apiClient.post("/user/refresh");
+        const newAccessToken = data.accessToken;
+
+        if (newAccessToken) {
+          localStorage.setItem("accessToken", newAccessToken);
+          error.config.headers.Authorization = `Bearer ${newAccessToken}`;
+          return apiClient.request(error.config); // 원래 요청 재시도
+        }
       } catch (refreshError) {
         console.error("Token refresh failed. Logging out...");
         localStorage.removeItem("accessToken");
-        throw refreshError;
+        window.location.href = "/login"; // 로그인 페이지로 리다이렉트
+        return Promise.reject(refreshError);
       }
     }
     return Promise.reject(error);

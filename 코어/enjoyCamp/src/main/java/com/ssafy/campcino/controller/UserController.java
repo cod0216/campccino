@@ -137,13 +137,15 @@ public class UserController {
     public ResponseEntity<?> getUserInfo(@RequestHeader("Authorization") String token) {
         try {
             // Authorization 헤더에서 "Bearer " 제거
-            if (token.startsWith("Bearer ")) {
+            if (token != null && token.startsWith("Bearer ")) {
                 token = token.substring(7);
+            } else {
+                return ResponseEntity.status(401).body("Authorization 헤더가 유효하지 않습니다.");
             }
 
             // 액세스 토큰 유효성 검증
             if (!jwtTokenProvider.validateToken(token, true)) {
-                return ResponseEntity.status(401).body("유효하지 않은 토큰입니다.");
+                return ResponseEntity.status(401).body("유효하지 않은 액세스 토큰입니다.");
             }
 
             // 토큰에서 사용자 ID 추출
@@ -156,14 +158,12 @@ public class UserController {
             }
 
             // 사용자 정보 반환
-            return ResponseEntity.ok(Map.of(
-                    "id", user.getUserId()
-
-            ));
+            return ResponseEntity.ok(Map.of("id", user.getUserId()));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(500).body("서버 오류가 발생했습니다.");
         }
     }
+
 }
 

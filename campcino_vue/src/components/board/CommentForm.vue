@@ -64,6 +64,7 @@ export default {
     return {
       commentContent,
       submitComment,
+      authStore,
     };
   },
 };

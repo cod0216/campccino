@@ -131,9 +131,10 @@ public class BoardController {
             Authentication authentication) {
         try {
             // 인증된 사용자 ID 설정
-            String userId = authentication.getName(); // 로그인된 사용자 ID 가져오기
-            request.setBoardId(boardId);
-            request.setUserId(userId); // 사용자 ID 설정
+//            String userId = authentication.getName(); // 로그인된 사용자 ID 가져오기
+//            System.out.println(userId);
+//            request.setBoardId(boardId);
+//            request.setUserId(userId); // 사용자 ID 설정
             commentService.createComment(request);
 
             return new ResponseEntity<>("댓글이 성공적으로 작성되었습니다!", HttpStatus.CREATED);
