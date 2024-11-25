@@ -1,50 +1,65 @@
 <template>
-    <form @submit.prevent="submitForm">
-      <label class="flex flex-col min-w-40 flex-1">
-        <p class="text-[#1C160C] text-base font-medium leading-normal pb-2">이름</p>
-        <input v-model="userData.name" class="form-input" type="text" placeholder="이름 입력" />
-      </label>
-      <label class="flex flex-col min-w-40 flex-1">
-        <p class="text-[#1C160C] text-base font-medium leading-normal pb-2">이메일</p>
-        <input v-model="userData.email" class="form-input" type="email" placeholder="이메일 입력" />
-      </label>
-      <label class="flex flex-col min-w-40 flex-1">
-        <p class="text-[#1C160C] text-base font-medium leading-normal pb-2">전화번호</p>
-        <input v-model="userData.phone" class="form-input" type="tel" placeholder="전화번호 입력" />
-      </label>
-      <label class="flex flex-col min-w-40 flex-1">
-        <p class="text-[#1C160C] text-base font-medium leading-normal pb-2">성별</p>
-        <select v-model="userData.gender" class="form-input">
-          <option value="male">남성</option>
-          <option value="female">여성</option>
-        </select>
-      </label>
-      <button type="submit" class="btn-primary">저장</button>
-    </form>
+  <form @submit.prevent>
+    <label class="flex flex-col min-w-40 flex-1">
+      <p class="text-[#1C160C] text-base font-medium leading-normal pb-2">이메일</p>
+      <input
+        v-model="localUserData.email"
+        class="form-input"
+        type="email"
+        placeholder="이메일 입력"
+      />
+    </label>
+    <label class="flex flex-col min-w-40 flex-1">
+      <p class="text-[#1C160C] text-base font-medium leading-normal pb-2">전화번호</p>
+      <input
+        v-model="localUserData.phone"
+        class="form-input"
+        type="tel"
+        placeholder="전화번호 입력"
+      />
+    </label>
+    <label class="flex flex-col min-w-40 flex-1">
+      <p class="text-[#1C160C] text-base font-medium leading-normal pb-2">성별</p>
+      <select v-model="localUserData.gender" class="form-input">
+        <option value="male">남성</option>
+        <option value="female">여성</option>
+      </select>
+    </label>
+    <!-- 폼 내 저장 버튼은 제거 (App.vue의 저장 버튼을 사용) -->
+  </form>
 </template>
 
 <script>
 export default {
+  name: "UserForm",
+  props: {
+    modelValue: {
+      type: Object,
+      required: true,
+    },
+  },
   data() {
     return {
-      userData: {
-        name: "",
-        email: "",
-        phone: "",
-        gender: "male",
-      },
+      localUserData: { ...this.modelValue },
     };
   },
-  methods: {
-    async submitForm() {
-      try {
-        console.log("User data submitted:", this.userData);
-        alert("사용자 정보가 저장되었습니다.");
-      } catch (error) {
-        console.error("Error submitting user data:", error);
-        alert("사용자 정보를 저장하는 데 실패했습니다.");
-      }
+  watch: {
+    localUserData: {
+      handler(newData) {
+        this.$emit("update:modelValue", newData);
+      },
+      deep: true,
+    },
+    modelValue: {
+      handler(newVal) {
+        this.localUserData = { ...newVal };
+      },
+      deep: true,
     },
   },
 };
 </script>
+
+<style>
+/* 컴포넌트 스타일은 여기서 추가 */
+</style>

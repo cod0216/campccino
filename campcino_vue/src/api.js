@@ -1,4 +1,5 @@
 // src/api.js
+
 import axios from "axios";
 import qs from "qs"; // qs 라이브러리 임포트
 
@@ -190,6 +191,7 @@ export const deleteComment = (boardId, commentId) => {
     .delete(`/boards/${boardId}/comments/${commentId}`)
     .then((res) => res.data);
 };
+
 // 캠프 상세 조회 API 수정
 export const getCampById = async (campId) => {
   try {
@@ -228,6 +230,18 @@ export const getPaginatedReviewsByCampId = (campId, page, size) => {
       },
     })
     .then((res) => res.data);
+};
+
+// 사용자 정보 수정 API
+export const updateUser = async (userData) => {
+  try {
+    const response = await apiClient.put("/user/update", userData);
+    console.log("회원정보가 성공적으로 업데이트되었습니다:", response.data); // 디버깅
+    return response.data;
+  } catch (error) {
+    console.error("회원정보 업데이트에 실패했습니다:", error);
+    throw error;
+  }
 };
 
 // 요청 인터셉터 추가

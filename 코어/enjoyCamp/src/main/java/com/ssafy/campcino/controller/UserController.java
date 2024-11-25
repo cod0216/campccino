@@ -3,12 +3,14 @@ package com.ssafy.campcino.controller;
 import com.ssafy.campcino.config.JwtTokenProvider;
 import com.ssafy.campcino.dto.requestDto.JoinDto;
 import com.ssafy.campcino.dto.requestDto.LoginDto;
+import com.ssafy.campcino.dto.requestDto.UpdateUserDto;
 import com.ssafy.campcino.model.UserEntity;
 import com.ssafy.campcino.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -65,6 +67,35 @@ public class UserController {
             e.printStackTrace();
             return ResponseEntity.status(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
                     .body("로그인 처리 중 오류가 발생했습니다.");
+        }
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<?> updateUserInfo(@RequestHeader("Authorization") String token,
+                                            @RequestBody UpdateUserDto updateUserDto) {
+        try {
+            // Authorization 헤더에서 "Bearer " 제거
+            if (token != null && token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authorization 헤더가 유효하지 않습니다.");
+            }
+
+            // 액세스 토큰 유효성 검증
+            if (!jwtTokenProvider.validateToken(token, true)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 액세스 토큰입니다.");
+            }
+
+            // 토큰에서 사용자 ID 추출
+            String userId = jwtTokenProvider.getUserIdFromToken(token, true);
+
+            // 사용자 정보 업데이트
+            userService.updateUserInfo(userId, updateUserDto);
+
+            return ResponseEntity.ok("회원정보가 성공적으로 업데이트되었습니다.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("회원정보 업데이트 중 오류가 발생했습니다.");
         }
     }
 

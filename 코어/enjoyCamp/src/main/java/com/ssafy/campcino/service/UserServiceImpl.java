@@ -6,6 +6,7 @@ import com.ssafy.campcino.mapper.UserMapper;
 import com.ssafy.campcino.model.UserEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.ssafy.campcino.dto.requestDto.UpdateUserDto;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -42,6 +43,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteRefreshToken(String userId) {
         userMapper.updateRefreshToken(userId, null);
+    }
+
+    @Override
+    public void updateUserInfo(String userId, UpdateUserDto updateUserDto) {
+        userMapper.updateUserInfo(userId, updateUserDto);
     }
 
     @Override
