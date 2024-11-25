@@ -1,21 +1,17 @@
-// src/main/java/com/ssafy/campcino/config/WebConfig.java
 package com.ssafy.campcino.config;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.*;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**") // Apply to all API endpoints
-
-
-//        registry.addMapping("/api/**") // Apply to all API endpoints
-                .allowedOrigins("http://localhost:5173") // Frontend origin
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowedHeaders("*")
-                .allowCredentials(true);
+        registry.addMapping("/**")
+                .allowedOrigins("http://localhost:5173") // FE 도메인
+                .allowedMethods("GET", "POST", "PUT", "DELETE")
+                .allowCredentials(true) // 쿠키 허용
+                .allowedHeaders("*");
     }
 }

@@ -12,7 +12,6 @@
         )
     </insert>
 
-
     <!-- 아이디로 사용자 조회 -->
     <select id="findByUserId" parameterType="String" resultMap="UserResultMap">
         SELECT *
@@ -20,6 +19,7 @@
         WHERE user_id = #{userId}
     </select>
 
+    <!-- 사용자 정보 매핑 -->
     <resultMap id="UserResultMap" type="com.ssafy.campcino.model.UserEntity">
         <id property="userId" column="user_id"/>
         <result property="userPassword" column="user_password"/>
@@ -38,10 +38,17 @@
     </resultMap>
 
     <!-- Refresh Token 업데이트 -->
-    <update id="updateRefreshToken">
+    <update id="updateRefreshToken" parameterType="map">
         UPDATE tbl_user
         SET user_refresh_token = #{refreshToken}
         WHERE user_id = #{userId}
     </update>
+
+    <!-- Refresh Token 조회 -->
+    <select id="findRefreshTokenByUserId" parameterType="String" resultType="String">
+        SELECT user_refresh_token
+        FROM tbl_user
+        WHERE user_id = #{userId}
+    </select>
 
 </mapper>

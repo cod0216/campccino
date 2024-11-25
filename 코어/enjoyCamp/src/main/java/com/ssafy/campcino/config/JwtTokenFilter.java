@@ -1,8 +1,8 @@
-
 package com.ssafy.campcino.config;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.security.core.Authentication;
 
 import java.io.IOException;
 
@@ -22,22 +23,40 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    @Override
+    /**
+     * 쿠키에서 Access Token 추출
+     */
+    private String extractAccessTokenFromCookies(HttpServletRequest request) {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("accessToken".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
+    }
+
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
-            String token = getTokenFromRequest(request);
+            String accessToken = extractAccessTokenFromCookies(request);
 
-            if (token != null && jwtTokenProvider.validateToken(token)) {
-                var authentication = jwtTokenProvider.getAuthentication(token);
+            if (accessToken != null && jwtTokenProvider.validateToken(accessToken, true)) {
+                Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
 
-                // AbstractAuthenticationToken으로 캐스팅
                 if (authentication instanceof AbstractAuthenticationToken) {
+                    // setDetails 호출 가능
                     ((AbstractAuthenticationToken) authentication)
                             .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                } else {
+                    throw new IllegalStateException("Authentication is not an instance of AbstractAuthenticationToken.");
                 }
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+            } else {
+                // 유효하지 않은 Access Token 처리
+                SecurityContextHolder.clearContext();
             }
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -48,12 +67,4 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-
-    private String getTokenFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        return null;
-    }
 }

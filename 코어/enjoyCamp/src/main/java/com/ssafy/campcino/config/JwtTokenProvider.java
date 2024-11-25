@@ -12,86 +12,94 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
-
 import java.security.Key;
 import java.util.Date;
-import java.util.List;
 
 @Component
 public class JwtTokenProvider {
 
-    private Key key;
     private final UserDetailsService userDetailsService;
-    private final String secretKey = "3x@mpl3$S3cr3tK3yTh@tIsV3ryS3cur3!"; // Should match application.properties
-    private final long expirationTime = 120000; // 120초
-
-    //15분~1시간  리프레쉬는 1주일 정도
+    private Key accessKey;
+    private Key refreshKey;
+    private final String accessSecretKey = "AccessKeySecretKeyForSigning123!@#"; // Access Token 서명용 키
+    private final String refreshSecretKey = "RefreshKeySecretKeyForSigning456!@#"; // Refresh Token 서명용 키
+    private final long accessTokenExpirationTime = 15 * 60 * 1000; // 15분
+    private final long refreshTokenExpirationTime = 7 * 24 * 60 * 60 * 1000; // 7일
 
     public JwtTokenProvider(UserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
+        this.userDetailsService = userDetailsService; // 생성자에서 주입
     }
 
     @PostConstruct
     public void init() {
-        // application.properties에서 키를 로드
-        if (secretKey.length() < 32) {
-            throw new IllegalArgumentException("3x@mpl3$S3cr3tK3yTh@tIsV3ryS3cur3!");
-        }
-        this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
+        this.accessKey = Keys.hmacShaKeyFor(accessSecretKey.getBytes());
+        this.refreshKey = Keys.hmacShaKeyFor(refreshSecretKey.getBytes());
     }
 
+    public Authentication getAuthentication(String token) {
+        try {
+            // 토큰에서 사용자 이름 추출
+            String username = getUserIdFromToken(token, true); // true: Access Token 사용
 
-    //, List<String> roles
+            // UserDetailsService에서 사용자 정보 로드
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+            if (userDetails == null) {
+                throw new IllegalArgumentException("User details not found for token: " + token);
+            }
+
+            // 인증 정보 생성 및 반환
+            return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to authenticate token: " + token, e);
+        }
+    }
+
     public String generateAccessToken(String username) {
         Claims claims = Jwts.claims().setSubject(username);
-//        claims.put("roles", roles);
         Date now = new Date();
-        Date validity = new Date(now.getTime() + expirationTime);
+        Date validity = new Date(now.getTime() + accessTokenExpirationTime);
 
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(validity)
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(accessKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
     public String generateRefreshToken(String username) {
         Claims claims = Jwts.claims().setSubject(username);
-//        claims.put("roles", roles);
         Date now = new Date();
-        Date validity = new Date(now.getTime() + expirationTime + expirationTime);
+        Date validity = new Date(now.getTime() + refreshTokenExpirationTime);
 
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(validity)
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(refreshKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public boolean validateToken(String token) {
+    public boolean validateToken(String token, boolean isAccessToken) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Key signingKey = isAccessToken ? accessKey : refreshKey;
+            Jwts.parserBuilder().setSigningKey(signingKey).build().parseClaimsJws(token);
             return true;
         } catch (Exception e) {
             return false;
         }
-    }// 토큰(유효시간)으로 만들 수 있는 놈이면 true, 아니면 false
+    }
 
-    public String getUserIdFromToken(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build()
+    public String getUserIdFromToken(String token, boolean isAccessToken) {
+        Key signingKey = isAccessToken ? accessKey : refreshKey;
+        return Jwts.parserBuilder().setSigningKey(signingKey).build()
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
     }
-
-    public Authentication getAuthentication(String token) {
-        String username = getUserIdFromToken(token);
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
-    }
 }
+
 
 
 /*
