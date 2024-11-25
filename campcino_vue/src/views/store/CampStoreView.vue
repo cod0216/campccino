@@ -1,7 +1,7 @@
 <!-- src/views/StoreListView.vue -->
 <template>
+  <Header />
   <div>
-    <Header />
     <h1 class="text-2xl font-bold mb-4">Store List</h1>
     <div v-if="stores.length > 0" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
       <ProductItem

@@ -71,6 +71,7 @@ export default {
           password: this.password,
         });
         alert("로그인 성공!");
+        this.authStore.$patch({}); // 강제 반응성 동기화
         this.$router.push("/");
       } catch (error) {
         console.error("로그인 실패:", error);

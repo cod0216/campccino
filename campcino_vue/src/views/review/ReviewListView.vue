@@ -1,7 +1,8 @@
 <!-- src/views/review/ReviewListView.vue -->
 <template>
+  <Header />
   <div class="review-list-container">
-    <Header />
+    
     <main class="container mx-auto p-6">
       <h1 class="text-3xl font-bold mb-4">캠핑장 리뷰 목록</h1>
 
