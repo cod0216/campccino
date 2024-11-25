@@ -9,16 +9,47 @@ export const useAuthStore = defineStore("auth", {
   }),
   actions: {
     // 초기화: 리프레시 토큰으로 인증 상태 확인
+    // async initializeAuth() {
+    //   console.log("Initializing Auth..."); // 디버깅 메시지
+    //   const token = localStorage.getItem("accessToken");
+    //   if (!token) {
+    //     console.log("No token found in localStorage");
+    //     this.isAuthenticated = false;
+    //     this.user = null;
+    //     return;
+    //   }
+    //   try {
+    //     console.log("Token found, refreshing access token...");
+    //     await this.refreshAccessToken(); // 토큰 갱신
+    //     console.log("Access token refreshed, fetching user info...");
+    //     await this.fetchUserInfo(); // 사용자 정보 가져오기
+    //     this.isAuthenticated = true;
+    //     console.log("User authenticated:", this.user);
+    //   } catch (error) {
+    //     console.error("Authentication initialization failed:", error);
+    //     this.isAuthenticated = false;
+    //     this.user = null;
+    //     localStorage.removeItem("accessToken"); // 실패 시 토큰 제거
+    //   }
+    // },
     async initializeAuth() {
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        this.isAuthenticated = false;
+        this.user = null;
+        return;
+      }
+
       try {
-        await this.refreshAccessToken(); // 액세스 토큰 갱신
+        console.log("Restoring session...");
         await this.fetchUserInfo(); // 사용자 정보 가져오기
         this.isAuthenticated = true;
-      } catch {
-        this.isAuthenticated = false;
-        this.user = null; // 인증 실패 시 사용자 정보 초기화
+      } catch (error) {
+        console.error("Session restoration failed:", error);
+        this.logoutUser();
       }
     },
+
 
     // 로그인 처리
     async loginUser(credentials) {
@@ -36,7 +67,6 @@ export const useAuthStore = defineStore("auth", {
     // 로그아웃 처리
     async logoutUser() {
       try {
-        await logoutUser();
         localStorage.removeItem("accessToken"); // 로컬 스토리지에서 액세스 토큰 제거
         this.isAuthenticated = false;
         this.user = null; // 사용자 정보 초기화
