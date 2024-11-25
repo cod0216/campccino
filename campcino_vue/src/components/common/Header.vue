@@ -47,6 +47,10 @@
     <div class="flex items-center gap-8">
       <!-- 로그인 상태에 따라 버튼 변경 -->
       <template v-if="isAuthenticated">
+        <!-- 사용자 ID 표시 -->
+        <span class="font-bold text-[#1C160C]">
+          {{ user?.id }}님 환영합니다!
+        </span>
         <router-link to="/profile">
           <button class="px-4 py-2 bg-[#F4EFE6] text-[#1C160C] font-bold">
             회원정보
@@ -66,19 +70,12 @@
           </button>
         </router-link>
       </template>
-      <!-- 프로필 이미지 -->
-      <div
-        v-if="isAuthenticated"
-        class="w-10 h-10 rounded-full bg-cover"
-        :style="{ backgroundImage: `url('${profileImage || defaultImage}')` }"
-      ></div>
     </div>
   </header>
 </template>
 
 <script>
 import { useAuthStore } from "@/stores/auth";
-import { useRouter } from "vue-router"; // Vue Router 사용
 
 export default {
   name: "Header",
@@ -90,15 +87,14 @@ export default {
   },
   setup() {
     const authStore = useAuthStore();
-    const router = useRouter(); // Vue Router 객체
 
     const handleLogout = () => {
       authStore.logoutUser(); // 로그아웃 호출
-      router.push("/");
     };
 
     return {
       isAuthenticated: authStore.isAuthenticated, // 로그인 상태
+      user: authStore.user, // 사용자 정보 가져오기
       handleLogout,
       defaultImage: "https://example.com/default-image.jpg", // 기본 이미지
     };
