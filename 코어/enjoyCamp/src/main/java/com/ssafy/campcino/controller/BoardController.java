@@ -90,15 +90,15 @@ public class BoardController {
     public ResponseEntity<BoardDto> createBoard(@RequestBody CreateBoardRequestDto request, Authentication authentication) {
         try {
             // 인증된 사용자 ID 설정
-//            String userId = authentication.getName();
-            String userId = "ssafy";
-            request.setUserId(userId);
+//            String userId = authentication.getName(); // 로그인된 사용자 ID 가져오기
+//            request.setUserId(userId); // 사용자 ID 설정
             BoardDto createdBoard = boardService.createBoard(request);
             return new ResponseEntity<>(createdBoard, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
     /**
      * 댓글 목록 조회 (페이징 적용)
@@ -131,17 +131,17 @@ public class BoardController {
             Authentication authentication) {
         try {
             // 인증된 사용자 ID 설정
-//            String userId = authentication.getName();
-            String userId = "ssafy";
-        	
+            String userId = authentication.getName(); // 로그인된 사용자 ID 가져오기
             request.setBoardId(boardId);
-            request.setUserId(userId);
+            request.setUserId(userId); // 사용자 ID 설정
             commentService.createComment(request);
+
             return new ResponseEntity<>("댓글이 성공적으로 작성되었습니다!", HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>("댓글 작성에 실패했습니다: " + e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
     
     @PutMapping("/{id}")
     public ResponseEntity<String> updateBoard(

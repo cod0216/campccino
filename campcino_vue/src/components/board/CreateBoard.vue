@@ -67,12 +67,14 @@
 <script>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/auth"; // 사용자 인증 정보 가져오기
 import { createBoard } from "@/api";
 
 export default {
-  name: "CreatePost",
+  name: "CreateBoard",
   setup() {
     const router = useRouter();
+    const authStore = useAuthStore(); // 사용자 인증 정보
     const post = ref({
       title: "",
       content: "",
@@ -84,15 +86,22 @@ export default {
 
     const submitPost = async () => {
       try {
+        const userId = authStore.user?.id; // 로그인한 사용자 ID 가져오기
+        if (!userId) {
+          alert("로그인이 필요합니다!");
+          return;
+        }
+
+        // 게시글 생성 API 요청
         await createBoard({
           boardTitle: post.value.title,
           boardContent: post.value.content,
           category: post.value.category,
           imgUrl: post.value.imgUrl,
+          userId, // 사용자 ID 포함
         });
         alert("게시글이 성공적으로 작성되었습니다!");
-        // 게시글 목록으로 이동
-        router.push("/boards"); // useRouter를 사용하여 네비게이션
+        router.push("/boards");
       } catch (error) {
         console.error("게시글 작성 중 오류가 발생했습니다:", error);
         alert("게시글 작성에 실패했습니다.");
