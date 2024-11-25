@@ -201,4 +201,34 @@ export const getPaginatedReviewsByCampId = (campId, page, size) => {
     .then((res) => res.data);
 };
 
+// 요청 인터셉터 추가
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem("accessToken");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// 응답 인터셉터 추가 (토큰 갱신)
+apiClient.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response && error.response.status === 401) {
+      console.error("Unauthorized. Attempting token refresh...");
+      try {
+        const newToken = await refreshToken();
+        localStorage.setItem("accessToken", newToken);
+        error.config.headers.Authorization = `Bearer ${newToken}`;
+        return apiClient.request(error.config); // 원래 요청 재시도
+      } catch (refreshError) {
+        console.error("Token refresh failed. Logging out...");
+        localStorage.removeItem("accessToken");
+        throw refreshError;
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default apiClient;

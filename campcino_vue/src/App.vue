@@ -18,20 +18,26 @@
 <script>
 import { ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
 import Modal from "@/components/common/Modal.vue";
 import CampDetailView from "@/views/camp/CampDetailView.vue";
+
 
 export default {
   name: "App",
   components: {
     Modal,
-    CampDetailView,
+    CampDetailView
   },
   setup() {
+    const authStore = useAuthStore();
+    console.log("Calling initializeAuth..."); // 디버깅 메시지
+    authStore.initializeAuth(); // 앱 로드 시 인증 초기화
     const route = useRoute();
     const router = useRouter();
     const isModalOpen = ref(false);
     const selectedCampId = ref(null);
+    
 
     const openModal = (campId) => {
       selectedCampId.value = campId;
