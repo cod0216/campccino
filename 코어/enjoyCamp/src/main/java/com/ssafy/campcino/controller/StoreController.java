@@ -12,7 +12,7 @@ import com.ssafy.campcino.dto.responseDto.StoreDto;
 import com.ssafy.campcino.service.StoreService;
 
 @RestController
-@RequestMapping("/api/stores")
+@RequestMapping("/stores")
 public class StoreController {
 
     @Autowired

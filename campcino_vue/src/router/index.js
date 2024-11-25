@@ -13,6 +13,7 @@ import ReviewListView from "@/views/review/ReviewListView.vue"; // 새로운 뷰
 import ReviewForm from "@/components/camp/ReviewForm.vue";
 import BoardDetail from "@/components/board/BoardDetail.vue";
 import CreateBoard from "@/components/board/CreateBoard.vue";
+import ProfileView from "@/views/user/ProfileView.vue";
 const routes = [
   { path: "/", name: "MainView", component: MainView },
   { path: "/boards", name: "BoardView", component: BoardView },
@@ -65,7 +66,7 @@ const routes = [
   {
     path: "/profile",
     name: "Profile",
-    component: () => import("@/views/ProfileView.vue"),
+    component: () => ProfileView,
     meta: { requiresAuth: true }, // 인증 필요
   },
 ];

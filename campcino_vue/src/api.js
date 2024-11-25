@@ -45,8 +45,6 @@ export const refreshToken = () => {
   return apiClient.post("/user/refresh");
 };
 
-
-
 // 캠프 API
 export const getCamps = (region, categories, query) => {
   return apiClient
@@ -97,12 +95,14 @@ export const getBoards = (
   sortBy = "board_created_at",
   sortOrder = "DESC"
 ) => {
-  return apiClient.get("/boards", {
-    params: {categories, text, page, size, sortBy, sortOrder },
-    paramsSerializer: params => {
-      return qs.stringify(params, { arrayFormat: 'repeat' }); // 'repeat' 옵션 사용
-    },
-  }).then((res) => res.data);
+  return apiClient
+    .get("/boards", {
+      params: { categories, text, page, size, sortBy, sortOrder },
+      paramsSerializer: (params) => {
+        return qs.stringify(params, { arrayFormat: "repeat" }); // 'repeat' 옵션 사용
+      },
+    })
+    .then((res) => res.data);
 };
 
 /**

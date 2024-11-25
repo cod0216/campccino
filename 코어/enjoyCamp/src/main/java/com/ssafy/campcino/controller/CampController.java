@@ -31,7 +31,7 @@ import com.ssafy.campcino.service.ReviewService;
 import com.ssafy.campcino.service.SidoService;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/")
 public class CampController {
 
 	@Autowired

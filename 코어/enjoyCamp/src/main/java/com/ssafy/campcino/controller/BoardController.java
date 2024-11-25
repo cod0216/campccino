@@ -27,7 +27,7 @@ import com.ssafy.campcino.service.CommentService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/boards")
+@RequestMapping("/boards")
 public class BoardController {
 
     @Autowired
