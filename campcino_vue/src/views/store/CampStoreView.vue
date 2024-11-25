@@ -41,7 +41,7 @@ export default {
     });
 
     const viewStore = (id) => {
-      router.push(`/store/${id}`);
+      router.push(`/stores/${id}`);
     };
 
     return {

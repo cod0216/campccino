@@ -71,7 +71,7 @@ export default {
     const links = [
       { name: "캠핑장 조회", path: "/search" },
       { name: "게시판", path: "/boards" },
-      { name: "스토어", path: "/store" },
+      { name: "스토어", path: "/stores" },
       { name: "리뷰", path: "/reviews" },
     ];
 

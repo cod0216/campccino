@@ -12,55 +12,49 @@
         class="comment-item mb-4 p-4 border rounded"
       >
         <div class="flex justify-between mb-2">
-          <span class="font-semibold">{{ comment.userId }}</span>
-          <span class="text-sm text-gray-500">{{
-            formatDate(comment.commentCreatedAt)
-          }}</span>
+          <span class="font-semibold">
+            {{ comment.userId }}
+            <!-- "수정됨" 표시 -->
+            <span v-if="isEdited(comment.commentId)" class="text-muted">(수정됨)</span>
+          </span>
+          <span class="text-sm text-gray-500">{{ formatDate(comment.commentCreatedAt) }}</span>
         </div>
-
-        <!-- 댓글 내용 표시 또는 수정 -->
-        <div v-if="isEditing === comment.commentId">
-          <textarea
-            v-model="editingContent"
-            class="w-full border rounded p-2 mb-2"
-            rows="3"
-          ></textarea>
-          <div class="flex space-x-4">
-            <button
-              @click="saveEdit(comment.commentId)"
-              class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
-            >
-              저장
-            </button>
-            <button
-              @click="cancelEdit"
-              class="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600"
-            >
-              취소
-            </button>
-          </div>
-        </div>
-        <div v-else>
-          <p class="mb-2">{{ comment.commentContent }}</p>
-
-          <!-- 댓글 작성자와 로그인 사용자가 같은 경우 수정, 삭제 버튼 -->
-          <div
-            v-if="isCommentOwner(comment.userId)"
-            class="flex space-x-4 mt-2"
+        <p v-if="!isEditing[comment.commentId]">{{ comment.commentContent }}</p>
+        <textarea
+          v-else
+          v-model="editContent[comment.commentId]"
+          class="w-full border rounded p-2 mb-2"
+          rows="3"
+        ></textarea>
+        <div v-if="isOwner(comment.userId)">
+          <button
+            v-if="!isEditing[comment.commentId]"
+            @click="startEditing(comment)"
+            class="px-3 py-1 bg-yellow-500 text-white rounded mr-2"
           >
-            <button
-              @click="startEdit(comment.commentId, comment.commentContent)"
-              class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-            >
-              수정
-            </button>
-            <button
-              @click="deleteComment(comment.commentId)"
-              class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-            >
-              삭제
-            </button>
-          </div>
+            수정
+          </button>
+          <button
+            v-if="!isEditing[comment.commentId]"
+            @click="confirmDelete(comment)"
+            class="px-3 py-1 bg-red-500 text-white rounded"
+          >
+            삭제
+          </button>
+          <button
+            v-if="isEditing[comment.commentId]"
+            @click="submitEdit(comment)"
+            class="px-3 py-1 bg-green-500 text-white rounded mr-2"
+          >
+            저장
+          </button>
+          <button
+            v-if="isEditing[comment.commentId]"
+            @click="cancelEditing(comment)"
+            class="px-3 py-1 bg-gray-500 text-white rounded"
+          >
+            취소
+          </button>
         </div>
       </div>
 
@@ -87,9 +81,9 @@
 </template>
 
 <script>
-import { ref, onMounted, watch, defineExpose } from "vue";
-import { useAuthStore } from "@/stores/auth"; // 로그인 사용자 정보 가져오기
-import { getCommentsByBoardId } from "@/api";
+import { ref, onMounted, watch } from "vue";
+import { getCommentsByBoardId, updateComment, deleteComment } from "@/api"; // API 함수 임포트
+import { useAuthStore } from "@/stores/auth";
 
 export default {
   name: "CommentList",
@@ -100,6 +94,7 @@ export default {
     },
   },
   setup(props) {
+    const authStore = useAuthStore();
     const comments = ref({
       items: [],
       currentPage: 1,
@@ -108,11 +103,17 @@ export default {
     });
     const currentPage = ref(1);
     const totalPages = ref(1);
-    const authStore = useAuthStore(); // 로그인 사용자 정보 가져오기
 
-    const isEditing = ref(null); // 현재 수정 중인 댓글 ID
-    const editingContent = ref(""); // 수정 중인 댓글 내용
+    const isEditing = ref({}); // { commentId: true/false }
+    const editContent = ref({}); // { commentId: "edited content" }
 
+    // 수정된 댓글이 "수정됨" 상태인지 확인
+    const isEdited = (commentId) => {
+      const editedComments = JSON.parse(localStorage.getItem('editedComments') || '[]');
+      return editedComments.includes(commentId);
+    };
+
+    // 댓글 목록을 가져오는 함수
     const fetchComments = async (page = 1) => {
       if (page < 1 || page > totalPages.value) return;
       try {
@@ -126,66 +127,80 @@ export default {
     };
 
     const formatDate = (dateString) => {
-      const options = {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      };
+      const options = { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" };
       return new Date(dateString).toLocaleDateString(undefined, options);
     };
 
-    // 작성자와 로그인 사용자가 같은지 확인
-    const isCommentOwner = (commentUserId) => {
-      return commentUserId === authStore.user?.id;
+    const startEditing = (comment) => {
+      isEditing.value[comment.commentId] = true;
+      editContent.value[comment.commentId] = comment.commentContent;
     };
 
-    // 수정 시작
-    const startEdit = (commentId, content) => {
-      isEditing.value = commentId;
-      editingContent.value = content;
+    const cancelEditing = (comment) => {
+      isEditing.value[comment.commentId] = false;
+      delete editContent.value[comment.commentId];
     };
 
-    // 수정 저장
-    const saveEdit = async (commentId) => {
+    const submitEdit = async (comment) => {
+      const updatedContent = editContent.value[comment.commentId];
+      if (!updatedContent.trim()) {
+        alert("댓글 내용을 입력해주세요!");
+        return;
+      }
+
       try {
-        // TODO: 댓글 수정 API 호출
-        console.log("수정된 내용:", editingContent.value);
-        alert(`수정된 댓글 ID: ${commentId}, 내용: ${editingContent.value}`);
-        isEditing.value = null; // 수정 상태 초기화
-        fetchComments(currentPage.value); // 수정 후 댓글 목록 갱신
+        const updatedCommentData = {
+          commentId: comment.commentId,
+          commentContent: updatedContent,
+          userId: authStore.user?.id,
+        };
+
+        await updateComment(props.boardId, comment.commentId, updatedCommentData);
+        alert("댓글이 성공적으로 수정되었습니다!");
+        isEditing.value[comment.commentId] = false;
+        delete editContent.value[comment.commentId];
+
+        // 수정된 댓글을 localStorage에 저장
+        const editedComments = JSON.parse(localStorage.getItem('editedComments') || '[]');
+        if (!editedComments.includes(comment.commentId)) {
+          editedComments.push(comment.commentId);
+          localStorage.setItem('editedComments', JSON.stringify(editedComments));
+        }
+
+        fetchComments(currentPage.value);
       } catch (error) {
-        console.error("댓글 수정 중 오류 발생:", error);
-        alert("댓글 수정에 실패했습니다.");
+        console.error("댓글 수정 중 오류가 발생했습니다:", error);
+        alert("댓글 수정에 실패했습니다. 다시 시도해주세요.");
       }
     };
 
-    // 수정 취소
-    const cancelEdit = () => {
-      isEditing.value = null;
-      editingContent.value = ""; // 수정 내용 초기화
+    const confirmDelete = (comment) => {
+      if (confirm("정말로 이 댓글을 삭제하시겠습니까?")) {
+        deleteCommentById(comment);
+      }
     };
 
-    // 댓글 삭제 (임시)
-    const deleteComment = (commentId) => {
-      alert(`삭제 기능은 아직 구현되지 않았습니다. (댓글 ID: ${commentId})`);
+    const deleteCommentById = async (comment) => {
+      try {
+        await deleteComment(props.boardId, comment.commentId);
+        alert("댓글이 성공적으로 삭제되었습니다!");
+        fetchComments(currentPage.value);
+      } catch (error) {
+        console.error("댓글 삭제 중 오류가 발생했습니다:", error);
+        alert("댓글 삭제에 실패했습니다. 다시 시도해주세요.");
+      }
+    };
+
+    const isOwner = (commentUserId) => {
+      return authStore.user?.id === commentUserId;
     };
 
     onMounted(() => {
       fetchComments();
     });
 
-    watch(
-      () => props.boardId,
-      () => {
-        fetchComments(1);
-      }
-    );
-
-    // fetchComments 메서드를 부모 컴포넌트에 노출
-    defineExpose({
-      fetchComments,
+    watch(() => props.boardId, () => {
+      fetchComments(1);
     });
 
     return {
@@ -195,12 +210,13 @@ export default {
       fetchComments,
       formatDate,
       isEditing,
-      editingContent,
-      isCommentOwner,
-      startEdit,
-      saveEdit,
-      cancelEdit,
-      deleteComment,
+      editContent,
+      startEditing,
+      cancelEditing,
+      submitEdit,
+      confirmDelete,
+      isOwner,
+      isEdited,
     };
   },
 };

@@ -9,11 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.campcino.dto.requestDto.CreateCommentRequestDto;
+import com.ssafy.campcino.dto.requestDto.UpdateCommentRequestDto;
 import com.ssafy.campcino.dto.responseDto.CommentDto;
 import com.ssafy.campcino.dto.responseDto.PaginatedResponse;
 import com.ssafy.campcino.mapper.CommentMapper;
 import com.ssafy.campcino.model.CommentEntity;
-import com.ssafy.campcino.service.CommentService;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -25,8 +25,7 @@ public class CommentServiceImpl implements CommentService {
     public CommentDto createComment(CreateCommentRequestDto createCommentRequestDto) {
         CommentEntity comment = new CommentEntity();
         comment.setBoardId(createCommentRequestDto.getBoardId());
-        // userId는 인증된 사용자에서 설정 (예시로 "user123" 설정, 실제로는 Authentication에서 가져와야 함)
-        comment.setUserId("ssafy"); // 추후 수정 필요
+        comment.setUserId(createCommentRequestDto.getUserId()); // 실제 인증된 사용자 ID로 설정
         comment.setCommentContent(createCommentRequestDto.getCommentContent());
         comment.setCommentCreatedAt(LocalDateTime.now());
 
@@ -39,11 +38,12 @@ public class CommentServiceImpl implements CommentService {
     public PaginatedResponse<CommentDto> getCommentsByBoardId(Long boardId, int page, int size) {
         int offset = (page - 1) * size;
         List<CommentEntity> comments = commentMapper.getCommentsByBoardId(boardId, offset, size);
+//        System.out.println(comments.get(0));
         int totalComments = commentMapper.countCommentsByBoardId(boardId);
         int totalPages = (int) Math.ceil((double) totalComments / size);
 
         List<CommentDto> commentDtos = comments.stream().map(this::convertToDto).collect(Collectors.toList());
-
+//        System.out.println(commentDtos.get(0).toString());
         PaginatedResponse<CommentDto> response = new PaginatedResponse<>();
         response.setItems(commentDtos);
         response.setCurrentPage(page);
@@ -53,7 +53,29 @@ public class CommentServiceImpl implements CommentService {
         return response;
     }
 
+    @Override
+    public boolean updateComment(UpdateCommentRequestDto updateCommentRequestDto) {
+        CommentEntity comment = new CommentEntity();
+        comment.setCommentId(updateCommentRequestDto.getCommentId());
+        comment.setCommentContent(updateCommentRequestDto.getCommentContent());
+        comment.setUserId(updateCommentRequestDto.getUserId());
+
+        int affectedRows = commentMapper.updateComment(comment);
+        return affectedRows > 0;
+    }
+
+    @Override
+    public boolean deleteComment(Long commentId, Long boardId) {
+//    	System.out.println(commentId+" "+boardId) ;
+        int affectedRows = commentMapper.deleteComment(commentId, boardId);
+//        System.out.println(affectedRows);
+        return affectedRows > 0;
+    }
+
     private CommentDto convertToDto(CommentEntity comment) {
+        if (comment == null) {
+            return null;
+        }
         CommentDto dto = new CommentDto();
         dto.setCommentId(comment.getCommentId());
         dto.setBoardId(comment.getBoardId());

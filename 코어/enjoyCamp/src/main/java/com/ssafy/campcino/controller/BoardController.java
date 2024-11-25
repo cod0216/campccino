@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.campcino.dto.requestDto.CreateBoardRequestDto;
 import com.ssafy.campcino.dto.requestDto.CreateCommentRequestDto;
+import com.ssafy.campcino.dto.requestDto.UpdateCommentRequestDto;
 import com.ssafy.campcino.dto.responseDto.BoardDto;
 import com.ssafy.campcino.dto.responseDto.CommentDto;
 import com.ssafy.campcino.dto.responseDto.PaginatedResponse;
@@ -40,14 +41,6 @@ public class BoardController {
 
     /**
      * 게시글 목록 조회 (페이징, 필터링)
-     * 
-     * @param categories  카테고리 필터
-     * @param text        검색 텍스트
-     * @param page        페이지 번호 (기본값: 1)
-     * @param size        페이지 당 게시글 수 (기본값: 10)
-     * @param sortBy      정렬 기준 (예: "board_created_at")
-     * @param sortOrder   정렬 순서 ("ASC" 또는 "DESC")
-     * @return PaginatedResponse<BoardDto>
      */
     @GetMapping
     public PaginatedResponse<BoardDto> getBoards(
@@ -57,7 +50,7 @@ public class BoardController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "board_created_at") String sortBy,
             @RequestParam(defaultValue = "DESC") String sortOrder) {
-        // 기본 카테고리 설정 (필요 시 수정)
+        // 기본 카테고리 설정
         if (categories == null || categories.isEmpty()) {
             categories = Arrays.asList("일반", "질문", "공지", "자유", "정보", "기타");
         }
@@ -66,9 +59,6 @@ public class BoardController {
 
     /**
      * 특정 게시글 조회
-     * 
-     * @param boardId 게시글 ID
-     * @return BoardDto
      */
     @GetMapping("/{id}")
     public ResponseEntity<BoardDto> getBoardById(@PathVariable("id") Long boardId) {
@@ -82,9 +72,6 @@ public class BoardController {
 
     /**
      * 게시글 작성
-     * 
-     * @param request 게시글 작성 요청 데이터
-     * @return BoardDto
      */
     @PostMapping()
     public ResponseEntity<BoardDto> createBoard(@RequestBody CreateBoardRequestDto request, Authentication authentication) {
@@ -99,14 +86,8 @@ public class BoardController {
         }
     }
 
-
     /**
      * 댓글 목록 조회 (페이징 적용)
-     * 
-     * @param boardId 게시글 ID
-     * @param page    페이지 번호 (기본값: 1)
-     * @param size    페이지 당 댓글 수 (기본값: 10)
-     * @return PaginatedResponse<CommentDto>
      */
     @GetMapping("/{id}/comments")
     public PaginatedResponse<CommentDto> getCommentsByBoardId(
@@ -118,11 +99,6 @@ public class BoardController {
 
     /**
      * 댓글 작성
-     * 
-     * @param boardId        게시글 ID
-     * @param request        댓글 작성 요청 데이터
-     * @param authentication 인증된 사용자 정보
-     * @return ResponseEntity<String>
      */
     @PostMapping("/{id}/comments")
     public ResponseEntity<String> createComment(
@@ -132,8 +108,7 @@ public class BoardController {
         try {
             // 인증된 사용자 ID 설정
 //            String userId = authentication.getName(); // 로그인된 사용자 ID 가져오기
-//            System.out.println(userId);
-//            request.setBoardId(boardId);
+            request.setBoardId(boardId);
 //            request.setUserId(userId); // 사용자 ID 설정
             commentService.createComment(request);
 
@@ -143,14 +118,60 @@ public class BoardController {
         }
     }
 
-    
+    /**
+     * 댓글 수정
+     */
+    @PutMapping("/{id}/comments/{commentId}")
+    public ResponseEntity<String> updateComment(
+            @PathVariable("commentId") Long commentId,
+            @RequestBody UpdateCommentRequestDto requestDto,
+            Authentication authentication) {
+        try {
+//            String userId = authentication.getName(); // 로그인된 사용자 ID 가져오기
+//            requestDto.setUserId(userId); // 사용자 ID 설정
+            boolean isUpdated = commentService.updateComment(requestDto);
+            if (isUpdated) {
+                return new ResponseEntity<>("댓글이 성공적으로 수정되었습니다!", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("댓글 수정에 실패했습니다. 권한이 없거나 댓글이 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>("댓글 수정에 실패했습니다: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /**
+     * 댓글 삭제
+     */
+    @DeleteMapping("/{id}/comments/{commentId}")
+    public ResponseEntity<String> deleteComment(
+            @PathVariable("commentId") Long commentId,
+            @PathVariable("id") Long boardId,
+            Authentication authentication) {
+        try {
+//            String userId = authentication.getName(); // 로그인된 사용자 ID 가져오기
+            boolean isDeleted = commentService.deleteComment(commentId,boardId);
+            if (isDeleted) {
+                return new ResponseEntity<>("댓글이 성공적으로 삭제되었습니다!", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("댓글 삭제에 실패했습니다. 권한이 없거나 댓글이 존재하지 않습니다.", HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>("댓글 삭제에 실패했습니다: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /**
+     * 게시글 수정
+     */
     @PutMapping("/{id}")
     public ResponseEntity<String> updateBoard(
             @PathVariable("id") Long boardId,
             @RequestBody CreateBoardRequestDto requestDto,
             Authentication authentication) {
         try {
-            // 인증된 사용자 확인 (추후 구현)
+            // 인증된 사용자 ID 가져오기
+//            String userId = authentication.getName();
             boardService.updateBoard(requestDto, boardId);
             return new ResponseEntity<>("게시글이 성공적으로 수정되었습니다!", HttpStatus.OK);
         } catch (Exception e) {
@@ -158,18 +179,21 @@ public class BoardController {
         }
     }
     
+    /**
+     * 게시글 삭제
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteBoard(
             @PathVariable("id") Long boardId,
             Authentication authentication) {
         try {
-            // 인증된 사용자 확인 (추후 구현)
+            // 인증된 사용자 ID 가져오기
+//            String userId = authentication.getName();
             boardService.deleteBoard(boardId);
             return new ResponseEntity<>("게시글이 성공적으로 삭제되었습니다!", HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("게시글 삭제에 실패했습니다: " + e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-
 
 }

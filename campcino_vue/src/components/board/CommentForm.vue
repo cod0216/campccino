@@ -19,6 +19,7 @@
 <script>
 import { ref } from "vue";
 import { useAuthStore } from "@/stores/auth"; // 사용자 인증 정보
+import { createComment } from "@/api"; // createComment 함수 임포트
 
 export default {
   name: "CommentForm",
@@ -28,7 +29,8 @@ export default {
       required: true,
     },
   },
-  setup(props) {
+  emits: ["commentSubmitted"], // 이벤트 선언
+  setup(props, { emit }) {
     const commentContent = ref("");
     const authStore = useAuthStore(); // 로그인한 사용자 정보 가져오기
 
@@ -46,15 +48,15 @@ export default {
         }
 
         // 댓글 API 요청
-        await axios.post(`/boards/${props.boardId}/comments`, {
+        await createComment(props.boardId, {
           userId,
           boardId: props.boardId,
-          content: commentContent.value,
+          commentContent: commentContent.value,
         });
 
         alert("댓글이 성공적으로 작성되었습니다!");
         commentContent.value = ""; // 입력 필드 초기화
-        this.$emit("commentSubmitted"); // 부모 컴포넌트에 이벤트 전송
+        emit("commentSubmitted"); // 부모 컴포넌트에 이벤트 전송
       } catch (error) {
         console.error("댓글 작성 중 오류가 발생했습니다:", error);
         alert("댓글 작성에 실패했습니다. 다시 시도해주세요.");

@@ -22,4 +22,10 @@ public interface CommentMapper {
     
     // 댓글 작성
     void insertComment(CommentEntity comment);
+
+    // 댓글 수정
+    int updateComment(CommentEntity comment);
+
+    // 댓글 삭제
+    int deleteComment(@Param("commentId") Long commentId, @Param("boardId") Long boardId);
 }

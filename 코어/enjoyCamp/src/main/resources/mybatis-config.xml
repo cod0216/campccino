@@ -24,5 +24,6 @@
         <mapper resource="mapper/SidoMapper.xml"/>
         <mapper resource="mappers/BoardMapper.xml"/>
         <mapper resource="mappers/CommentMapper.xml"/>
+        <mapper resource="mappers/StoreMapper.xml"/>
     </mappers>
 </configuration>

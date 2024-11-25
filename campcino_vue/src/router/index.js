@@ -45,10 +45,10 @@ const routes = [
     props: true,
   },
   { path: "/main", name: "Main", component: MainView },
-  { path: "/store", name: "CampStore", component: CampStoreView },
+  { path: "/stores", name: "CampStore", component: CampStoreView },
   { path: "/search", name: "CampSearchView", component: CampSearchView },
   {
-    path: "/store/:id",
+    path: "/stores/:id",
     name: "CampStoreDetail",
     component: CampStoreDetailView,
     props: true,

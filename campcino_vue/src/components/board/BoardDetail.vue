@@ -53,7 +53,7 @@
 <script>
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { getBoardById, deleteBoardById } from "@/api"; // 삭제 API 추가
+import { getBoardById, deleteBoardById } from "@/api";
 import { useAuthStore } from "@/stores/auth";
 import CommentList from "./CommentList.vue";
 import CommentForm from "./CommentForm.vue";

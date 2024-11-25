@@ -166,6 +166,30 @@ export const createComment = (boardId, commentData) => {
     .then((res) => res.data);
 };
 
+/**
+ * 댓글 수정
+ * @param {number} boardId - 게시글 ID
+ * @param {number} commentId - 댓글 ID
+ * @param {object} commentData - 수정된 댓글 데이터
+ * @returns {Promise<string>}
+ */
+export const updateComment = (boardId, commentId, commentData) => {
+  return apiClient
+    .put(`/boards/${boardId}/comments/${commentId}`, commentData)
+    .then((res) => res.data);
+};
+
+/**
+ * 댓글 삭제
+ * @param {number} boardId - 게시글 ID
+ * @param {number} commentId - 댓글 ID
+ * @returns {Promise<string>}
+ */
+export const deleteComment = (boardId, commentId) => {
+  return apiClient
+    .delete(`/boards/${boardId}/comments/${commentId}`)
+    .then((res) => res.data);
+};
 // 캠프 상세 조회 API 수정
 export const getCampById = async (campId) => {
   try {
