@@ -1,12 +1,12 @@
 <!-- src/components/camp/CampSearchView.vue -->
 <template>
-  
+
   <div
   class="relative flex w-full min-h-screen flex-col bg-white overflow-x-hidden"
     style="font-family: 'Be Vietnam Pro', 'Noto Sans', sans-serif"
   >
   <Header />
-    
+
     <!-- 찜 목록 컴포넌트 -->
     <FavoriteList
       v-if="favorites.length"

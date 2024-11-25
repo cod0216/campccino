@@ -1,131 +1,80 @@
+<!-- src/components/board/CreatePost.vue -->
 <template>
-  <div
-    class="relative flex w-full min-h-screen flex-col bg-white overflow-x-hidden"
-    style="font-family: 'Be Vietnam Pro', 'Noto Sans', sans-serif"
-  >
-    <Header
-      :headerSearch="headerSearch"
-      @update:headerSearch="headerSearch = $event"
-    />
-    <main class="flex flex-1 justify-center py-5 px-6">
-      <div class="max-w-[920px] w-full flex flex-col">
-        <h2 class="text-[#1C160C] text-2xl font-bold mb-4">
-          글쓰기
-        </h2>
-        <form @submit.prevent="submitPost" class="flex flex-col gap-4">
-          <div>
-            <label class="block text-[#1C160C] mb-2">제목</label>
-            <input
-              type="text"
-              v-model="newPost.board_title"
-              required
-              class="w-full px-4 py-2 border border-[#F4EFE6] rounded"
-            />
-          </div>
-          <div>
-            <label class="block text-[#1C160C] mb-2">내용</label>
-            <textarea
-              v-model="newPost.board_content"
-              required
-              class="w-full px-4 py-2 border border-[#F4EFE6] rounded"
-              rows="6"
-            ></textarea>
-          </div>
-          <div>
-            <label class="block text-[#1C160C] mb-2">카테고리</label>
-            <select
-              v-model="newPost.category"
-              required
-              class="w-full px-4 py-2 border border-[#F4EFE6] rounded"
-            >
-              <option disabled value="">선택</option>
-              <option
-                v-for="category in categories"
-                :key="category"
-                :value="category"
-              >
-                {{ category }}
-              </option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-[#1C160C] mb-2">이미지 주소</label>
-            <input
-              type="text"
-              v-model="newPost.img_url"
-              placeholder="URL"
-              class="w-full px-4 py-2 border border-[#F4EFE6] rounded"
-            />
-          </div>
-          <div class="flex gap-4">
-            <button
-              type="submit"
-              class="w-1/2 px-4 py-2 bg-[#F4EFE6] text-[#1C160C] font-bold rounded"
-            >
-              등록하기
-            </button>
-            <button
-              type="button"
-              @click="cancelPost"
-              class="w-1/2 px-4 py-2 bg-red-400 text-white font-bold rounded"
-            >
-              취소
-            </button>
-          </div>
-        </form>
+  <div class="create-post-container">
+    <h2 class="text-2xl font-bold mb-4">새 게시글 작성</h2>
+    <form @submit.prevent="submitPost">
+      <div class="mb-4">
+        <label class="block text-gray-700">제목</label>
+        <input v-model="post.title" type="text" class="w-full border rounded p-2" required />
       </div>
-    </main>
+      <div class="mb-4">
+        <label class="block text-gray-700">내용</label>
+        <textarea v-model="post.content" class="w-full border rounded p-2" rows="5" required></textarea>
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700">카테고리</label>
+        <select v-model="post.category" class="w-full border rounded p-2" required>
+          <option value="" disabled>카테고리를 선택하세요</option>
+          <option v-for="category in categories" :key="category" :value="category">{{ category }}</option>
+        </select>
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700">이미지 URL (선택 사항)</label>
+        <input v-model="post.imgUrl" type="text" class="w-full border rounded p-2" />
+      </div>
+      <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">작성</button>
+    </form>
   </div>
 </template>
 
 <script>
-import Header from "@/components/common/Header.vue";
-import { createBoard } from "@/api";
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { createBoard } from '@/api';
 
 export default {
-  name: "CreatePost",
-  components: {
-    Header,
-  },
-  data() {
-    return {
-      headerSearch: "",
-      newPost: {
-        board_title: "",
-        board_content: "",
-        category: "",
-        img_url: "",
-        user_id: "user123", // 실제 사용자 ID로 대체하세요
-      },
-      categories: ["질문", "추천", "수다", "장비", "기타"],
-    };
-  },
-  methods: {
-    async submitPost() {
+  name: 'CreatePost',
+  setup() {
+    const router = useRouter();
+    const post = ref({
+      title: '',
+      content: '',
+      category: '',
+      imgUrl: '',
+    });
+
+    const categories = ["일반", "질문", "공지", "자유", "정보", "기타"];
+
+    const submitPost = async () => {
       try {
-        const postData = {
-          board_title: this.newPost.board_title,
-          board_content: this.newPost.board_content,
-          category: this.newPost.category,
-          img_url: this.newPost.img_url,
-          user_id: this.newPost.user_id,
-          board_created_at: new Date(),
-          board_view: 0,
-        };
-        await createBoard(postData);
-        alert("새 게시글이 성공적으로 작성되었습니다!");
-        this.$router.push("/board"); // /board 페이지로 이동
+        await createBoard({
+          boardTitle: post.value.title,
+          boardContent: post.value.content,
+          category: post.value.category,
+          imgUrl: post.value.imgUrl,
+        });
+        alert('게시글이 성공적으로 작성되었습니다!');
+        // 게시글 목록으로 이동
+        router.push('/boards'); // useRouter를 사용하여 네비게이션
       } catch (error) {
-        console.error("게시글 작성 중 오류가 발생했습니다:", error);
+        console.error('게시글 작성 중 오류가 발생했습니다:', error);
+        alert('게시글 작성에 실패했습니다.');
       }
-    },
-    cancelPost() {
-      this.$router.push("/board");
-    },
+    };
+
+    return {
+      post,
+      categories,
+      submitPost,
+    };
   },
 };
 </script>
 
 <style scoped>
-/* 필요에 따라 스타일을 추가하세요 */
+.create-post-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem;
+}
 </style>

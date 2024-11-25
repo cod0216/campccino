@@ -1,8 +1,7 @@
+// src/router/index.js
 import { createRouter, createWebHistory } from "vue-router";
 import { useAuthStore } from "@/stores/auth"; // Pinia 스토어 가져오기
 import BoardView from "@/views/board/BoardView.vue";
-import CreatePost from "@/components/board/CreateBoard.vue";
-import PostDetail from "@/components/board/PostDetail.vue";
 import MainView from "@/views/MainView.vue";
 import CampDetailView from "@/views/camp/CampDetailView.vue";
 import CampStoreView from "@/views/store/CampStoreView.vue";
@@ -10,28 +9,43 @@ import CampStoreDetailView from "@/views/store/CampStoreDetailView.vue";
 import LoginView from "@/views/user/LoginView.vue";
 import JoinView from "@/views/user/JoinView.vue";
 import CampSearchView from "@/views/camp/CampSearchView.vue";
-import ReviewListView from "@/views/review/ReviewListView.vue";
-
+import ReviewListView from "@/views/review/ReviewListView.vue"; // 새로운 뷰 임포트
+import ReviewForm from "@/components/camp/ReviewForm.vue";
+import BoardDetail from "@/components/board/BoardDetail.vue";
+import CreateBoard from "@/components/board/CreateBoard.vue";
 const routes = [
   { path: "/", name: "MainView", component: MainView },
-  { path: "/board", name: "BoardView", component: BoardView },
+  { path: "/boards", name: "BoardView", component: BoardView },
+  {
+    path: "/boards/:id",
+    name: "BoardDetail",
+    component: BoardDetail,
+    props: true,
+  },
+  { path: "/boards/create", name: "CreateBoard", component: CreateBoard },
   {
     path: "/camps/:id",
     name: "CampDetail",
     component: CampDetailView,
     props: true,
   },
-  { path: "/create", name: "CreatePost", component: CreatePost },
-  { path: "/post/:id", name: "PostDetail", component: PostDetail },
+  // 별도의 리뷰 작성 페이지를 원할 경우
+  {
+    path: "/camps/:id/review",
+    name: "ReviewForm",
+    component: ReviewForm,
+    props: true,
+  },
   { path: "/main", name: "Main", component: MainView },
+  // 중복된 라우트 제거 ("/camp/:id")
   { path: "/store", name: "CampStore", component: CampStoreView },
+  { path: "/search", name: "CampSearchView", component: CampSearchView },
   {
     path: "/store/:id",
     name: "CampStoreDetail",
     component: CampStoreDetailView,
     props: true,
   },
-  { path: "/search", name: "CampSearchView", component: CampSearchView },
   {
     path: "/login",
     name: "Login",
@@ -47,8 +61,7 @@ const routes = [
     },
   },
   { path: "/join", name: "Join", component: JoinView },
-  { path: "/reviews", name: "ReviewList", component: ReviewListView },
-
+  { path: "/reviews", name: "ReviewList", component: ReviewListView }, // 새로운 라우트 추가
   {
     path: "/profile",
     name: "Profile",

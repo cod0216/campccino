@@ -17,7 +17,7 @@
         ⭐ {{ formattedRating }}
       </p>
       <p class="mt-2">{{ storeDetail.shopComment }}</p>
-      
+
       <!-- 리뷰 섹션 -->
       <div class="mt-6">
         <h2 class="text-xl font-semibold mb-4">Reviews</h2>
@@ -31,7 +31,7 @@
         <div v-else>
           <p class="text-gray-500">No reviews yet.</p>
         </div>
-        
+
         <!-- 리뷰 작성 폼 -->
         <div class="mt-6">
           <h3 class="text-lg font-semibold mb-2">Add a Review</h3>
@@ -71,7 +71,7 @@ export default {
     const storeStore = useStoreStore();
     const route = useRoute();
     const storeId = parseInt(route.params.id, 10);
-    
+
     const newReview = reactive({
       userId: "currentUserId", // 실제 사용자 ID로 교체
       shopRate: null,
@@ -91,10 +91,10 @@ export default {
 
     const submitReview = async () => {
       try {
-        await storeStore.submitShopReview(storeId, { 
-          userId: newReview.userId, 
-          shopRate: newReview.shopRate, 
-          comment: newReview.comment 
+        await storeStore.submitShopReview(storeId, {
+          userId: newReview.userId,
+          shopRate: newReview.shopRate,
+          comment: newReview.comment
         });
         // 폼 초기화
         newReview.shopRate = null;
@@ -117,7 +117,7 @@ export default {
     });
 
     const formattedRating = computed(() => {
-      
+
 
       return storeStore.storeDetail.rating !== undefined
         ? storeStore.storeDetail.rating.toFixed(2)

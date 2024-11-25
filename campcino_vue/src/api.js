@@ -1,5 +1,6 @@
 // src/api.js
 import axios from "axios";
+import qs from "qs"; // qs 라이브러리 임포트
 
 // Backend API base URL
 const BASE_URL = "http://localhost:8080";
@@ -46,7 +47,6 @@ export const refreshToken = () => {
 
 
 
-
 // 캠프 API
 export const getCamps = (region, categories, query) => {
   return apiClient
@@ -78,35 +78,49 @@ export const getRegions = () =>
 export const getCategories = () =>
   apiClient.get("/categories").then((res) => res.data);
 
-// 보드 API (unchanged)
-export const getBoards = async () => {
-  try {
-    const response = await apiClient.get("/boards");
-    return response.data;
-  } catch (error) {
-    console.error("보드 데이터를 가져오는 중 오류 발생:", error);
-    throw error;
-  }
+/**
+ * 게시글 목록 조회
+ * @param {number} region - 지역 필터 (0은 전체)
+ * @param {Array<string>} categories - 카테고리 필터
+ * @param {string} text - 검색 텍스트
+ * @param {number} page - 페이지 번호
+ * @param {number} size - 페이지 당 게시글 수
+ * @param {string} sortBy - 정렬 기준
+ * @param {string} sortOrder - 정렬 순서
+ * @returns {Promise<object>}
+ */
+export const getBoards = (
+  categories = ["일반", "질문", "공지", "자유", "정보", "기타"],
+  text = "",
+  page = 1,
+  size = 10,
+  sortBy = "board_created_at",
+  sortOrder = "DESC"
+) => {
+  return apiClient.get("/boards", {
+    params: {categories, text, page, size, sortBy, sortOrder },
+    paramsSerializer: params => {
+      return qs.stringify(params, { arrayFormat: 'repeat' }); // 'repeat' 옵션 사용
+    },
+  }).then((res) => res.data);
 };
 
-export const getBoardById = async (id) => {
-  try {
-    const response = await apiClient.get(`/boards/${id}`);
-    return response.data;
-  } catch (error) {
-    console.error("ID로 보드를 가져오는 중 오류 발생:", error);
-    throw error;
-  }
+/**
+ * 특정 게시글 조회
+ * @param {number} id - 게시글 ID
+ * @returns {Promise<object>}
+ */
+export const getBoardById = (id) => {
+  return apiClient.get(`/boards/${id}`).then((res) => res.data);
 };
 
-export const createBoard = async (boardData) => {
-  try {
-    const response = await apiClient.post("/boards", boardData);
-    return response.data;
-  } catch (error) {
-    console.error("보드를 생성하는 중 오류 발생:", error);
-    throw error;
-  }
+/**
+ * 게시글 작성
+ * @param {object} boardData - 게시글 데이터
+ * @returns {Promise<object>}
+ */
+export const createBoard = (boardData) => {
+  return apiClient.post("/boards", boardData).then((res) => res.data);
 };
 
 export const updateBoard = async (id, updatedData) => {
@@ -118,6 +132,33 @@ export const updateBoard = async (id, updatedData) => {
     console.error("보드를 업데이트하는 중 오류 발생:", error);
     throw error;
   }
+};
+
+/**
+ * 댓글 목록 조회 (페이징 적용)
+ * @param {number} boardId - 게시글 ID
+ * @param {number} page - 페이지 번호
+ * @param {number} size - 페이지 당 댓글 수
+ * @returns {Promise<object>}
+ */
+export const getCommentsByBoardId = (boardId, page = 1, size = 10) => {
+  return apiClient
+    .get(`/boards/${boardId}/comments`, {
+      params: { page, size },
+    })
+    .then((res) => res.data);
+};
+
+/**
+ * 댓글 작성
+ * @param {number} boardId - 게시글 ID
+ * @param {object} commentData - 댓글 데이터
+ * @returns {Promise<string>}
+ */
+export const createComment = (boardId, commentData) => {
+  return apiClient
+    .post(`/boards/${boardId}/comments`, commentData)
+    .then((res) => res.data);
 };
 
 // 캠프 상세 조회 API 수정

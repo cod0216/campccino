@@ -23,7 +23,7 @@
       </router-link>
 
       <router-link
-        to="/board"
+        to="/boards"
         class="text-[#1C160C] hover:text-[#A18249] font-medium"
       >
         게시판
