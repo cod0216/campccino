@@ -253,14 +253,7 @@
     <img src="./img/productreviewdelete.gif" style="width: 100%;" alt="main">
 </div>
 
-### ⚙AI(인공지능)
-- ChatBot
-<div style="text-align: center;">
-    <img src="./img/chatbot.gif" style="width: 100%;" alt="main">
-</div>
-
 ----
-
 ### 🥄리뷰
 - 캠핑장 평점별 조회
 <div style="text-align: center;">
@@ -277,6 +270,14 @@
     <img src="./img/reviewname.gif" style="width: 100%;" alt="main">
 </div>
 
+----
+### ⚙AI(인공지능)
+- ChatBot
+<div style="text-align: center;">
+    <img src="./img/chatbot.gif" style="width: 100%;" alt="main">
+</div>
+
+----
 ## ✏ 실행방법
 **FrontEnd Project**
 ```bash
