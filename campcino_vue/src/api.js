@@ -137,7 +137,7 @@ export const updateBoard = async (id, updatedData) => {
 
 // 게시글 삭제 API
 export const deleteBoardById = async (id) => {
-  return apiClient.delete(`/boards/${id}`).then(res => res.data);
+  return apiClient.delete(`/boards/${id}`).then((res) => res.data);
 };
 
 /**
