@@ -1,6 +1,6 @@
 // src/stores/storeStore.js
 import { defineStore } from "pinia";
-import apiClient from "@/api"; // Axios 인스턴스 사용
+import apiClient, { updateStoreReview as apiUpdateStoreReview, deleteStoreReview as apiDeleteStoreReview } from "@/api"; // Axios 인스턴스 사용
 
 export const useStoreStore = defineStore("storeStore", {
   state: () => ({
@@ -67,6 +67,7 @@ export const useStoreStore = defineStore("storeStore", {
               comment: review.comment,
               userId: review.userId,
               createdAt: review.createdAt,
+              updatedAt: review.updatedAt, // 수정된 경우 추가
             })),
           };
           console.log(`Fetched and cached reviews for storeId ${storeId}:`, this.storeReviews[storeId]);
@@ -78,34 +79,31 @@ export const useStoreStore = defineStore("storeStore", {
       // 캐시에 데이터가 있으면 API 호출을 건너뜀
     },
 
-    // 특정 storeId에 리뷰를 제출하는 함수
     async submitShopReview(storeId, review) {
       try {
         const response = await apiClient.post(`/stores/${storeId}/reviews`, review);
-        // 제출된 리뷰를 캐시에 추가
-        if (this.storeReviews[storeId]) {
-          this.storeReviews[storeId].push({
-            reviewId: response.data.reviewId,
-            shopRate: response.data.shopRate,
-            comment: response.data.comment,
-            userId: response.data.userId,
-            createdAt: response.data.createdAt,
-          });
-        } else {
-          // 리뷰 캐시가 없으면 새 배열로 초기화
+    
+        // 응답 데이터 정리
+        const newReview = {
+          reviewId: response.data.reviewId,
+          shopRate: response.data.shopRate,
+          comment: response.data.comment || "", // 빈 값 처리
+          userId: response.data.userId,
+          createdAt: response.data.createdAt,
+          updatedAt: response.data.updatedAt,
+        };
+    
+        // 캐시에 리뷰 추가
+        if (!this.storeReviews[storeId]) {
+          // storeReviews가 없는 경우 초기화
           this.storeReviews = {
             ...this.storeReviews,
-            [storeId]: [
-              {
-                reviewId: response.data.reviewId,
-                shopRate: response.data.shopRate,
-                comment: response.data.comment,
-                userId: response.data.userId,
-                createdAt: response.data.createdAt,
-              },
-            ],
+            [storeId]: [],
           };
         }
+    
+        // 반응형 상태를 유지하면서 데이터 추가
+        this.storeReviews[storeId] = [...this.storeReviews[storeId], newReview];
       } catch (error) {
         console.error(`Failed to submit review for storeId ${storeId}:`, error);
         throw error;
@@ -113,9 +111,9 @@ export const useStoreStore = defineStore("storeStore", {
     },
 
     // 특정 storeId의 리뷰를 삭제하는 함수
-    async deleteShopReview(storeId, reviewId) {
+    async deleteShopReview(storeId, reviewId, userId) {
       try {
-        await apiClient.delete(`/stores/${storeId}/reviews/${reviewId}`);
+        await apiClient.delete(`/stores/${storeId}/reviews/${reviewId}`, { params: { userId } });
         // 캐시에서 리뷰 제거
         if (this.storeReviews[storeId]) {
           this.storeReviews[storeId] = this.storeReviews[storeId].filter(review => review.reviewId !== reviewId);
@@ -124,7 +122,7 @@ export const useStoreStore = defineStore("storeStore", {
         console.error(`Failed to delete review ${reviewId} for storeId ${storeId}:`, error);
         throw error;
       }
-    },
+    }, // 쉼표 추가
 
     // 특정 storeId의 리뷰를 수정하는 함수
     async updateShopReview(storeId, updatedReview) {
@@ -146,7 +144,7 @@ export const useStoreStore = defineStore("storeStore", {
         console.error(`Failed to update review ${updatedReview.reviewId} for storeId ${storeId}:`, error);
         throw error;
       }
-    },
+    }, // 쉼표 추가
 
     // 캐시된 데이터를 강제로 새로고침하는 함수 (필요 시 사용)
     async refreshStoreDetail(storeId) {
@@ -181,6 +179,7 @@ export const useStoreStore = defineStore("storeStore", {
             comment: review.comment,
             userId: review.userId,
             createdAt: review.createdAt,
+            updatedAt: review.updatedAt, // 수정된 경우 추가
           })),
         };
       } catch (error) {

@@ -1,3 +1,4 @@
+<!-- src/components/store/ReviewForm.vue -->
 <template>
   <div class="mt-6">
     <h3 class="text-xl font-semibold mb-2">리뷰 작성</h3>
@@ -67,3 +68,7 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+/* 스타일 추가 가능 */
+</style>

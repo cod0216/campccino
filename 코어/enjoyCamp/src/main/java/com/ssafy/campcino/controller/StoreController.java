@@ -60,7 +60,7 @@ public class StoreController {
 
     // 특정 리뷰 삭제
     @DeleteMapping("/{storeId}/reviews/{reviewId}")
-    public void deleteStoreReview(@PathVariable int storeId, @PathVariable int reviewId) {
-        storeService.deleteStoreReview(storeId, reviewId);
+    public void deleteStoreReview(@PathVariable int storeId, @PathVariable int reviewId, @RequestParam String userId) {
+        storeService.deleteStoreReview(storeId, reviewId, userId);
     }
 }

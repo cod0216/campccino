@@ -232,7 +232,6 @@ export const getPaginatedReviewsByCampId = (campId, page, size) => {
     .then((res) => res.data);
 };
 
-// 리뷰 수정 API
 export const updateStoreReview = (storeId, reviewId, reviewData) => {
   return apiClient
     .put(`/stores/${storeId}/reviews/${reviewId}`, reviewData)
@@ -241,11 +240,11 @@ export const updateStoreReview = (storeId, reviewId, reviewData) => {
 
 // 리뷰 삭제 API
 export const deleteStoreReview = (storeId, reviewId) => {
+  const userId = localStorage.getItem("userId"); // 사용자 ID를 로컬 스토리지에서 가져온다고 가정
   return apiClient
-    .delete(`/stores/${storeId}/reviews/${reviewId}`)
+    .delete(`/stores/${storeId}/reviews/${reviewId}`, { params: { userId } })
     .then((res) => res.data);
 };
-
 // 사용자 정보 수정 API
 export const updateUser = async (userData) => {
   try {

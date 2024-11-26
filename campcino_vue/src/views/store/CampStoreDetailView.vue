@@ -1,3 +1,4 @@
+<!-- src/views/StoreDetailView.vue -->
 <template>
   <div>
     <Header />
@@ -92,14 +93,19 @@ export default {
     });
 
     const submitReview = async (review) => {
-      try {
-        await storeStore.submitShopReview(storeId, review);
-        alert("리뷰가 성공적으로 제출되었습니다.");
-      } catch (error) {
-        console.error("리뷰 제출 실패:", error);
-        alert("리뷰 제출에 실패했습니다. 나중에 다시 시도해주세요.");
-      }
-    };
+  try {
+    // 리뷰 작성
+    const newReview = await storeStore.submitShopReview(storeId, review);
+
+    // 서버로부터 받은 새로운 리뷰 데이터를 상태에 추가
+    storeStore.storeReviews[storeId].push(newReview);
+
+    alert("리뷰가 성공적으로 제출되었습니다.");
+  } catch (error) {
+    console.error("리뷰 제출 실패:", error);
+    alert("리뷰 제출에 실패했습니다. 나중에 다시 시도해주세요.");
+  }
+};
 
     const handleEditReview = (review) => {
       editingReview.value = { ...review };
@@ -107,7 +113,8 @@ export default {
 
     const handleDeleteReview = async (reviewId) => {
       try {
-        await storeStore.deleteShopReview(storeId, reviewId);
+        const userId = authStore.user.userId;
+        await storeStore.deleteShopReview(storeId, reviewId, userId);
         alert("리뷰가 성공적으로 삭제되었습니다.");
       } catch (error) {
         console.error("리뷰 삭제 실패:", error);
@@ -117,6 +124,7 @@ export default {
 
     const updateReview = async () => {
       try {
+        const userId = authStore.user.userId;
         await storeStore.updateShopReview(storeId, editingReview.value);
         alert("리뷰가 성공적으로 수정되었습니다.");
         editingReview.value = null; // 수정 상태 해제
