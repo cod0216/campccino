@@ -99,7 +99,7 @@ export default {
       }
 
       try {
-        const userId = authStore.user?.id; // user에서 ID 가져오기
+        const userId = authStore.user.userId; // user에서 ID 가져오기
         if (!userId) {
           alert("로그인이 필요합니다.");
           return;
