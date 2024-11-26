@@ -2,8 +2,8 @@
 <template>
   <div>
     <Header />
-    <h1 class="text-2xl font-bold mb-4">Store List</h1>
-    <div v-if="stores.length > 0" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+    <h1 class="text-2xl font-bold mb-4">상품 리스트</h1>
+    <div v-if="stores.length > 0" class="grid grid-cols-2 sm:grid-cols-5 lg:grid-cols-4 gap-4">
       <ProductItem
         v-for="store in stores"
         :key="store.shopId"

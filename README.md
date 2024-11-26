@@ -1,93 +1,286 @@
-# Final_PJT
+# 📖 전국 문화 여과 활동 시설 데이터를 활용한 CampCino 서비스
+
+<div style="text-align: center;">
+    <img src="./img/logo.png" style="width: 100%;" alt="main">
+</div>
+
+## 🖥️ 프로젝트 소개
+전국 문화 여가 활동 시설(캠핑) 데이터 를 가지고 전국 캠핑장을 한 눈에 볼 수 있도록 캠핑장 검색 사이트를 제작한다.
+지역 별 위치를 Kakao Map API를 통해 지도로 볼 수 있고, 별도의 리스트를 통해 주소와 후기도 볼 수 있다.
+추가적으로 게시판 기능을 추가하여 각 캠핑장에 대한 정보와 의견을 소통할 수 있는 등 다양한 아이디어를 통한 추가 기능을 구현해 본다.
+또한 캠핑 상점 사이트를 통해 캠핑 용품을 구매 하는등 다양한 편의 기능을 구현해본다.
+
+## 🕰️ 개발 기간
+* 24.11.19일 - 24.11.27일
+
+### 🧑‍🤝‍🧑 맴버구성
+- **정상범**, **최은창**
+
+### ⚙️ 개발 환경
+**Frontend**
+- Framework: `Vue 3.0`
+- Markup Language: `HTML`
+- Styling: `CSS 3`, `Tailwind CSS`, `Bootstrap 5`
+- Scripting: `JavaScript` 
+- Icons: `FontAwesome`, `HeroIcons`
+- Editor: `VS Code`
+- Build Tool: `Vite`
+- Package Manager: `npm`
+
+**Backend**
+- Framework: `Spring Boot 3.3.5`
+- Language: `Java 17`
+- Database: `MySQL 8.0.38`
+- Database Management Tool: `MySQL Workbench`
+- ORM: `MyBatis`
+- Build Tool: `Maven`
+- API Testing & Documentation: `Swagger UI`
+- Authentication: `JWT`
+- Dependencies:
+    - `Lombok`, `Devtools`, `Spring Security`, `MySQL Connector`
+
+**사용 API**
+- `ChatGPT API`
+- `KaKao Map API`
+
+## 🎬 Usecase Diagram
+### 💎주요 기능 Usecase
+<div style="text-align: center;">
+    <img src="./img/total_use.png" style="width: 100%;" alt="total_use">
+</div>
+
+### 💎회원 기능 Usecase
+<div style="text-align: center;">
+    <img src="./img/user_use.png" style="width: 100%;" alt="user_use">
+</div>
+
+### 💎캠핑 기능 Usecase
+<div style="text-align: center;">
+    <img src="./img/camp_use.png" style="width: 100%;" alt="camp_use">
+</div>
+
+### 💎게시판 기능 Usecase
+<div style="text-align: center;">
+    <img src="./img/board_use.png" style="width: 100%;" alt="board_use">
+</div>
+
+### 💎상점 기능 Usecase
+<div style="text-align: center;">
+    <img src="./img/store_use.png" style="width: 100%;" alt="store_use">
+</div>
+
+## 💿 Database
+<div style="text-align: center;">
+    <img src="./img/CampCino_ERD.png" style="width: 100%;" alt="CampCino_ERD">
+</div> 
+
+
+## ✨ Class Diagram
+* Domain : User
+<div style="text-align: center;">
+    <img src="./img/User_use.cld.jpg" style="width: 100%;" alt="main">
+</div>
+
+* Domain : Board
+<div style="text-align: center;">
+    <img src="./img/Board_use.cld.jpg" style="width: 100%;" alt="main">
+</div>
+
+* Domain : Camp
+<div style="text-align: center;">
+    <img src="./img/Camp_use.cld.jpg" style="width: 100%;" alt="main">
+</div>
+
+* Domain : Store
+<div style="text-align: center;">
+    <img src="./img/Store_use.cld.jpg" style="width: 100%;" alt="main">
+</div>
+
+## 🎨 화면 흐름도
+
+<div style="text-align: center;">
+    <img src="./img/displayflow.png" style="width: 100%;" alt="main">
+</div>
+
+
+## 🖼 화면 설계서
+
+<div style="text-align: center;">
+    <img src="./img/display.png" style="width: 100%;" alt="main">
+</div>
 
 
 
-## Getting started
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## 📌 주요 기능
+### 👤User
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+- **✔ 회원가입**
+<div style="text-align: center;">
+    <img src="./img/join.gif" style="width: 100%;" alt="main">
+</div>
 
-## Add your files
+- **✔ 로그인**
+<div style="text-align: center;">
+    <img src="./img/login.gif" style="width: 100%;" alt="login">
+</div>
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+- **✔ 로그아웃**
+<div style="text-align: center;">
+    <img src="./img/logout.gif" style="width: 100%;" alt="main">
+</div>
 
+- **✔ 회원정보 수정**
+<div style="text-align: center;">
+    <img src="./img/userupdate.gif" style="width: 100%;" alt="main">
+</div>
+
+----
+### 📋Board
+- **✔ 게시글 전체 조회**
+<div style="text-align: center;">
+    <img src="./img/boardlist.gif" style="width: 100%;" alt="main">
+</div>
+
+- **✔ 게시글 작성**
+<div style="text-align: center;">
+    <img src="./img/boardwrite.gif" style="width: 100%;" alt="main">
+</div>
+
+- **✔ 게시글 검색**
+<div style="text-align: center;">
+    <img src="./img/boardsearch.gif" style="width: 100%;" alt="main">
+</div>
+
+- **✔ 게시글 카테고리 검색**
+<div style="text-align: center;">
+    <img src="./img/boardcata.gif" style="width: 100%;" alt="main">
+</div>
+
+- **✔ 게시글 수정**
+<div style="text-align: center;">
+    <img src="./img/boardupdate.gif" style="width: 100%;" alt="main">
+</div>
+
+- **✔ 게시글 삭제**
+<div style="text-align: center;">
+    <img src="./img/boarddelete.gif" style="width: 100%;" alt="main">
+</div>
+
+
+- **✔ 게시글 댓글 조회**
+<div style="text-align: center;">
+    <img src="./img/sublist.gif" style="width: 100%;" alt="main">
+</div>
+
+- **✔ 게시글 댓글 쓰기**
+<div style="text-align: center;">
+    <img src="./img/subwrite.gif" style="width: 100%;" alt="main">
+</div>
+
+- **✔ 게시글 댓글 수정**
+<div style="text-align: center;">
+    <img src="./img/subupdate.gif" style="width: 100%;" alt="main">
+</div>
+
+- **✔ 게시글 댓글 삭제**
+<div style="text-align: center;">
+    <img src="./img/subdelete.gif" style="width: 100%;" alt="main">
+</div>
+
+
+----
+### 🏕Camping
+#### ✔캠핑장 검색
+- **지역명(전라남도, 경기도, 광주광역시, 울산광역시 등)**
+<div style="text-align: center;">
+    <img src="./img/camplocal.gif" style="width: 100%;" alt="main">
+</div>
+
+- **테마명(일반 야영장, 글램핑, 자동차야영장, 카라반등)**
+<div style="text-align: center;">
+    <img src="./img/campcata.gif" style="width: 100%;" alt="main">
+</div>
+
+- **검색명**
+<div style="text-align: center;">
+    <img src="./img/campsearch.gif" style="width: 100%;" alt="main">
+</div>
+
+#### ✔ 부가기능
+- **찜하기**
+<div style="text-align: center;">
+    <img src="./img/camplike.gif" style="width: 100%;" alt="main">
+</div>
+
+#### ✔ 캠핑장 상세 조회
+- **찜하기**
+<div style="text-align: center;">
+    <img src="./img/campdetail.gif" style="width: 100%;" alt="main">
+</div>
+
+#### ✔ 캠핑장 리뷰 작성
+- **찜하기**
+<div style="text-align: center;">
+    <img src="./img/campreview.gif" style="width: 100%;" alt="main">
+</div>
+
+
+----
+### 🥄Store
+- 상점 전체 조회
+<div style="text-align: center;">
+    <img src="./img/storelist.gif" style="width: 100%;" alt="main">
+</div>
+
+- 상점 물품 상세 조회
+<div style="text-align: center;">
+    <img src="./img/storedetail.gif" style="width: 100%;" alt="main">
+</div>
+
+- 상세 물품 리뷰 쓰기
+<div style="text-align: center;">
+    <img src="./img/productreviewwrite.gif" style="width: 100%;" alt="main">
+</div>
+
+- 상세 물품 리뷰 수정
+<div style="text-align: center;">
+    <img src="./img/productreviewupdate.gif" style="width: 100%;" alt="main">
+</div>
+
+- 상세 물품 리뷰 수정
+<div style="text-align: center;">
+    <img src="./img/productreviewdelete.gif" style="width: 100%;" alt="main">
+</div>
+
+### ⚙AI(인공지능)
+- ChatBot
+<div style="text-align: center;">
+    <img src="./img/chatbot.gif" style="width: 100%;" alt="main">
+</div>
+
+----
+
+### 🥄리뷰
+- 캠핑장 평점별 조회
+<div style="text-align: center;">
+    <img src="./img/popular.gif" style="width: 100%;" alt="main">
+</div>
+
+- 캠핑장 리뷰수 조회
+<div style="text-align: center;">
+    <img src="./img/reviewcnt.gif" style="width: 100%;" alt="main">
+</div>
+
+- 캠핑장 이름순 조회
+<div style="text-align: center;">
+    <img src="./img/reviewname.gif" style="width: 100%;" alt="main">
+</div>
+
+## ✏ 실행방법
+**FrontEnd Project**
+```bash
+$npm install
+
+$npm run dev
 ```
-cd existing_repo
-git remote add origin https://lab.ssafy.com/best.dev.choi/final_pjt.git
-git branch -M master
-git push -uf origin master
-```
-
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://lab.ssafy.com/best.dev.choi/final_pjt/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.

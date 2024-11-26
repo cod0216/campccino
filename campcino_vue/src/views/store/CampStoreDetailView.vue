@@ -1,14 +1,15 @@
 <!-- src/views/StoreDetailView.vue -->
 <template>
+  
   <div>
-    <Header />
+    <Header />  
     <div v-if="storeDetail" class="p-6">
       <h1 class="text-2xl font-bold">{{ storeDetail.shopTitle }}</h1>
       <img
-        :src="storeDetail.shopImg"
+        :src="storeDetail.image"
         :alt="storeDetail.shopTitle"
         @error="handleImageError"
-        class="w-full h-64 object-cover rounded mt-4"
+        class="w-50 h-64 object-cover rounded mt-4"
       />
       <p class="text-lg mt-4">
         Price: ₩{{ storeDetail.shopPrice.toLocaleString() }}

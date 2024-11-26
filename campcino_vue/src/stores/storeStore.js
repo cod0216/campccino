@@ -13,10 +13,11 @@ export const useStoreStore = defineStore("storeStore", {
     async fetchStores() {
       try {
         const response = await apiClient.get("/stores");
+        console.log('Fetched stores:', response.data); // 디버깅용 로그
         this.stores = response.data.map((store) => ({
           shopId: store.shopId,
           shopTitle: store.shopTitle,
-          shopImg: store.shopImg,
+          image: store.image, // 수정된 부분: shopImg -> image
           shopPrice: store.shopPrice,
           shopComment: store.shopComment,
           rating: store.rating || 0, // 백엔드의 평점 데이터 매핑
@@ -33,12 +34,13 @@ export const useStoreStore = defineStore("storeStore", {
       if (!this.storeDetails[storeId]) {
         try {
           const response = await apiClient.get(`/stores/${storeId}`);
+          console.log(`Fetched store detail for storeId ${storeId}:`, response.data); // 디버깅용 로그
           this.storeDetails = {
             ...this.storeDetails,
             [storeId]: {
               shopId: response.data.shopId,
               shopTitle: response.data.shopTitle,
-              shopImg: response.data.shopImg,
+              image: response.data.image, // 수정된 부분: shopImg -> image
               shopPrice: response.data.shopPrice,
               shopComment: response.data.shopComment,
               rating: response.data.rating || 0, // shopRating 대신 rating 사용, 기본값 처리
@@ -82,7 +84,8 @@ export const useStoreStore = defineStore("storeStore", {
     async submitShopReview(storeId, review) {
       try {
         const response = await apiClient.post(`/stores/${storeId}/reviews`, review);
-    
+        console.log(`Submitted review for storeId ${storeId}:`, response.data); // 디버깅용 로그
+
         // 응답 데이터 정리
         const newReview = {
           reviewId: response.data.reviewId,
@@ -92,7 +95,7 @@ export const useStoreStore = defineStore("storeStore", {
           createdAt: response.data.createdAt,
           updatedAt: response.data.updatedAt,
         };
-    
+
         // 캐시에 리뷰 추가
         if (!this.storeReviews[storeId]) {
           // storeReviews가 없는 경우 초기화
@@ -101,7 +104,7 @@ export const useStoreStore = defineStore("storeStore", {
             [storeId]: [],
           };
         }
-    
+
         // 반응형 상태를 유지하면서 데이터 추가
         this.storeReviews[storeId] = [...this.storeReviews[storeId], newReview];
       } catch (error) {
@@ -114,6 +117,8 @@ export const useStoreStore = defineStore("storeStore", {
     async deleteShopReview(storeId, reviewId, userId) {
       try {
         await apiClient.delete(`/stores/${storeId}/reviews/${reviewId}`, { params: { userId } });
+        console.log(`Deleted review ${reviewId} for storeId ${storeId}`); // 디버깅용 로그
+
         // 캐시에서 리뷰 제거
         if (this.storeReviews[storeId]) {
           this.storeReviews[storeId] = this.storeReviews[storeId].filter(review => review.reviewId !== reviewId);
@@ -128,6 +133,8 @@ export const useStoreStore = defineStore("storeStore", {
     async updateShopReview(storeId, updatedReview) {
       try {
         const response = await apiClient.put(`/stores/${storeId}/reviews/${updatedReview.reviewId}`, updatedReview);
+        console.log(`Updated review ${updatedReview.reviewId} for storeId ${storeId}:`, response.data); // 디버깅용 로그
+
         // 캐시에서 리뷰 업데이트
         if (this.storeReviews[storeId]) {
           const index = this.storeReviews[storeId].findIndex(review => review.reviewId === updatedReview.reviewId);
@@ -155,13 +162,14 @@ export const useStoreStore = defineStore("storeStore", {
           [storeId]: {
             shopId: response.data.shopId,
             shopTitle: response.data.shopTitle,
-            shopImg: response.data.shopImg,
+            image: response.data.image, // 수정된 부분: shopImg -> image
             shopPrice: response.data.shopPrice,
             shopComment: response.data.shopComment,
             rating: response.data.rating || 0,
             // 필요한 다른 필드들 추가
           },
         };
+        console.log(`Refreshed store detail for storeId ${storeId}:`, this.storeDetails[storeId]); // 디버깅용 로그
       } catch (error) {
         console.error(`Failed to refresh store detail for storeId ${storeId}:`, error);
         throw error;
@@ -182,6 +190,7 @@ export const useStoreStore = defineStore("storeStore", {
             updatedAt: review.updatedAt, // 수정된 경우 추가
           })),
         };
+        console.log(`Refreshed reviews for storeId ${storeId}:`, this.storeReviews[storeId]); // 디버깅용 로그
       } catch (error) {
         console.error(`Failed to refresh reviews for storeId ${storeId}:`, error);
         throw error;
