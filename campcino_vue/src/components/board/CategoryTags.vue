@@ -1,4 +1,3 @@
-<!-- src/components/CategoryTags.vue -->
 <template>
   <div class="flex flex-wrap gap-3 p-3">
     <div
@@ -7,7 +6,9 @@
       @click="selectCategory(category)"
       :class="[
         'flex h-8 items-center justify-center gap-x-2 rounded px-4 bg-[#F4EFE6] cursor-pointer',
-        selectedCategory === category ? 'bg-[#D1BFA3]' : '',
+        selectedCategory === category
+          ? 'bg-[#D1BFA3] border-2 border-[#1C160C]'
+          : '',
       ]"
     >
       <p class="text-[#1C160C] text-sm font-medium">{{ category }}</p>
