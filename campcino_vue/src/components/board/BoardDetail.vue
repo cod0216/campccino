@@ -122,7 +122,7 @@ export default {
     };
 
     const isOwner = computed(
-      () => board.value?.userId === authStore.user?.userId
+      () => board.value?.userId === authStore.user.userId
     );
 
     onMounted(() => {
