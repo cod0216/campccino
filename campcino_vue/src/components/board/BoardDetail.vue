@@ -83,7 +83,9 @@ export default {
       try {
         const response = await getBoardById(props.id);
         board.value = response;
-        formattedDate.value = new Date(response.boardCreatedAt).toLocaleString();
+        formattedDate.value = new Date(
+          response.boardCreatedAt
+        ).toLocaleString();
       } catch (error) {
         console.error("게시글을 가져오는 중 오류가 발생했습니다:", error);
       }
@@ -119,7 +121,7 @@ export default {
       router.push("/boards");
     };
 
-    const isOwner = computed(() => board.value?.userId === authStore.user.userId);
+    const isOwner = computed(() => board.value?.userId === authStore.user?.id);
 
     onMounted(() => {
       fetchBoard();

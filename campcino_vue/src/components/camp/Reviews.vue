@@ -19,8 +19,8 @@
               {{ review.userId }}
             </h3>
             <!-- 생성일자를 보기 좋게 포맷 (옵션) -->
-            <p v-if="review.created_at" class="text-sm text-secondary">
-              {{ formatDate(review.created_at) }}
+            <p v-if="review.createdAt" class="text-sm text-secondary">
+              {{ formatDate(review.createdAt) }}
             </p>
           </div>
         </div>

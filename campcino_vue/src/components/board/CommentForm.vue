@@ -41,7 +41,7 @@ export default {
       }
 
       try {
-        const userId = authStore.user.userId; // 로그인한 사용자의 ID
+        const userId = authStore.user?.id; // 로그인한 사용자의 ID
         if (!userId) {
           alert("로그인이 필요합니다!");
           return;
