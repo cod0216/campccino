@@ -1,4 +1,3 @@
-<!-- src/views/StoreDetailView.vue -->
 <template>
   <div>
     <Header />
@@ -21,19 +20,51 @@
       <!-- 리뷰 섹션 -->
       <div class="mt-6">
         <h2 class="text-xl font-semibold mb-4">Reviews</h2>
-        <ReviewList :reviews="storeReviews" />
+        <ReviewList :reviews="storeReviews" @edit-review="handleEditReview" @delete-review="handleDeleteReview" />
         <ReviewForm :storeId="storeId" @submit-review="submitReview" />
       </div>
     </div>
     <div v-else class="p-6">
       <p>스토어 상세 정보를 로드 중입니다...</p>
     </div>
+
+    <!-- 리뷰 수정 모달 -->
+    <div v-if="editingReview" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+      <div class="bg-white p-6 rounded shadow-lg w-1/2">
+        <h3 class="text-xl font-semibold mb-4">리뷰 수정</h3>
+        <form @submit.prevent="updateReview" class="space-y-4">
+          <div>
+            <label for="edit-rating" class="block text-sm font-medium text-gray-700">평점</label>
+            <select v-model.number="editingReview.shopRate" id="edit-rating" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+              <option disabled value="">평점을 선택하세요</option>
+              <option v-for="n in 5" :key="n" :value="n">{{ n }} 점</option>
+            </select>
+          </div>
+          <div>
+            <label for="edit-comment" class="block text-sm font-medium text-gray-700">리뷰</label>
+            <textarea
+              v-model="editingReview.comment"
+              id="edit-comment"
+              rows="4"
+              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+              placeholder="리뷰를 작성하세요"
+              required
+            ></textarea>
+          </div>
+          <div class="flex justify-end space-x-2">
+            <button type="button" @click="cancelEdit" class="px-4 py-2 bg-gray-300 text-gray-700 rounded">취소</button>
+            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">수정 완료</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import { useStoreStore } from "@/stores/storeStore";
-import { onMounted, computed } from "vue";
+import { useAuthStore } from "@/stores/auth"; // auth 스토어 임포트
+import { onMounted, computed, ref } from "vue";
 import Header from "@/components/common/Header.vue";
 import ReviewList from "@/components/store/ReviewList.vue";
 import ReviewForm from "@/components/store/ReviewForm.vue"; // 리뷰 폼 컴포넌트 임포트
@@ -44,8 +75,10 @@ export default {
   components: { Header, ReviewList, ReviewForm },
   setup() {
     const storeStore = useStoreStore();
+    const authStore = useAuthStore(); // auth 스토어 사용
     const route = useRoute();
     const storeId = parseInt(route.params.id, 10);
+    const editingReview = ref(null); // 리뷰 수정 상태
 
     onMounted(async () => {
       try {
@@ -68,6 +101,35 @@ export default {
       }
     };
 
+    const handleEditReview = (review) => {
+      editingReview.value = { ...review };
+    };
+
+    const handleDeleteReview = async (reviewId) => {
+      try {
+        await storeStore.deleteShopReview(storeId, reviewId);
+        alert("리뷰가 성공적으로 삭제되었습니다.");
+      } catch (error) {
+        console.error("리뷰 삭제 실패:", error);
+        alert("리뷰 삭제에 실패했습니다. 나중에 다시 시도해주세요.");
+      }
+    };
+
+    const updateReview = async () => {
+      try {
+        await storeStore.updateShopReview(storeId, editingReview.value);
+        alert("리뷰가 성공적으로 수정되었습니다.");
+        editingReview.value = null; // 수정 상태 해제
+      } catch (error) {
+        console.error("리뷰 수정 실패:", error);
+        alert("리뷰 수정에 실패했습니다. 나중에 다시 시도해주세요.");
+      }
+    };
+
+    const cancelEdit = () => {
+      editingReview.value = null;
+    };
+
     const handleImageError = (event) => {
       event.target.src = "https://via.placeholder.com/400x300?text=Image+Not+Available"; // 대체 이미지 URL
     };
@@ -85,9 +147,14 @@ export default {
       storeDetail,
       storeReviews,
       submitReview,
+      handleEditReview,
+      handleDeleteReview,
+      updateReview,
+      cancelEdit,
       handleImageError,
       formattedRating,
       storeId,
+      editingReview,
     };
   },
 };

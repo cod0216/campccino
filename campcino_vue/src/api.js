@@ -232,6 +232,20 @@ export const getPaginatedReviewsByCampId = (campId, page, size) => {
     .then((res) => res.data);
 };
 
+// 리뷰 수정 API
+export const updateStoreReview = (storeId, reviewId, reviewData) => {
+  return apiClient
+    .put(`/stores/${storeId}/reviews/${reviewId}`, reviewData)
+    .then((res) => res.data);
+};
+
+// 리뷰 삭제 API
+export const deleteStoreReview = (storeId, reviewId) => {
+  return apiClient
+    .delete(`/stores/${storeId}/reviews/${reviewId}`)
+    .then((res) => res.data);
+};
+
 // 사용자 정보 수정 API
 export const updateUser = async (userData) => {
   try {

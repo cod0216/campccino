@@ -112,6 +112,42 @@ export const useStoreStore = defineStore("storeStore", {
       }
     },
 
+    // 특정 storeId의 리뷰를 삭제하는 함수
+    async deleteShopReview(storeId, reviewId) {
+      try {
+        await apiClient.delete(`/stores/${storeId}/reviews/${reviewId}`);
+        // 캐시에서 리뷰 제거
+        if (this.storeReviews[storeId]) {
+          this.storeReviews[storeId] = this.storeReviews[storeId].filter(review => review.reviewId !== reviewId);
+        }
+      } catch (error) {
+        console.error(`Failed to delete review ${reviewId} for storeId ${storeId}:`, error);
+        throw error;
+      }
+    },
+
+    // 특정 storeId의 리뷰를 수정하는 함수
+    async updateShopReview(storeId, updatedReview) {
+      try {
+        const response = await apiClient.put(`/stores/${storeId}/reviews/${updatedReview.reviewId}`, updatedReview);
+        // 캐시에서 리뷰 업데이트
+        if (this.storeReviews[storeId]) {
+          const index = this.storeReviews[storeId].findIndex(review => review.reviewId === updatedReview.reviewId);
+          if (index !== -1) {
+            this.storeReviews[storeId][index] = {
+              ...this.storeReviews[storeId][index],
+              shopRate: response.data.shopRate,
+              comment: response.data.comment,
+              updatedAt: response.data.updatedAt,
+            };
+          }
+        }
+      } catch (error) {
+        console.error(`Failed to update review ${updatedReview.reviewId} for storeId ${storeId}:`, error);
+        throw error;
+      }
+    },
+
     // 캐시된 데이터를 강제로 새로고침하는 함수 (필요 시 사용)
     async refreshStoreDetail(storeId) {
       try {
