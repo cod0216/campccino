@@ -1,4 +1,3 @@
-<!-- src/components/store/ReviewForm.vue -->
 <template>
   <div class="mt-6">
     <h3 class="text-xl font-semibold mb-2">리뷰 작성</h3>
@@ -28,6 +27,7 @@
 
 <script>
 import { reactive } from 'vue';
+import { useAuthStore } from "@/stores/auth"; // auth 스토어 임포트
 
 export default {
   name: "ReviewForm",
@@ -39,6 +39,7 @@ export default {
   },
   emits: ['submit-review'],
   setup(props, { emit }) {
+    const authStore = useAuthStore(); // auth 스토어 사용
     const review = reactive({
       shopRate: null,
       comment: "",
@@ -47,7 +48,7 @@ export default {
     const handleSubmit = () => {
       if (review.shopRate && review.comment) {
         emit('submit-review', { 
-          userId: "currentUserId", // 실제 사용자 ID로 교체 필요
+          userId: authStore.user.userId, // 실제 사용자 ID 사용
           shopRate: review.shopRate, 
           comment: review.comment 
         });
@@ -66,7 +67,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-/* 스타일 추가 가능 */
-</style>

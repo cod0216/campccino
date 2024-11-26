@@ -51,4 +51,16 @@ public class StoreController {
 //        }
         return storeService.getStoreReviews(id);
     }
+
+    // 특정 리뷰 수정
+    @PutMapping("/{storeId}/reviews/{reviewId}")
+    public void updateStoreReview(@PathVariable int storeId, @PathVariable int reviewId, @RequestBody ShopReviewRequest reviewRequest) {
+        storeService.updateStoreReview(storeId, reviewId, reviewRequest);
+    }
+
+    // 특정 리뷰 삭제
+    @DeleteMapping("/{storeId}/reviews/{reviewId}")
+    public void deleteStoreReview(@PathVariable int storeId, @PathVariable int reviewId) {
+        storeService.deleteStoreReview(storeId, reviewId);
+    }
 }
