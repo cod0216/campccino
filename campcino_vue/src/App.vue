@@ -13,6 +13,7 @@
       <CampDetailView v-if="isModalOpen" :campId="selectedCampId" />
     </Modal>
   </div>
+  <bot/>
 </template>
 
 <script>
@@ -21,13 +22,15 @@ import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import Modal from "@/components/common/Modal.vue";
 import CampDetailView from "@/views/camp/CampDetailView.vue";
+import bot from "@/views/chattbot/ChatbotPopup.vue";
 
 
 export default {
   name: "App",
   components: {
     Modal,
-    CampDetailView
+    CampDetailView,
+    bot
   },
   setup() {
     const authStore = useAuthStore();
