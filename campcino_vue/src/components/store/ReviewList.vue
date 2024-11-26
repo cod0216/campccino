@@ -1,10 +1,11 @@
+<!-- src/components/store/ReviewList.vue -->
 <template>
   <div>
     <div v-if="reviews && reviews.length > 0">
       <div v-for="review in reviews" :key="review.reviewId" class="border p-4 rounded mb-4">
         <div class="flex items-center">
           <i class="fas fa-star text-yellow-500 mr-2"></i>
-          <span>{{ review.rating }}</span>
+          <span>{{ review.shopRate }}</span>
           <span class="ml-2 text-sm text-gray-600">{{ review.createdAt }}</span>
         </div>
         <p class="mt-2">{{ review.comment || '리뷰 내용 없음' }}</p>

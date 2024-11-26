@@ -1,10 +1,11 @@
+<!-- src/components/store/ReviewForm.vue -->
 <template>
   <div class="mt-6">
     <h3 class="text-xl font-semibold mb-2">리뷰 작성</h3>
-    <form @submit.prevent="submitReview" class="space-y-4">
+    <form @submit.prevent="handleSubmit" class="space-y-4">
       <div>
         <label for="rating" class="block text-sm font-medium text-gray-700">평점</label>
-        <select v-model="review.rating" id="rating" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+        <select v-model.number="review.shopRate" id="rating" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
           <option disabled value="">평점을 선택하세요</option>
           <option v-for="n in 5" :key="n" :value="n">{{ n }} 점</option>
         </select>
@@ -26,41 +27,42 @@
 </template>
 
 <script>
+import { reactive } from 'vue';
+
 export default {
   name: "ReviewForm",
   props: {
-    productId: {
+    storeId: {
       type: Number,
       required: true
     }
   },
-  data() {
-    return {
-      review: {
-        productId: this.productId,
-        userId: 1, // 임시 사용자 ID (로그인 시스템 연동 필요)
-        rating: "",
-        comment: "",
-      },
-    };
-  },
-  methods: {
-    async submitReview() {
-      try {
-        const response = await this.$emit('submit-review', this.review);
-        if (response === 'success') {
-          alert("리뷰가 성공적으로 제출되었습니다.");
-          // 리뷰 폼 초기화
-          this.review.rating = "";
-          this.review.comment = "";
-        } else {
-          alert("리뷰 제출에 실패했습니다.");
-        }
-      } catch (error) {
-        console.error("Error submitting review:", error);
-        alert("리뷰 제출 중 오류가 발생했습니다.");
+  emits: ['submit-review'],
+  setup(props, { emit }) {
+    const review = reactive({
+      shopRate: null,
+      comment: "",
+    });
+
+    const handleSubmit = () => {
+      if (review.shopRate && review.comment) {
+        emit('submit-review', { 
+          userId: "currentUserId", // 실제 사용자 ID로 교체 필요
+          shopRate: review.shopRate, 
+          comment: review.comment 
+        });
+        // 폼 초기화
+        review.shopRate = null;
+        review.comment = "";
+      } else {
+        alert("평점과 리뷰 내용을 모두 입력해주세요.");
       }
-    },
+    };
+
+    return {
+      review,
+      handleSubmit,
+    };
   },
 };
 </script>

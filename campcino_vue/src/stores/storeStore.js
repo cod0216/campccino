@@ -1,17 +1,18 @@
 // src/stores/storeStore.js
 import { defineStore } from "pinia";
-import axios from "axios";
+import apiClient from "@/api"; // Axios 인스턴스 사용
 
 export const useStoreStore = defineStore("storeStore", {
   state: () => ({
     stores: [],
-    storeDetail: null,
-    storeReviews: [],
+    storeDetails: {}, // storeId를 키로 하는 상세 정보 캐시
+    storeReviews: {}, // storeId를 키로 하는 리뷰 캐시
   }),
   actions: {
+    // 모든 스토어 목록을 가져오는 함수
     async fetchStores() {
       try {
-        const response = await axios.get("/stores");
+        const response = await apiClient.get("/stores");
         this.stores = response.data.map((store) => ({
           shopId: store.shopId,
           shopTitle: store.shopTitle,
@@ -25,48 +26,142 @@ export const useStoreStore = defineStore("storeStore", {
         throw error;
       }
     },
-    async fetchStoreDetail(id) {
+
+    // 특정 storeId의 상세 정보를 가져오는 함수 (캐싱 적용)
+    async fetchStoreDetail(storeId) {
+      // 캐시에 데이터가 없을 경우에만 API 호출
+      if (!this.storeDetails[storeId]) {
+        try {
+          const response = await apiClient.get(`/stores/${storeId}`);
+          this.storeDetails = {
+            ...this.storeDetails,
+            [storeId]: {
+              shopId: response.data.shopId,
+              shopTitle: response.data.shopTitle,
+              shopImg: response.data.shopImg,
+              shopPrice: response.data.shopPrice,
+              shopComment: response.data.shopComment,
+              rating: response.data.rating || 0, // shopRating 대신 rating 사용, 기본값 처리
+              // 필요한 다른 필드들 추가
+            },
+          };
+        } catch (error) {
+          console.error(`Failed to fetch store detail for storeId ${storeId}:`, error);
+          throw error;
+        }
+      }
+      // 캐시에 데이터가 있으면 API 호출을 건너뜀
+    },
+
+    // 특정 storeId의 리뷰를 가져오는 함수 (캐싱 적용)
+    async fetchStoreReviews(storeId) {
+      // 캐시에 데이터가 없을 경우에만 API 호출
+      if (!this.storeReviews[storeId]) {
+        try {
+          const response = await apiClient.get(`/stores/${storeId}/reviews`);
+          this.storeReviews = {
+            ...this.storeReviews,
+            [storeId]: response.data.map((review) => ({
+              reviewId: review.reviewId,
+              shopRate: review.shopRate,
+              comment: review.comment,
+              userId: review.userId,
+              createdAt: review.createdAt,
+            })),
+          };
+          console.log(`Fetched and cached reviews for storeId ${storeId}:`, this.storeReviews[storeId]);
+        } catch (error) {
+          console.error(`Failed to fetch reviews for storeId ${storeId}:`, error);
+          throw error;
+        }
+      }
+      // 캐시에 데이터가 있으면 API 호출을 건너뜀
+    },
+
+    // 특정 storeId에 리뷰를 제출하는 함수
+    async submitShopReview(storeId, review) {
       try {
-        const response = await axios.get(`/stores/${id}`);
-        this.storeDetail = {
-          shopId: response.data.shopId,
-          shopTitle: response.data.shopTitle,
-          shopImg: response.data.shopImg,
-          shopPrice: response.data.shopPrice,
-          shopComment: response.data.shopComment,
-          rating: response.data.rating || 0, // shopRating 대신 rating 사용, 기본값 처리
-          // 필요한 다른 필드들 추가
+        const response = await apiClient.post(`/stores/${storeId}/reviews`, review);
+        // 제출된 리뷰를 캐시에 추가
+        if (this.storeReviews[storeId]) {
+          this.storeReviews[storeId].push({
+            reviewId: response.data.reviewId,
+            shopRate: response.data.shopRate,
+            comment: response.data.comment,
+            userId: response.data.userId,
+            createdAt: response.data.createdAt,
+          });
+        } else {
+          // 리뷰 캐시가 없으면 새 배열로 초기화
+          this.storeReviews = {
+            ...this.storeReviews,
+            [storeId]: [
+              {
+                reviewId: response.data.reviewId,
+                shopRate: response.data.shopRate,
+                comment: response.data.comment,
+                userId: response.data.userId,
+                createdAt: response.data.createdAt,
+              },
+            ],
+          };
+        }
+      } catch (error) {
+        console.error(`Failed to submit review for storeId ${storeId}:`, error);
+        throw error;
+      }
+    },
+
+    // 캐시된 데이터를 강제로 새로고침하는 함수 (필요 시 사용)
+    async refreshStoreDetail(storeId) {
+      try {
+        const response = await apiClient.get(`/stores/${storeId}`);
+        this.storeDetails = {
+          ...this.storeDetails,
+          [storeId]: {
+            shopId: response.data.shopId,
+            shopTitle: response.data.shopTitle,
+            shopImg: response.data.shopImg,
+            shopPrice: response.data.shopPrice,
+            shopComment: response.data.shopComment,
+            rating: response.data.rating || 0,
+            // 필요한 다른 필드들 추가
+          },
         };
       } catch (error) {
-        console.error("Failed to fetch store detail:", error);
+        console.error(`Failed to refresh store detail for storeId ${storeId}:`, error);
         throw error;
       }
     },
-    async fetchStoreReviews(id) {
+
+    async refreshStoreReviews(storeId) {
       try {
-        const response = await axios.get(`/stores/${id}/reviews`);
-        console.log("API 응답 데이터 (리뷰):", response.data); // 디버깅용 로그 추가
-        this.storeReviews = response.data.map((review) => ({
-          reviewId: review.reviewId,
-          shopRate: review.shopRate,
-          comment: review.comment,
-          userId: review.userId,
-          createdAt: review.createdAt,
-        }));
-        console.log("매핑된 리뷰 데이터:", this.storeReviews); // 매핑 결과 확인
+        const response = await apiClient.get(`/stores/${storeId}/reviews`);
+        this.storeReviews = {
+          ...this.storeReviews,
+          [storeId]: response.data.map((review) => ({
+            reviewId: review.reviewId,
+            shopRate: review.shopRate,
+            comment: review.comment,
+            userId: review.userId,
+            createdAt: review.createdAt,
+          })),
+        };
       } catch (error) {
-        console.error("리뷰 데이터를 가져오는 중 오류 발생:", error);
-      }
-    },
-    async submitShopReview(shopId, review) {
-      try {
-        await axios.post(`/stores/${shopId}/reviews`, review);
-        // 리뷰 제출 후 리뷰 리스트를 다시 불러옵니다.
-        await this.fetchStoreReviews(shopId);
-      } catch (error) {
-        console.error("Failed to submit shop review:", error);
+        console.error(`Failed to refresh reviews for storeId ${storeId}:`, error);
         throw error;
       }
+    },
+  },
+  getters: {
+    // 특정 storeId의 상세 정보를 반환하는 getter
+    getStoreDetail: (state) => {
+      return (storeId) => state.storeDetails[storeId] || null;
+    },
+
+    // 특정 storeId의 리뷰를 반환하는 getter
+    getStoreReviews: (state) => {
+      return (storeId) => state.storeReviews[storeId] || [];
     },
   },
 });
