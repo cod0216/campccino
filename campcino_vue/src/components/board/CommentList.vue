@@ -152,7 +152,7 @@ export default {
         const updatedCommentData = {
           commentId: comment.commentId,
           commentContent: updatedContent,
-          userId: authStore.user?.id,
+          userId: authStore.user.userId,
         };
 
         await updateComment(props.boardId, comment.commentId, updatedCommentData);
@@ -192,7 +192,7 @@ export default {
     };
 
     const isOwner = (commentUserId) => {
-      return authStore.user?.id === commentUserId;
+      return authStore.user.userId === commentUserId;
     };
 
     onMounted(() => {

@@ -86,7 +86,7 @@ export default {
 
     const submitPost = async () => {
       try {
-        const userId = authStore.user?.id; // 로그인한 사용자 ID 가져오기
+        const userId = authStore.user.userId; // 로그인한 사용자 ID 가져오기
         if (!userId) {
           alert("로그인이 필요합니다!");
           return;

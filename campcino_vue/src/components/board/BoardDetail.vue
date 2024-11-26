@@ -119,7 +119,7 @@ export default {
       router.push("/boards");
     };
 
-    const isOwner = computed(() => board.value?.userId === authStore.user?.id);
+    const isOwner = computed(() => board.value?.userId === authStore.user.userId);
 
     onMounted(() => {
       fetchBoard();
