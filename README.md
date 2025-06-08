@@ -1,4 +1,4 @@
-# 📖 전국 문화 여가 활동 시설 데이터를 활용한 CampCino 서비스
+# 📖 전국 문화 여가 활동 시설 데이터를 활용한 CampCcino 서비스
 
 <div style="text-align: center;">
     <img src="./img/logo.png" style="width: 100%;" alt="main">
