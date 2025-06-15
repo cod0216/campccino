@@ -1,19 +1,9 @@
 
 package com.ssafy.enjoyCamp;
 
-import com.ssafy.campcino.dto.responseDto.CampDto;
-import com.ssafy.campcino.service.CampService;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Arrays;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
 public class CampControllerTest {

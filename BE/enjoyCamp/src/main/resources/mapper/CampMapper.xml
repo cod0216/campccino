@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ssafy.campcino.mapper.CampMapper">
+<mapper namespace="com.campccino.mapper.CampMapper">
 
 	<!-- 캠핑장 기본 정보 매핑 -->
 	<resultMap id="CampResultMap"
-		type="com.ssafy.campcino.dto.responseDto.CampDto">
+		type="com.campccino.dto.responseDto.CampDto">
 		<id property="campId" column="camp_id" />
 		<result property="regionId" column="sido_id" />
 		<result property="regionName" column="sido_name" />
@@ -34,12 +34,12 @@
 
 		<!-- 리뷰 컬렉션 매핑 -->
 		<collection property="reviews"
-			ofType="com.ssafy.campcino.dto.responseDto.ReviewDto"
+			ofType="com.campccino.dto.responseDto.ReviewDto"
 			select="getReviewsByCampId" column="camp_id" />
 	</resultMap>
 
 	<resultMap id="CampReviewSummaryResultMap"
-		type="com.ssafy.campcino.dto.responseDto.CampReviewSummaryDto">
+		type="com.campccino.dto.responseDto.CampReviewSummaryDto">
 		<result property="campId" column="camp_id" />
 		<result property="campName" column="camp_name" />
 		<result property="avgRating" column="avg_rating" />
@@ -48,7 +48,7 @@
 
 	<!-- AmenitiesResultMap -->
 	<resultMap id="AmenitiesResultMap"
-		type="com.ssafy.campcino.model.AmenitiesEntity">
+		type="com.campccino.model.AmenitiesEntity">
 		<result property="f_elec" column="f_elec" />
 		<result property="f_hotWater" column="f_hot_water" />
 		<result property="f_wifi" column="f_wifi" />
@@ -66,7 +66,7 @@
 
 	<!-- NearAmenitiesResultMap -->
 	<resultMap id="NearAmenitiesResultMap"
-		type="com.ssafy.campcino.dto.responseDto.NearAmenitiesDto">
+		type="com.campccino.dto.responseDto.NearAmenitiesDto">
 		<result property="n_fishing" column="n_fishing" />
 		<result property="n_hiking" column="n_hiking" />
 		<result property="n_beach" column="n_beach" />
@@ -81,7 +81,7 @@
 
 	<!-- OperatingHoursResultMap -->
 	<resultMap id="OperatingHoursResultMap"
-		type="com.ssafy.campcino.dto.responseDto.OperatingHoursDto">
+		type="com.campccino.dto.responseDto.OperatingHoursDto">
 		<result property="o_weekday" column="o_weekday" />
 		<result property="o_weekend" column="o_weekend" />
 		<result property="o_spring" column="o_spring" />
@@ -92,7 +92,7 @@
 
 	<!-- GlampingInfoResultMap -->
 	<resultMap id="GlampingInfoResultMap"
-		type="com.ssafy.campcino.dto.responseDto.GlampingInfoDto">
+		type="com.campccino.dto.responseDto.GlampingInfoDto">
 		<result property="g_bed" column="g_bed" />
 		<result property="g_tv" column="g_tv" />
 		<result property="g_fridge" column="g_fridge" />
@@ -105,7 +105,7 @@
 
 	<!-- ReviewResultMap -->
 	<resultMap id="ReviewResultMap"
-		type="com.ssafy.campcino.dto.responseDto.ReviewDto">
+		type="com.campccino.dto.responseDto.ReviewDto">
 		<id property="reviewId" column="review_id" />
 		<result property="campRate" column="camp_rate" />
 		<result property="userId" column="user_id" />
@@ -362,7 +362,7 @@
 
 	<!-- 리뷰 삽입 쿼리 추가 -->
 	<insert id="insertReview"
-		parameterType="com.ssafy.campcino.dto.requestDto.CreateReviewRequestDto">
+		parameterType="com.campccino.dto.requestDto.CreateReviewRequestDto">
 		INSERT INTO tbl_review (camp_rate, comment, user_id, camp_id)
 		VALUES (#{campRate}, #{comment}, #{userId}, #{campId})
 	</insert>

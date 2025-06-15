@@ -3,9 +3,9 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.ssafy.campcino.mapper.StoreMapper">
+<mapper namespace="com.campccino.mapper.StoreMapper">
 
-    <resultMap id="StoreResultMap" type="com.ssafy.campcino.dto.responseDto.StoreDto">
+    <resultMap id="StoreResultMap" type="com.campccino.dto.responseDto.StoreDto">
         <id property="shopId" column="shop_id" />
         <result property="shopTitle" column="shop_title" />
         <result property="shopPrice" column="shop_price" />
@@ -54,7 +54,7 @@
     </insert>
 
     <!-- 특정 상점의 모든 리뷰 조회 -->
-    <resultMap id="ShopReviewResultMap" type="com.ssafy.campcino.dto.responseDto.ShopReviewResponse">
+    <resultMap id="ShopReviewResultMap" type="com.campccino.dto.responseDto.ShopReviewResponse">
         <id property="reviewId" column="review_id" />
         <result property="shopId" column="shop_id" />
         <result property="userId" column="user_id" />
