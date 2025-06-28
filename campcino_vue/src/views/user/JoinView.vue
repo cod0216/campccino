@@ -164,7 +164,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-/* 스타일 정의 필요 시 추가 */
-</style>
